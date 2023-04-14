@@ -3,75 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ActivityScheduler.Core.Settings"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"  
-        Title="Basic WPF Tutorial" Height="1000" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Settings" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Content="Save" Name="BtnSave" HorizontalAlignment="Left" Height="25" Margin="616,25,0,0" VerticalAlignment="Top" Width="135" Click="BtnSave_Click"/>
+        <Button Content="Cancel" Name="BtnCancel" HorizontalAlignment="Left" Height="25" Margin="616,76,0,0" VerticalAlignment="Top" Width="135" Click="BtnCancel_Click"/>
+        <TextBox HorizontalAlignment="Left" Margin="42,69,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="295" Name="Setting1Tb"/>
+        <TextBlock HorizontalAlignment="Left" Margin="42,50,0,0" TextWrapping="Wrap" Text="Setting 1" VerticalAlignment="Top"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="42,141,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.197"  Name="Setting2Chbx"/>
+        <TextBlock HorizontalAlignment="Left" Margin="43,122,0,0" TextWrapping="Wrap" Text="Setting 2" VerticalAlignment="Top"/>
 
-    <Border Padding="20">
-        <StackPanel Margin="0,0,197,389">
-
-            <!--buttons-->
-
-            <TextBlock Text="Main properties" FontWeight="Bold" Margin="0 10"></TextBlock>
-            <TextBlock Text="Property1"></TextBlock>
-            <TextBox x:Name="Property1_value" Padding="2" Margin="0 10 0 20"></TextBox>
-            <TextBlock x:Name="Property2" Text=""></TextBlock>
-
-            <!--Status and Revision-->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-            </Grid>
-
-            <!--part number-->
-
-            <!--raw material-->
-
-            <!--Manufacturing Information-->
-            <TextBlock Text="Work Centres"></TextBlock>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-
-                <!--Checkboxes-->
-                <!--Column 1-->
-                <StackPanel Grid.Column="0" Margin="0 0 10 0">
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxWeld" Content="Weld" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxAssembly" Content="Assembly" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxPlasma" Content="Plasma" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxLaser" Content="Laser" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxPurchase" Content="Purchase" ></CheckBox>
-                </StackPanel>
-                <!--column2-->
-                <StackPanel Grid.Column="1">
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxLathe" Content="Lathe" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxDrill" Content="Drill" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxFold" Content="Fold" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxRoll" Content="Roll" ></CheckBox>
-                    <CheckBox Checked="Cbox_Checked" x:Name="cboxSaw" Content="Saw" ></CheckBox>
-                </StackPanel>
-            </Grid>
-
-            <!--length-->
-
-            <!--Mass-->
-
-            <!--finish-->
-
-            <!--Purchase Information-->
-
-            <!--Supplier Name-->
-
-            <!--Supplier Code-->
-
-            <!--Additional Information-->
-
-        </StackPanel>
-    </Border>
-
+    </Grid>
 </Window>

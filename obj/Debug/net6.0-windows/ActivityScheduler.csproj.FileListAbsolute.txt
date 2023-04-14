@@ -76,5 +76,3 @@ C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win-arm64\native\
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win-x64\native\e_sqlite3.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win-x86\native\e_sqlite3.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
-C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\Core\Settings\Settings2.g.cs
-C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\Core\Settings\Settings2.baml

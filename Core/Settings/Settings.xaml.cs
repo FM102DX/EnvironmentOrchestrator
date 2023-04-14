@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,54 +10,44 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ActivityScheduler.Core.Settings
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class Settings : Window
     {
-        public Settings()
+        SettingsManager _settingsManager;
+        public Settings(SettingsManager settingsManager)
         {
+            _settingsManager = settingsManager;
             InitializeComponent();
-            // Create a new binding
-            // TheDate is a property of type DateTime on MyData class
-/* 
-            Binding bind01 = new Binding();
-            bind01.Mode = BindingMode.TwoWay;
-            bind01.Source = Property1_value;
-            BindingOperations.SetBinding(Property2, TextBlock.TextProperty, bind01);
-
-            */
-
         }
 
-        private void Cbox_Checked(object sender, RoutedEventArgs e)
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            //this.txtLength.Text += ((CheckBox)sender).Content;
+            var settings = new SettingsData();
+
+            settings.Setting01 = Setting1Tb.Text;
+
+            if ((bool)Setting2Chbx.IsChecked) { settings.Setting02 = true; } else { settings.Setting02 = false; }
+            
+            _settingsManager.SaveSettings(settings);
+
+            this.Close();
         }
 
-        private void DropDownFinish_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
-                return;
+            this.Close();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            var settings = _settingsManager.GetSettings();
+
+            Setting1Tb.Text = settings.Setting01;
+            
+            Setting2Chbx.IsChecked = settings.Setting02;
         }
-
-        private void TxtSupplierName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-        }
-
-
-
-
-                
-
-
     }
 }

@@ -24,7 +24,7 @@ namespace ActivityScheduler
     /// </summary>
     public partial class MainWindow : Window
     {
-        ActivityScheduler.Core.Settings.Settings2 settingsFrm;
+        ActivityScheduler.Core.Settings.Settings settingsFrm;
 
         SettingsManager _settingsManager;
         public MainWindow(SettingsManager settingsManager)
@@ -36,7 +36,7 @@ namespace ActivityScheduler
        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            settingsFrm = new Core.Settings.Settings2(_settingsManager);
+            settingsFrm = new Core.Settings.Settings(_settingsManager);
             settingsFrm.ShowDialog();
         }
     }
