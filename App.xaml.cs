@@ -1,7 +1,7 @@
 ﻿using ActivityScheduler.Core.Appilcation;
 using ActivityScheduler.Core.Settings;
 using ActivityScheduler.DataAccess;
-using ActivityScheduler.Service;
+using ActivityScheduler.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
@@ -19,9 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 
 
-
-
-
 namespace ActivityScheduler
 {
     /// <summary>
@@ -30,12 +27,12 @@ namespace ActivityScheduler
     public partial class App : System.Windows.Application
     {
         private ServiceProvider serviceProvider;
-        Serilog.ILogger Logger;
-        System.Windows.Forms.NotifyIcon notifyIcon1;
-        MainWindow mainWindow;
-        ActivityScheduler.Core.TrayContextMenu trayContextMenu;
-        ServiceProvider _serviceProvider;
-        EfAsyncRepository<SettingStorageUnit> settingsRepo;
+        private Serilog.ILogger Logger;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private MainWindow mainWindow;
+        private ActivityScheduler.Core.TrayContextMenu trayContextMenu;
+        private ServiceProvider _serviceProvider;
+        private EfAsyncRepository<SettingStorageUnit> settingsRepo;
         public App()
         {
             ServiceCollection services = new ServiceCollection();

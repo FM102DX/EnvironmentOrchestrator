@@ -54,7 +54,7 @@ namespace ActivityScheduler.Core {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/ActivityScheduler;component/core/traycontextmenu.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/ActivityScheduler;V1.0.0.0;component/core/traycontextmenu.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Core\TrayContextMenu.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
