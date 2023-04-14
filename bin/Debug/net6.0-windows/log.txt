@@ -1,6 +1,0 @@
-2023-04-10 17:40:21.088 +03:00 [INF] Starting
-2023-04-10 17:41:48.288 +03:00 [INF] Starting
-2023-04-10 17:42:28.159 +03:00 [INF] C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\ActivityScheduler.dll
-2023-04-10 17:43:00.239 +03:00 [INF] Starting
-2023-04-10 17:43:33.331 +03:00 [INF] Starting
-2023-04-10 17:44:45.773 +03:00 [INF] Starting

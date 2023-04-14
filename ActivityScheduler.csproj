@@ -10,9 +10,13 @@
 
   <ItemGroup>
     <Compile Remove="ActivityScheduler.Shared\**" />
+    <Compile Remove="ActivityScheduler.WindowsService\**" />
     <EmbeddedResource Remove="ActivityScheduler.Shared\**" />
+    <EmbeddedResource Remove="ActivityScheduler.WindowsService\**" />
     <None Remove="ActivityScheduler.Shared\**" />
+    <None Remove="ActivityScheduler.WindowsService\**" />
     <Page Remove="ActivityScheduler.Shared\**" />
+    <Page Remove="ActivityScheduler.WindowsService\**" />
   </ItemGroup>
 
   <ItemGroup>
