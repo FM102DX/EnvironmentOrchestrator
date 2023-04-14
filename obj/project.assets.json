@@ -592,6 +592,16 @@
         "build": {
           "buildTransitive/net6.0/System.Text.Json.targets": {}
         }
+      },
+      "ActivityScheduler.Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/ActivityScheduler.Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ActivityScheduler.Shared.dll": {}
+        }
       }
     }
   },
@@ -1380,10 +1390,16 @@
         "system.text.json.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "ActivityScheduler.Shared/1.0.0": {
+      "type": "project",
+      "path": "ActivityScheduler.Shared/ActivityScheduler.Shared.csproj",
+      "msbuildProject": "ActivityScheduler.Shared/ActivityScheduler.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
+      "ActivityScheduler.Shared >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 7.0.5",
       "Microsoft.EntityFrameworkCore.Sqlite >= 7.0.5",
       "Microsoft.Extensions.DependencyInjection >= 7.0.0",
@@ -1424,7 +1440,11 @@
       "frameworks": {
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Develop\\ActivityScheduler\\ActivityScheduler.Shared\\ActivityScheduler.Shared.csproj": {
+              "projectPath": "C:\\Develop\\ActivityScheduler\\ActivityScheduler.Shared\\ActivityScheduler.Shared.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -1481,7 +1501,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
       }
     }
   }
