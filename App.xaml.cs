@@ -1,8 +1,11 @@
 ﻿using ActivityScheduler.Core.Appilcation;
+using ActivityScheduler.Core.Settings;
+using ActivityScheduler.DataAccess;
 using ActivityScheduler.Service;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -32,6 +35,7 @@ namespace ActivityScheduler
         MainWindow mainWindow;
         ActivityScheduler.Core.TrayContextMenu trayContextMenu;
         ServiceProvider _serviceProvider;
+        EfAsyncRepository<SettingStorageUnit> settingsRepo;
         public App()
         {
             ServiceCollection services = new ServiceCollection();
@@ -53,13 +57,49 @@ namespace ActivityScheduler
 
             string logFilePath= System.IO.Path.Combine(app.LogsDirectory, Functions.GetNextFreeFileName(app.LogsDirectory, "ActivitySchedulerLogs","txt")); 
 
-
             Serilog.ILogger _logger = new LoggerConfiguration()
                   .WriteTo.File(logFilePath)
                   .CreateLogger();
 
-
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
+
+            EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(app.DataDirectory);
+            
+            sqLiteDbContext.Database.EnsureCreated();
+
+            try
+            {
+                settingsRepo = new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext);
+
+                services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => settingsRepo);
+
+
+
+
+                /*
+                 * 
+                    employeesRepo = new EfAsyncRepository<Employee>(sqLitedbContext);
+                    rolesRepo = new EfAsyncRepository<EmployeeRole>(sqLitedbContext);
+                    messagesRepo = new EfAsyncRepository<ConsoleToApiMessage>(sqLitedbContext);
+                    employeesRepo.InitAsync(true);
+
+                    Log.Logger.Information($"SQLITE repos  initialized ok");
+
+                    services.AddTransient(typeof(IAsyncRepositoryT<Employee>), (x) => new EfAsyncRepository<Employee>(new EFSqliteDbContext()));
+                    services.AddTransient(typeof(IAsyncRepositoryT<EmployeeRole>), (x) => new EfAsyncRepository<EmployeeRole>(new EFSqliteDbContext()));
+
+                    services.AddScoped(typeof(IAsyncRepositoryT<Employee>), (x) => new EfAsyncRepository<Employee>(new EFSqliteDbContext()));
+                    services.AddScoped(typeof(IAsyncRepositoryT<EmployeeRole>), (x) => new EfAsyncRepository<EmployeeRole>(new EFSqliteDbContext()));
+                    services.AddScoped(typeof(IAsyncRepositoryT<ConsoleToApiMessage>), (x) => new EfAsyncRepository<ConsoleToApiMessage>(new EFSqliteDbContext()));
+
+                   */
+            }
+            catch (Exception ex)
+            {
+                 _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
+            }
+
+            services.AddSingleton<SettingsManager>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
@@ -79,7 +119,8 @@ namespace ActivityScheduler
 
             notifyIcon1.MouseDown += NotifyIcon1_MouseDown;
             notifyIcon1.MouseDoubleClick += NotifyIcon1_MouseDoubleClick;
-            
+
+            SettingsManager mgr = _serviceProvider.GetService<SettingsManager>();
 
             mainWindow = _serviceProvider.GetService<MainWindow>();
 
@@ -99,9 +140,9 @@ namespace ActivityScheduler
 
         private void NotifyIcon1_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            mainWindow.WindowState = WindowState.Normal;
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>());
+
             mainWindow.Show();
-            mainWindow.Activate();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -125,7 +166,8 @@ namespace ActivityScheduler
 
         public void ShowMainWindow()
         {
-            mainWindow = new ActivityScheduler.MainWindow();
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>());
+
             mainWindow.Show();
             
         }

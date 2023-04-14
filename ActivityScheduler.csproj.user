@@ -7,11 +7,17 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Core\Settings\Settings2.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Core\TrayContextMenu.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Core\Settings\Settings2.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Core\TrayContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 C:\Develop\ActivityScheduler\App.xaml
-2-466379487
+41477345743
 
-10-1575307299
-207-1182434525
-Core\TrayContextMenu.xaml;MainWindow.xaml;
+211369611482
+223-704967242
+Core\Settings\Settings.xaml;Core\Settings\Settings2.xaml;Core\TrayContextMenu.xaml;MainWindow.xaml;
 
 False
 

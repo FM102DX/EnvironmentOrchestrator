@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using ActivityScheduler.Core;
 using Serilog;
 using System.IO;
+using ActivityScheduler.Core.Settings;
 
 namespace ActivityScheduler
 {
@@ -23,12 +24,20 @@ namespace ActivityScheduler
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        ActivityScheduler.Core.Settings.Settings2 settingsFrm;
+
+        SettingsManager _settingsManager;
+        public MainWindow(SettingsManager settingsManager)
         {
             InitializeComponent();
-
-
+            _settingsManager = settingsManager;
+            InitializeComponent();
         }
-
+       
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            settingsFrm = new Core.Settings.Settings2(_settingsManager);
+            settingsFrm.ShowDialog();
+        }
     }
 }

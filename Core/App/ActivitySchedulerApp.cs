@@ -23,6 +23,15 @@ namespace ActivityScheduler.Core.Appilcation
                 return directory;
             }
         }
+        public String? DataDirectory
+        {
+            get
+            {
+                var directory = System.IO.Path.Combine(BaseDirectory, "Data");
+                Directory.CreateDirectory(directory);
+                return directory;
+            }
+        }
 
         public String? OutputDirectory
         {
