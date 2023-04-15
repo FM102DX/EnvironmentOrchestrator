@@ -75,12 +75,12 @@ namespace ActivityScheduler.Core.Settings
 
         private void RunBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.Start();
+            _app.StartService();
         }
 
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.Stop();
+            _app.StopService();
         }
     }
 }

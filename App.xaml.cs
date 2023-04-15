@@ -13,10 +13,12 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Interop;
 
 
 namespace ActivityScheduler
@@ -136,8 +138,49 @@ namespace ActivityScheduler
 
             if (!app.DoesServiceExist(app.WinServiceName))
             {
-                throw new Exception("Failed to install worker service. Try to run this app from administrator.");
+                String msg = "Failed to install worker service. Try to run this app from administrator.";
+                System.Windows.MessageBox.Show(msg);
+                Logger.Information(msg);
+                throw new Exception(msg);
             }
+            Logger.Information("Starting service");
+            app.StartService();
+            
+            bool canProceed=false;
+            bool startSuccessful = false;
+            int count = 0;
+            do
+            {
+                string stt = app.GetServiceState();
+                startSuccessful = stt == "Running";
+                Logger.Information($"stt={stt}");
+                if (!startSuccessful)
+                {
+                    Thread.Sleep(1000);
+                    count++;
+                    if (count>20) { canProceed = true; }
+                    Logger.Information($"Start unsuccessful, count={count}");
+                }
+                else
+                {
+                    canProceed = true;
+                }
+            }
+            while (!canProceed);
+
+            Logger.Information($"End of wait loop");
+
+            if (!startSuccessful)
+            {
+                string stt = app.GetServiceState();
+                Logger.Information($"State={stt}");
+                string msg = "Failed to start worker service. Try to run this app from administrator.";
+                System.Windows.MessageBox.Show(msg);
+                Logger.Information(msg);
+                throw new Exception(msg);
+            }
+
+    
 
             mainWindow.Show();
         }

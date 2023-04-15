@@ -107,14 +107,14 @@ namespace ActivityScheduler.Core.Appilcation
             return service.Status.ToString();
         }
 
-        public void Start()
+        public void StartService()
         {
             ServiceController[] services = ServiceController.GetServices("localhost");
             var service = services.FirstOrDefault(s => s.ServiceName == WinServiceName);
             if (service != null) { service.Start();  }
         }
 
-        public void Stop()
+        public void StopService()
         {
             ServiceController[] services = ServiceController.GetServices("localhost");
             var service = services.FirstOrDefault(s => s.ServiceName == WinServiceName);
