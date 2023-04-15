@@ -24,11 +24,11 @@
             <TabItem Header="Worker service">
                 <Grid Background="#FFE5E5E5" Margin="2,0,-2,0">
                     <Button Name="GetStateBtn" Content="GetState" HorizontalAlignment="Left" Margin="28,47,0,0" VerticalAlignment="Top" Width="64" Click="GetStateBtn_Click"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="105,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" Height="20" Background="#FFF8FDEF"/>
-                    <Button Name="InstallBtn"   Content="Install" HorizontalAlignment="Left" Margin="28,79,0,0" VerticalAlignment="Top" Width="61" />
-                    <Button Name="UninstallBtn" Content="Uninstall" HorizontalAlignment="Left" Margin="28,110,0,0" VerticalAlignment="Top" Width="61"/>
-                    <Button Name="RunBtn"   Content="Run" HorizontalAlignment="Left" Margin="28,142,0,0" VerticalAlignment="Top" Width="61" />
-                    <Button Name="StopBtn"  Content="Stop" HorizontalAlignment="Left" Margin="28,176,0,0" VerticalAlignment="Top" Width="61"/>
+                    <TextBlock Name="StateLbl" HorizontalAlignment="Left" Margin="105,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" Height="20" Background="#FFF8FDEF"/>
+                    <Button Name="InstallBtn"   Content="Install" HorizontalAlignment="Left" Margin="28,79,0,0" VerticalAlignment="Top" Width="61" Click="InstallBtn_Click" />
+                    <Button Name="UninstallBtn" Content="Uninstall" HorizontalAlignment="Left" Margin="28,110,0,0" VerticalAlignment="Top" Width="61" Click="UninstallBtn_Click"/>
+                    <Button Name="RunBtn"   Content="Run" HorizontalAlignment="Left" Margin="28,142,0,0" VerticalAlignment="Top" Width="61" Click="RunBtn_Click" />
+                    <Button Name="StopBtn"  Content="Stop" HorizontalAlignment="Left" Margin="28,176,0,0" VerticalAlignment="Top" Width="61" Click="StopBtn_Click"/>
 
                 </Grid>
             </TabItem>

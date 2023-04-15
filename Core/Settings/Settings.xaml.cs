@@ -60,7 +60,27 @@ namespace ActivityScheduler.Core.Settings
 
         private void GetStateBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.
+            StateLbl.Text = _app.GetServiceState();
+        }
+
+        private void InstallBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _app.InstallService();
+        }
+
+        private void UninstallBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _app.UninstallService();
+        }
+
+        private void RunBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _app.Start();
+        }
+
+        private void StopBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _app.Stop();
         }
     }
 }

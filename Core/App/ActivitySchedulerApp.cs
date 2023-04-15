@@ -78,6 +78,7 @@ namespace ActivityScheduler.Core.Appilcation
 
         public void InstallService()
         {
+            if (DoesServiceExist(WinServiceName)) return;
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -88,6 +89,7 @@ namespace ActivityScheduler.Core.Appilcation
         }
         public void UninstallService()
         {
+            if (!DoesServiceExist(WinServiceName)) return;
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -105,15 +107,18 @@ namespace ActivityScheduler.Core.Appilcation
             return service.Status.ToString();
         }
 
-        public string Start()
+        public void Start()
         {
             ServiceController[] services = ServiceController.GetServices("localhost");
             var service = services.FirstOrDefault(s => s.ServiceName == WinServiceName);
-            if (service == null) { return "Not installed"; }
-            return service.Status.ToString();
+            if (service != null) { service.Start();  }
         }
 
-
-
+        public void Stop()
+        {
+            ServiceController[] services = ServiceController.GetServices("localhost");
+            var service = services.FirstOrDefault(s => s.ServiceName == WinServiceName);
+            if (service != null) { service.Stop(); }
+        }
     }
 }
