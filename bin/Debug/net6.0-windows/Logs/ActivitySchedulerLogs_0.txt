@@ -1,0 +1,2 @@
+2023-04-16 00:06:15.159 +03:00 [INF] Starting ActivityScheduler app
+2023-04-16 00:06:15.188 +03:00 [INF] Starting service
