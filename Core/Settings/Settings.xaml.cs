@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ActivityScheduler.Core.Appilcation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,10 +17,12 @@ namespace ActivityScheduler.Core.Settings
 {
     public partial class Settings : Window
     {
-        SettingsManager _settingsManager;
-        public Settings(SettingsManager settingsManager)
+        private SettingsManager _settingsManager;
+        private ActivitySchedulerApp _app;
+        public Settings(SettingsManager settingsManager, ActivitySchedulerApp app)
         {
             _settingsManager = settingsManager;
+            _app = app;
             InitializeComponent();
         }
 
@@ -48,6 +51,16 @@ namespace ActivityScheduler.Core.Settings
             Setting1Tb.Text = settings.Setting01;
             
             Setting2Chbx.IsChecked = settings.Setting02;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GetStateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _app.
         }
     }
 }

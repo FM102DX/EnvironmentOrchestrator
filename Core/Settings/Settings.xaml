@@ -10,12 +10,30 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Content="Save" Name="BtnSave" HorizontalAlignment="Left" Height="25" Margin="616,25,0,0" VerticalAlignment="Top" Width="135" Click="BtnSave_Click"/>
-        <Button Content="Cancel" Name="BtnCancel" HorizontalAlignment="Left" Height="25" Margin="616,76,0,0" VerticalAlignment="Top" Width="135" Click="BtnCancel_Click"/>
-        <TextBox HorizontalAlignment="Left" Margin="42,69,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="295" Name="Setting1Tb"/>
-        <TextBlock HorizontalAlignment="Left" Margin="42,50,0,0" TextWrapping="Wrap" Text="Setting 1" VerticalAlignment="Top"/>
-        <CheckBox Content="" HorizontalAlignment="Left" Margin="42,141,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.197"  Name="Setting2Chbx"/>
-        <TextBlock HorizontalAlignment="Left" Margin="43,122,0,0" TextWrapping="Wrap" Text="Setting 2" VerticalAlignment="Top"/>
+        <Button Content="Save" Name="BtnSave" HorizontalAlignment="Left" Height="25" Margin="684,21,0,0" VerticalAlignment="Top" Width="97" Click="BtnSave_Click"/>
+        <Button Content="Cancel" Name="BtnCancel" HorizontalAlignment="Left" Height="25" Margin="684,72,0,0" VerticalAlignment="Top" Width="97" Click="BtnCancel_Click"/>
+        <TabControl HorizontalAlignment="Left" Height="261" Margin="36,43,0,0" VerticalAlignment="Top" Width="587">
+            <TabItem Header="Common">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox HorizontalAlignment="Left" Margin="9,36,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="295" x:Name="Setting1Tb"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="9,17,0,0" TextWrapping="Wrap" Text="Setting 1" VerticalAlignment="Top"/>
+                    <CheckBox Content="" HorizontalAlignment="Left" Margin="9,108,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.197"  x:Name="Setting2Chbx"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Setting 2" VerticalAlignment="Center"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Worker service">
+                <Grid Background="#FFE5E5E5" Margin="2,0,-2,0">
+                    <Button Name="GetStateBtn" Content="GetState" HorizontalAlignment="Left" Margin="28,47,0,0" VerticalAlignment="Top" Width="64" Click="GetStateBtn_Click"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="105,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="208" Height="20" Background="#FFF8FDEF"/>
+                    <Button Name="InstallBtn"   Content="Install" HorizontalAlignment="Left" Margin="28,79,0,0" VerticalAlignment="Top" Width="61" />
+                    <Button Name="UninstallBtn" Content="Uninstall" HorizontalAlignment="Left" Margin="28,110,0,0" VerticalAlignment="Top" Width="61"/>
+                    <Button Name="RunBtn"   Content="Run" HorizontalAlignment="Left" Margin="28,142,0,0" VerticalAlignment="Top" Width="61" />
+                    <Button Name="StopBtn"  Content="Stop" HorizontalAlignment="Left" Margin="28,176,0,0" VerticalAlignment="Top" Width="61"/>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+
 
     </Grid>
 </Window>

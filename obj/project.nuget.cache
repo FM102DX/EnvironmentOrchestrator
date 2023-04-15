@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ytGp3RN5+flUfiKauxPwoPnUPn5nBosLWL2xOHUksXuBuFpqEbPgZckd8KMxhiJ83+LjVOZCJ8sPpRPExg8Heg==",
+  "dgSpecHash": "xLbt8OVQ0/FX9Achi1Sx0btjMiH4rhY9Nm3/VaOuyorg3IjzC8Wq1bAMwmjuoTjtP+2vuTLt+Kd7x30qRgUWkA==",
   "success": true,
   "projectFilePath": "C:\\Develop\\ActivityScheduler\\ActivityScheduler.csproj",
   "expectedPackageFiles": [
@@ -28,9 +28,11 @@
     "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.core\\2.1.4\\sqlitepclraw.core.2.1.4.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.4\\sqlitepclraw.lib.e_sqlite3.2.1.4.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.4\\sqlitepclraw.provider.e_sqlite3.2.1.4.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.diagnostics.eventlog\\7.0.0\\system.diagnostics.eventlog.7.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.serviceprocess.servicecontroller\\7.0.0\\system.serviceprocess.servicecontroller.7.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.text.json\\7.0.0\\system.text.json.7.0.0.nupkg.sha512"
   ],

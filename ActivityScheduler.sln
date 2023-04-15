@@ -5,9 +5,11 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActivityScheduler", "ActivityScheduler.csproj", "{11E0F92F-116F-4AA1-9128-08CD1AEDDDA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityScheduler.Shared", "ActivityScheduler.Shared\ActivityScheduler.Shared.csproj", "{C4C70135-B5CD-4F3A-B7B5-D5FDCFACD0A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActivityScheduler.Shared", "ActivityScheduler.Shared\ActivityScheduler.Shared.csproj", "{C4C70135-B5CD-4F3A-B7B5-D5FDCFACD0A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityScheduler.WindowsService", "ActivityScheduler.WindowsService\ActivityScheduler.WindowsService.csproj", "{F514A365-3338-4BC8-A015-17882F902C95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActivityScheduler.WindowsService", "ActivityScheduler.WindowsService\ActivityScheduler.WindowsService.csproj", "{F514A365-3338-4BC8-A015-17882F902C95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityScheduler.WorkerService.TopShelf", "ActivityScheduler.WorkerService.TopShelf\ActivityScheduler.WorkerService.TopShelf.csproj", "{31B5E847-2176-43F2-999A-0307FD5ABF51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +85,26 @@ Global
 		{F514A365-3338-4BC8-A015-17882F902C95}.Release|x64.Build.0 = Release|Any CPU
 		{F514A365-3338-4BC8-A015-17882F902C95}.Release|x86.ActiveCfg = Release|Any CPU
 		{F514A365-3338-4BC8-A015-17882F902C95}.Release|x86.Build.0 = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|ARM.Build.0 = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|x64.Build.0 = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Debug|x86.Build.0 = Debug|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|ARM.ActiveCfg = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|ARM.Build.0 = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|ARM64.Build.0 = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|x64.ActiveCfg = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|x64.Build.0 = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|x86.ActiveCfg = Release|Any CPU
+		{31B5E847-2176-43F2-999A-0307FD5ABF51}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

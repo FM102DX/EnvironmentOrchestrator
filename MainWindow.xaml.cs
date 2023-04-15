@@ -16,6 +16,7 @@ using ActivityScheduler.Core;
 using Serilog;
 using System.IO;
 using ActivityScheduler.Core.Settings;
+using ActivityScheduler.Core.Appilcation;
 
 namespace ActivityScheduler
 {
@@ -24,19 +25,21 @@ namespace ActivityScheduler
     /// </summary>
     public partial class MainWindow : Window
     {
-        ActivityScheduler.Core.Settings.Settings settingsFrm;
+        private ActivityScheduler.Core.Settings.Settings settingsFrm;
+        private ActivitySchedulerApp _app;
 
         SettingsManager _settingsManager;
-        public MainWindow(SettingsManager settingsManager)
+        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app)
         {
             InitializeComponent();
             _settingsManager = settingsManager;
+            _app = app;
             InitializeComponent();
         }
        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            settingsFrm = new Core.Settings.Settings(_settingsManager);
+            settingsFrm = new Core.Settings.Settings(_settingsManager, _app);
             settingsFrm.ShowDialog();
         }
     }

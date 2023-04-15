@@ -33,6 +33,7 @@ namespace ActivityScheduler
         private ActivityScheduler.Core.TrayContextMenu trayContextMenu;
         private ServiceProvider _serviceProvider;
         private EfAsyncRepository<SettingStorageUnit> settingsRepo;
+        private ActivitySchedulerApp _app;
         public App()
         {
             ServiceCollection services = new ServiceCollection();
@@ -41,18 +42,17 @@ namespace ActivityScheduler
         }
         private void ConfigureServices(ServiceCollection services)
         {
-
             services.AddSingleton<MainWindow>();
 
             services.AddSingleton(typeof(ActivitySchedulerApp), (x) => new ActivitySchedulerApp());
 
             var _serviceProvider = services.BuildServiceProvider();
 
-            var app= _serviceProvider.GetService<ActivitySchedulerApp>();
+            _app= _serviceProvider.GetService<ActivitySchedulerApp>();
 
-            Functions.LeaveLastNFilesOrFoldersInDirectory(app.LogsDirectory, 20);
+            Functions.LeaveLastNFilesOrFoldersInDirectory(_app.LogsDirectory, 20);
 
-            string logFilePath= System.IO.Path.Combine(app.LogsDirectory, Functions.GetNextFreeFileName(app.LogsDirectory, "ActivitySchedulerLogs","txt")); 
+            string logFilePath= System.IO.Path.Combine(_app.LogsDirectory, Functions.GetNextFreeFileName(_app.LogsDirectory, "ActivitySchedulerLogs","txt")); 
 
             Serilog.ILogger _logger = new LoggerConfiguration()
                   .WriteTo.File(logFilePath)
@@ -60,7 +60,7 @@ namespace ActivityScheduler
 
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
-            EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(app.DataDirectory);
+            EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
             
             sqLiteDbContext.Database.EnsureCreated();
 
@@ -69,9 +69,6 @@ namespace ActivityScheduler
                 settingsRepo = new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext);
 
                 services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => settingsRepo);
-
-
-
 
                 /*
                  * 
@@ -115,6 +112,7 @@ namespace ActivityScheduler
             notifyIcon1.Visible = true;
 
             notifyIcon1.MouseDown += NotifyIcon1_MouseDown;
+
             notifyIcon1.MouseDoubleClick += NotifyIcon1_MouseDoubleClick;
 
             SettingsManager mgr = _serviceProvider.GetService<SettingsManager>();
@@ -131,13 +129,22 @@ namespace ActivityScheduler
 
             trayContextMenu = new ActivityScheduler.Core.TrayContextMenu(this);
 
+            if(!app.DoesServiceExist(app.WinServiceName))
+            {
+                app.InstallService();
+            }
+
+            if (!app.DoesServiceExist(app.WinServiceName))
+            {
+                throw new Exception("Failed to install worker service. Try to run this app from administrator.");
+            }
+
             mainWindow.Show();
-           
         }
 
         private void NotifyIcon1_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>());
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app);
 
             mainWindow.Show();
         }
@@ -163,7 +170,7 @@ namespace ActivityScheduler
 
         public void ShowMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>());
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app);
 
             mainWindow.Show();
             

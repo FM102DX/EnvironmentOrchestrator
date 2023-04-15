@@ -4,6 +4,7 @@ using Serilog;
 using System.Drawing;
 using ActivityScheduler.WorkerService;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.EventLog;
 
 namespace ActivityScheduler.WindowsService
 {
@@ -13,7 +14,7 @@ namespace ActivityScheduler.WindowsService
         {
 
             ActivitySchedulerWorkerApp app = new ActivitySchedulerWorkerApp();
-
+            var y = app.ExeFileFullPath;
             string logFilePath = System.IO.Path.Combine(app.LogsDirectory, Functions.GetNextFreeFileName(app.LogsDirectory, "ActivitySchedulerLogs", "txt"));
 
             Serilog.ILogger _logger = new LoggerConfiguration()
@@ -24,6 +25,18 @@ namespace ActivityScheduler.WindowsService
                 ConfigureServices(services => {
                     services.AddSingleton(typeof(Serilog.ILogger), _logger);
                     services.AddHostedService<Worker>();
+
+                    if(OperatingSystem.IsWindows())
+                    {
+                        services.Configure<EventLogSettings>(config =>
+                        {
+                            if (OperatingSystem.IsWindows())
+                            {
+                                config.LogName = "SampleService";
+                                config.SourceName = "SampleServiceName";
+                            };
+                        });
+                    };
                 }).Build();
 
             host.Run();
