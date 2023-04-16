@@ -44,5 +44,10 @@ namespace ActivityScheduler
             settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
             settingsFrm.ShowDialog();
         }
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            Tag = "Closed";
+        }
     }
 }

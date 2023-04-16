@@ -170,9 +170,7 @@ namespace ActivityScheduler
 
         private void NotifyIcon1_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
-
-            mainWindow.Show();
+            ShowMainWindow();
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -196,10 +194,15 @@ namespace ActivityScheduler
 
         public void ShowMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
-
-            mainWindow.Show();
+            if(mainWindow.Tag=="Closed")
+            {
+                mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
+            }
             
+            mainWindow.WindowState= WindowState.Normal;
+            mainWindow.Show();
+
+
         }
         public void HideMainWindow()
         {
