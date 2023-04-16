@@ -19,10 +19,12 @@ namespace ActivityScheduler.Core.Settings
     {
         private SettingsManager _settingsManager;
         private ActivitySchedulerApp _app;
-        public Settings(SettingsManager settingsManager, ActivitySchedulerApp app)
+        private WorkerServiceManager _workerMgr;
+        public Settings(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr)
         {
             _settingsManager = settingsManager;
             _app = app;
+            _workerMgr = workerMgr;
             InitializeComponent();
         }
 
@@ -60,27 +62,27 @@ namespace ActivityScheduler.Core.Settings
 
         private void GetStateBtn_Click(object sender, RoutedEventArgs e)
         {
-            StateLbl.Text = _app.GetServiceState();
+            StateLbl.Text = _workerMgr.GetServiceState().ToString();
         }
 
         private void InstallBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.InstallService();
+            _workerMgr.InstallService();
         }
 
         private void UninstallBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.UninstallService();
+            _workerMgr.UninstallService();
         }
 
         private void RunBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.StartService();
+            _workerMgr.StartService();
         }
 
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
-            _app.StopService();
+            _workerMgr.StopService();
         }
     }
 }

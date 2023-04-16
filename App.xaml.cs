@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -36,29 +37,41 @@ namespace ActivityScheduler
         private ServiceProvider _serviceProvider;
         private EfAsyncRepository<SettingStorageUnit> settingsRepo;
         private ActivitySchedulerApp _app;
+        private WorkerServiceManager _workerMgr;
         public App()
         {
             ServiceCollection services = new ServiceCollection();
             ConfigureServices(services);
             _serviceProvider = services.BuildServiceProvider();
         }
+
         private void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<MainWindow>();
 
             services.AddSingleton(typeof(ActivitySchedulerApp), (x) => new ActivitySchedulerApp());
 
+            services.AddSingleton<WorkerServiceManager>();
+
             var _serviceProvider = services.BuildServiceProvider();
 
-            _app= _serviceProvider.GetService<ActivitySchedulerApp>();
+            _app = _serviceProvider.GetService<ActivitySchedulerApp>();
 
-            Functions.LeaveLastNFilesOrFoldersInDirectory(_app.LogsDirectory, 20);
+            // Functions.LeaveLastNFilesOrFoldersInDirectory(_app.LogsDirectory, 20);
 
             string logFilePath= System.IO.Path.Combine(_app.LogsDirectory, Functions.GetNextFreeFileName(_app.LogsDirectory, "ActivitySchedulerLogs","txt")); 
 
             Serilog.ILogger _logger = new LoggerConfiguration()
                   .WriteTo.File(logFilePath)
                   .CreateLogger();
+
+            Process[] pname = Process.GetProcessesByName("ActivityScheduler");
+            _logger.Information($"Intances of ActivityScheduler.exe {pname.Length}");
+            if (pname.Length > 1)
+            {
+                System.Windows.MessageBox.Show("Only one instance of application can be running");
+                Shutdown();
+            }
 
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
@@ -131,63 +144,33 @@ namespace ActivityScheduler
 
             trayContextMenu = new ActivityScheduler.Core.TrayContextMenu(this);
 
-            if(!app.DoesServiceExist(app.WinServiceName))
+
+            //install and run worker service
+
+            _workerMgr = _serviceProvider.GetService<WorkerServiceManager>();
+
+            CommonOperationResult installResult = _workerMgr.InstallService();
+
+            if (!installResult.Success)
             {
-                app.InstallService();
+                System.Windows.MessageBox.Show(installResult.Message);
+                throw new Exception(installResult.Message);
             }
 
-            if (!app.DoesServiceExist(app.WinServiceName))
-            {
-                String msg = "Failed to install worker service. Try to run this app from administrator.";
-                System.Windows.MessageBox.Show(msg);
-                Logger.Information(msg);
-                throw new Exception(msg);
-            }
-            Logger.Information("Starting service");
-            app.StartService();
+            CommonOperationResult startResult = _workerMgr.StartService();
             
-            bool canProceed=false;
-            bool startSuccessful = false;
-            int count = 0;
-            do
+            if (!startResult.Success)
             {
-                string stt = app.GetServiceState();
-                startSuccessful = stt == "Running";
-                Logger.Information($"stt={stt}");
-                if (!startSuccessful)
-                {
-                    Thread.Sleep(1000);
-                    count++;
-                    if (count>20) { canProceed = true; }
-                    Logger.Information($"Start unsuccessful, count={count}");
-                }
-                else
-                {
-                    canProceed = true;
-                }
+                System.Windows.MessageBox.Show(startResult.Message);
+                throw new Exception(startResult.Message);
             }
-            while (!canProceed);
-
-            Logger.Information($"End of wait loop");
-
-            if (!startSuccessful)
-            {
-                string stt = app.GetServiceState();
-                Logger.Information($"State={stt}");
-                string msg = "Failed to start worker service. Try to run this app from administrator.";
-                System.Windows.MessageBox.Show(msg);
-                Logger.Information(msg);
-                throw new Exception(msg);
-            }
-
-    
 
             mainWindow.Show();
         }
 
         private void NotifyIcon1_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app);
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
 
             mainWindow.Show();
         }
@@ -213,7 +196,7 @@ namespace ActivityScheduler
 
         public void ShowMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app);
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
 
             mainWindow.Show();
             

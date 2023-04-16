@@ -30,7 +30,8 @@ namespace ActivityScheduler.Shared
         {
             System.IO.DirectoryInfo di = new DirectoryInfo(path);
             var files = di.GetFiles();
-            files.ToList().OrderByDescending(x => x.CreationTime).Skip(leaveNumber).ToList().ForEach(file => file.Delete());
+            var filesToRemove = files.ToList().OrderBy(x => x.CreationTime).Skip(leaveNumber).ToList();
+            filesToRemove.ForEach(file => file.Delete());
         }
     }
 }

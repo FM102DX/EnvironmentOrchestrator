@@ -1,2 +1,4 @@
-2023-04-16 00:06:15.159 +03:00 [INF] Starting ActivityScheduler app
-2023-04-16 00:06:15.188 +03:00 [INF] Starting service
+2023-04-16 16:03:46.068 +03:00 [INF] Starting ActivityScheduler app
+2023-04-16 16:03:46.255 +03:00 [INF] Started service, waiting for state Running
+2023-04-16 16:03:47.258 +03:00 [INF] Waiting for state Running, tries=1, current state=Stopped 
+2023-04-16 16:07:12.045 +03:00 [INF] Context menu opened by r-click
