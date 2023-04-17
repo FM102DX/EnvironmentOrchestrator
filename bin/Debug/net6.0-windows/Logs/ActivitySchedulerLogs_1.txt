@@ -1,1 +1,13 @@
-2023-04-15 01:00:24.724 +03:00 [INF] Starting ActivityScheduler app
+2023-04-17 16:52:04.084 +03:00 [INF] Intances of ActivityScheduler.exe 1
+2023-04-17 16:52:04.931 +03:00 [INF] Point 1
+2023-04-17 16:52:04.931 +03:00 [INF] Point 2
+2023-04-17 16:52:05.097 +03:00 [INF] Starting ActivityScheduler app
+2023-04-17 16:52:05.099 +03:00 [INF] Point 4
+2023-04-17 16:52:05.100 +03:00 [INF] Point 5
+2023-04-17 16:52:05.101 +03:00 [INF] Point 6
+2023-04-17 16:52:05.109 +03:00 [INF] Point 7
+2023-04-17 16:52:05.367 +03:00 [INF] Started service, waiting for state Running
+2023-04-17 16:52:06.369 +03:00 [INF] Waiting for state Running, tries=1, current state=Stopped 
+2023-04-17 16:52:06.378 +03:00 [INF] Point 8
+2023-04-17 16:52:06.603 +03:00 [INF] Point 9
+2023-04-17 16:52:14.702 +03:00 [INF] Context menu opened by r-click

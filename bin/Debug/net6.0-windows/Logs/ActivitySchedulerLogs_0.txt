@@ -1,4 +1,31 @@
-2023-04-16 16:03:46.068 +03:00 [INF] Starting ActivityScheduler app
-2023-04-16 16:03:46.255 +03:00 [INF] Started service, waiting for state Running
-2023-04-16 16:03:47.258 +03:00 [INF] Waiting for state Running, tries=1, current state=Stopped 
-2023-04-16 16:07:12.045 +03:00 [INF] Context menu opened by r-click
+2023-04-17 13:37:34.716 +03:00 [INF] Intances of ActivityScheduler.exe 1
+2023-04-17 13:37:35.382 +03:00 [INF] Point 1
+2023-04-17 13:37:35.382 +03:00 [INF] Point 2
+2023-04-17 13:37:35.556 +03:00 [INF] Starting ActivityScheduler app
+2023-04-17 13:37:35.558 +03:00 [INF] Point 4
+2023-04-17 13:37:35.559 +03:00 [INF] Point 5
+2023-04-17 13:37:35.559 +03:00 [INF] Point 6
+2023-04-17 13:37:35.577 +03:00 [INF] Installed service, waiting for state Stopped
+2023-04-17 13:37:36.580 +03:00 [INF] Waiting for state Stopped, tries=1, current state=NotInstalled 
+2023-04-17 13:37:37.584 +03:00 [INF] Waiting for state Stopped, tries=2, current state=NotInstalled 
+2023-04-17 13:37:38.588 +03:00 [INF] Waiting for state Stopped, tries=3, current state=NotInstalled 
+2023-04-17 13:37:39.594 +03:00 [INF] Waiting for state Stopped, tries=4, current state=NotInstalled 
+2023-04-17 13:37:40.598 +03:00 [INF] Waiting for state Stopped, tries=5, current state=NotInstalled 
+2023-04-17 13:37:41.603 +03:00 [INF] Waiting for state Stopped, tries=6, current state=NotInstalled 
+2023-04-17 13:37:42.606 +03:00 [INF] Waiting for state Stopped, tries=7, current state=NotInstalled 
+2023-04-17 13:37:43.609 +03:00 [INF] Waiting for state Stopped, tries=8, current state=NotInstalled 
+2023-04-17 13:37:44.613 +03:00 [INF] Waiting for state Stopped, tries=9, current state=NotInstalled 
+2023-04-17 13:37:45.619 +03:00 [INF] Waiting for state Stopped, tries=10, current state=NotInstalled 
+2023-04-17 13:37:46.623 +03:00 [INF] Waiting for state Stopped, tries=11, current state=NotInstalled 
+2023-04-17 13:37:47.632 +03:00 [INF] Waiting for state Stopped, tries=12, current state=NotInstalled 
+2023-04-17 13:37:48.638 +03:00 [INF] Waiting for state Stopped, tries=13, current state=NotInstalled 
+2023-04-17 13:37:49.643 +03:00 [INF] Waiting for state Stopped, tries=14, current state=NotInstalled 
+2023-04-17 13:37:50.646 +03:00 [INF] Waiting for state Stopped, tries=15, current state=NotInstalled 
+2023-04-17 13:37:51.654 +03:00 [INF] Waiting for state Stopped, tries=16, current state=NotInstalled 
+2023-04-17 13:37:52.656 +03:00 [INF] Waiting for state Stopped, tries=17, current state=NotInstalled 
+2023-04-17 13:37:53.659 +03:00 [INF] Waiting for state Stopped, tries=18, current state=NotInstalled 
+2023-04-17 13:37:54.662 +03:00 [INF] Waiting for state Stopped, tries=19, current state=NotInstalled 
+2023-04-17 13:37:55.667 +03:00 [INF] Waiting for state Stopped, tries=20, current state=NotInstalled 
+2023-04-17 13:37:56.670 +03:00 [INF] Waiting for state Stopped, tries=21, current state=NotInstalled 
+2023-04-17 13:37:56.670 +03:00 [INF] Failed to start install service. Try to run this app from administrator
+2023-04-17 13:37:56.901 +03:00 [INF] Context menu opened by r-click

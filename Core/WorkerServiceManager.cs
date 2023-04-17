@@ -41,7 +41,8 @@ namespace ActivityScheduler.Core.Appilcation
             {
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
                 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.CreateNoWindow = false;
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
                 startInfo.FileName = _app.ServiceExeFileFullPath;
                 startInfo.Arguments = " install";
                 process.StartInfo = startInfo;
@@ -88,7 +89,8 @@ namespace ActivityScheduler.Core.Appilcation
             if (!DoesServiceExist(_app.WinServiceName)) return;
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.CreateNoWindow = false;
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
             startInfo.FileName = _app.ServiceExeFileFullPath;
             startInfo.Arguments = " uninstall";
             process.StartInfo = startInfo;

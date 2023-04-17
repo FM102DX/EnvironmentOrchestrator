@@ -78,7 +78,7 @@ namespace ActivityScheduler
             EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
             
             sqLiteDbContext.Database.EnsureCreated();
-
+            _logger.Information($"Point 1");
             try
             {
                 settingsRepo = new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext);
@@ -107,13 +107,13 @@ namespace ActivityScheduler
             {
                  _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
             }
-
+            _logger.Information($"Point 2");
             services.AddSingleton<SettingsManager>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
         {
-
+            
             var app = _serviceProvider.GetService<ActivitySchedulerApp>();
 
             string iconFileFullPath = Path.Combine(app.IconsDirectory, "app.ico");
@@ -141,13 +141,18 @@ namespace ActivityScheduler
             Logger.Information("Starting ActivityScheduler app");
 
             var icon = new Icon(SystemIcons.Exclamation, 40, 40);
-
+            
+            _logger.Information($"Point 4");
+            
             trayContextMenu = new ActivityScheduler.Core.TrayContextMenu(this);
-
+            
+            _logger.Information($"Point 5");
 
             //install and run worker service
 
             _workerMgr = _serviceProvider.GetService<WorkerServiceManager>();
+
+            _logger.Information($"Point 6");
 
             CommonOperationResult installResult = _workerMgr.InstallService();
 
@@ -156,6 +161,7 @@ namespace ActivityScheduler
                 System.Windows.MessageBox.Show(installResult.Message);
                 throw new Exception(installResult.Message);
             }
+            _logger.Information($"Point 7");
 
             CommonOperationResult startResult = _workerMgr.StartService();
             
@@ -164,8 +170,10 @@ namespace ActivityScheduler
                 System.Windows.MessageBox.Show(startResult.Message);
                 throw new Exception(startResult.Message);
             }
+            _logger.Information($"Point 8");
 
             mainWindow.Show();
+            _logger.Information($"Point 9");
         }
 
         private void NotifyIcon1_MouseDoubleClick(object? sender, MouseEventArgs e)

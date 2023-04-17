@@ -17,6 +17,13 @@ namespace ActivityScheduler.WorkerService
 
         public String? BaseDirectory { get => System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location); }
 
+        public String? MainAppDirectory { get => "C:\\Develop\\ActivityScheduler\\bin\\Debug\\net6.0-windows\\ActivityScheduler.exe"; }
+        //public String? MainAppDirectory { get => "C:\\Develop\\WpfAppTest\\bin\\Debug\\net6.0-windows\\WpfAppTest.exe"; }
+        
+         public String? MainAppProcessName { get => "ActivityScheduler"; }
+        //public String? MainAppProcessName { get => "WpfAppTest"; }
+        
+
         public String? LogsDirectory
         {
             get
