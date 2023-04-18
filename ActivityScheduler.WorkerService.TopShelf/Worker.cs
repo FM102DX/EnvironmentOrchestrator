@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using ActivityScheduler.Shared.Pipes;
 
 namespace ActivityScheduler.WorkerService.TopShelf
 {
@@ -17,19 +18,43 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private Serilog.ILogger _logger;
         private ActivitySchedulerWorkerApp _app;
         private CancelToken _token;
+        private PipeServerHelper _serverPipe;
+        private PipeListener _pipeClient;
         public Worker(Serilog.ILogger logger, ActivitySchedulerWorkerApp app)
         {
             _logger = logger;
             _logger.Information("Workes service business logic class constructor");
+
+            //timer 1
+            _timer = new System.Timers.Timer(1000) { AutoReset = true };
+            _timer.Elapsed += SendPipeMessage;
+
+            //timer 2
             _timer2 = new System.Timers.Timer(1000) { AutoReset = true };
-            _timer2.Elapsed += ExecuteEvent2;
+            //_timer2.Elapsed += ExecuteEvent2;
             _app= app;
+
             _logger.Information("Workes service business logic class constructor--passed ok");
+
+            _serverPipe = new PipeServerHelper("Pipe01");
+            _serverPipe.Run();
+
+            _pipeClient = new PipeListener("Pipe02", _logger);
+            Task task = Task.Run(() => _pipeClient.Run());
         }
 
         private void ExecuteEvent2(object? sender, ElapsedEventArgs e)
         {
             _logger.Information("This is topshelf worker teak");
+        }
+
+        private void SendPipeMessage(object? sender, ElapsedEventArgs e)
+        {
+            Random random = new Random();
+            int x = random.Next(0, 1000);
+            string msg = $"Pipe server is sending message {x} to Pipe01";
+            _serverPipe.SendMessage(msg);
+            _logger.Information(msg);
         }
 
         private void CheckMainAppRunning(CancelToken token)
@@ -48,10 +73,16 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         System.Diagnostics.Process process = new System.Diagnostics.Process();
                         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                         startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                        startInfo.UseShellExecute = false;
                         startInfo.CreateNoWindow = false;
-                        startInfo.FileName = _app.MainAppDirectory;
-                        startInfo.Arguments = "";
-                        _logger.Information("...configured data");
+                        //startInfo.FileName = _app.MainAppDirectory;
+                        startInfo.FileName = "cmd.exe";
+                        startInfo.Arguments = $"/C {_app.MainAppDirectory}";
+
+                        //startInfo.FileName = "C:\\Develop\\Bats\\runwpf.bat";
+                        //_logger.Information("...configured data");
+
+                        
                         startInfo.UserName = "Admin";
                         string password = "123";
                         for (int x = 0; x < password.Length; x++)
@@ -61,10 +92,12 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         password = "";
                         startInfo.Password = ssPwd;
                         _logger.Information("...configured creds");
-                        process.StartInfo = startInfo;
-                        process.Start();
+                        
 
-                        _logger.Information("Started main app, waiting for it to be in running state");
+
+                        process.StartInfo = startInfo;
+                        bool rez=process.Start();
+                        _logger.Error($"process.Start={rez}");
                         Thread.Sleep(5000);
                         pname = Process.GetProcessesByName(_app.MainAppProcessName);
                         if (pname.Length == 0)
@@ -86,13 +119,15 @@ namespace ActivityScheduler.WorkerService.TopShelf
         public void Stop()
         {
             _timer2.Stop();
+            _timer.Stop();
             _token.Cancel();
         }
         public void Start()
         {
             _timer2.Start();
-            _token = new CancelToken();
-            CheckMainAppRunning(_token);
+            _timer.Start();
+            //_token = new CancelToken();
+            //CheckMainAppRunning(_token);
         }
 
         private class CancelToken

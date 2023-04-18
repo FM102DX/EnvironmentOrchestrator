@@ -2,6 +2,7 @@
 using ActivityScheduler.Core.Settings;
 using ActivityScheduler.DataAccess;
 using ActivityScheduler.Shared;
+using ActivityScheduler.Shared.Pipes;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
@@ -16,10 +17,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 
 namespace ActivityScheduler
@@ -38,13 +41,28 @@ namespace ActivityScheduler
         private EfAsyncRepository<SettingStorageUnit> settingsRepo;
         private ActivitySchedulerApp _app;
         private WorkerServiceManager _workerMgr;
+        private PipeServerHelper _serverPipe;
+        private PipeListener _pipeClient;
+        private readonly System.Timers.Timer _timer;
+
         public App()
         {
             ServiceCollection services = new ServiceCollection();
             ConfigureServices(services);
             _serviceProvider = services.BuildServiceProvider();
-        }
 
+            //timer 1
+            _timer = new System.Timers.Timer(1000) { AutoReset = true };
+            _timer.Elapsed += SendPipeMessage;
+        }
+        private void SendPipeMessage(object? sender, ElapsedEventArgs e)
+        {
+            Random random = new Random();
+            int x = random.Next(0, 1000);
+            string msg = $"Pipe server is sending message {x} to Pipe02";
+            _serverPipe.SendMessage(msg);
+            Logger.Information(msg);
+        }
         private void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<MainWindow>();
@@ -82,7 +100,6 @@ namespace ActivityScheduler
             try
             {
                 settingsRepo = new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext);
-
                 services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => settingsRepo);
 
                 /*
@@ -102,6 +119,7 @@ namespace ActivityScheduler
                     services.AddScoped(typeof(IAsyncRepositoryT<ConsoleToApiMessage>), (x) => new EfAsyncRepository<ConsoleToApiMessage>(new EFSqliteDbContext()));
 
                    */
+
             }
             catch (Exception ex)
             {
@@ -171,6 +189,17 @@ namespace ActivityScheduler
                 throw new Exception(startResult.Message);
             }
             _logger.Information($"Point 8");
+
+
+            _serverPipe = new PipeServerHelper("Pipe02");
+            _serverPipe.Run();
+            _timer.Start();
+
+            _pipeClient = new PipeListener("Pipe01", _logger);
+            Task task = Task.Run(() => _pipeClient.Run());  
+            
+
+            
 
             mainWindow.Show();
             _logger.Information($"Point 9");

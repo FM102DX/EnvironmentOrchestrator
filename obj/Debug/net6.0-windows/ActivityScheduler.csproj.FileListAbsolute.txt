@@ -83,3 +83,5 @@ C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\System.ServiceProcess.Serv
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.Messages.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\runtimes\win\lib\net6.0\System.ServiceProcess.ServiceController.dll
+C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\ActivityScheduler.Shared.Pipes.dll
+C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\ActivityScheduler.Shared.Pipes.pdb

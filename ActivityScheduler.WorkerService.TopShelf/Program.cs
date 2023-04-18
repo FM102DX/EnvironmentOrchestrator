@@ -32,12 +32,14 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         s.ConstructUsing(service => new WorkerContainer(_logger, app));
                         s.WhenStarted(service => service.Start(null));
                         s.WhenStopped(service => service.Stop(null));
+                        
                     });
-                    // x.RunAsLocalSystem();
-                    x.RunAs("HOMECOM01\\Admin", "123");
+                    x.RunAsLocalSystem();
+                    //x.RunAs("HOMECOM01\\Admin", "123");
                     x.SetServiceName(app.WinServiceName);
                     x.SetDisplayName(app.WinServiceDiaplayName);
                     x.SetDescription(app.WinServiceDescription);
+                    
                     x.StartAutomatically();
                     
                     _logger.Information("Completed setup");

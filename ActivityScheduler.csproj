@@ -12,15 +12,19 @@
     <Compile Remove="ActivityScheduler.Shared\**" />
     <Compile Remove="ActivityScheduler.WindowsService\**" />
     <Compile Remove="ActivityScheduler.WorkerService.TopShelf\**" />
+    <Compile Remove="CommunicationServerNetCore\**" />
     <EmbeddedResource Remove="ActivityScheduler.Shared\**" />
     <EmbeddedResource Remove="ActivityScheduler.WindowsService\**" />
     <EmbeddedResource Remove="ActivityScheduler.WorkerService.TopShelf\**" />
+    <EmbeddedResource Remove="CommunicationServerNetCore\**" />
     <None Remove="ActivityScheduler.Shared\**" />
     <None Remove="ActivityScheduler.WindowsService\**" />
     <None Remove="ActivityScheduler.WorkerService.TopShelf\**" />
+    <None Remove="CommunicationServerNetCore\**" />
     <Page Remove="ActivityScheduler.Shared\**" />
     <Page Remove="ActivityScheduler.WindowsService\**" />
     <Page Remove="ActivityScheduler.WorkerService.TopShelf\**" />
+    <Page Remove="CommunicationServerNetCore\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="ActivityScheduler.Shared\ActivityScheduler.Shared.csproj" />
+    <ProjectReference Include="CommunicationServerNetCore\ActivityScheduler.Shared.Pipes.csproj" />
   </ItemGroup>
 
   <ItemGroup>

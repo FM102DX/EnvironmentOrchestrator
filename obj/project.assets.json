@@ -647,11 +647,28 @@
       "ActivityScheduler.Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Serilog": "2.12.0",
+          "Serilog.Sinks.File": "5.0.0"
+        },
         "compile": {
           "bin/placeholder/ActivityScheduler.Shared.dll": {}
         },
         "runtime": {
           "bin/placeholder/ActivityScheduler.Shared.dll": {}
+        }
+      },
+      "ActivityScheduler.Shared.Pipes/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "ActivityScheduler.Shared": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ActivityScheduler.Shared.Pipes.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ActivityScheduler.Shared.Pipes.dll": {}
         }
       }
     }
@@ -1510,11 +1527,16 @@
       "type": "project",
       "path": "ActivityScheduler.Shared/ActivityScheduler.Shared.csproj",
       "msbuildProject": "ActivityScheduler.Shared/ActivityScheduler.Shared.csproj"
+    },
+    "ActivityScheduler.Shared.Pipes/1.0.0": {
+      "type": "project",
+      "path": "CommunicationServerNetCore/ActivityScheduler.Shared.Pipes.csproj",
+      "msbuildProject": "CommunicationServerNetCore/ActivityScheduler.Shared.Pipes.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
-      "ActivityScheduler.Shared >= 1.0.0",
+      "ActivityScheduler.Shared.Pipes >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 7.0.5",
       "Microsoft.EntityFrameworkCore.Sqlite >= 7.0.5",
       "Microsoft.Extensions.DependencyInjection >= 7.0.0",
@@ -1557,8 +1579,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Develop\\ActivityScheduler\\ActivityScheduler.Shared\\ActivityScheduler.Shared.csproj": {
-              "projectPath": "C:\\Develop\\ActivityScheduler\\ActivityScheduler.Shared\\ActivityScheduler.Shared.csproj"
+            "C:\\Develop\\ActivityScheduler\\CommunicationServerNetCore\\ActivityScheduler.Shared.Pipes.csproj": {
+              "projectPath": "C:\\Develop\\ActivityScheduler\\CommunicationServerNetCore\\ActivityScheduler.Shared.Pipes.csproj"
             }
           }
         }
