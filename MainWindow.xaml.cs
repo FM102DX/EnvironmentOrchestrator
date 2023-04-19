@@ -49,5 +49,10 @@ namespace ActivityScheduler
             base.OnClosed(e);
             Tag = "Closed";
         }
+
+        private void NewBatch_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

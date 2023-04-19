@@ -7,7 +7,8 @@
         Title="MainWindow" Height="450" Width="800"
         ResizeMode="NoResize">
     <Grid>
-        <Button Content="Settings" HorizontalAlignment="Left" Margin="678,18,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
-        <ListBox HorizontalAlignment="Left" Height="316" Margin="24,28,0,0" VerticalAlignment="Top" Width="231" />
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="681,97,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
+        <ListBox HorizontalAlignment="Left" Height="316" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" />
+        <Button Content="New batch" Name="NewBatch" HorizontalAlignment="Left" Margin="681,52,0,0" VerticalAlignment="Top" Width="99" Click="NewBatch_Click"/>
     </Grid>
 </Window>
