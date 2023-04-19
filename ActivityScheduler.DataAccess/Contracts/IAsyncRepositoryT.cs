@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using ActivityScheduler.Data.DataAccess;
 using ActivityScheduler.Shared;
 
-namespace ActivityScheduler.DataAccess
+namespace ActivityScheduler.Data.Contracts
 {
     public interface IAsyncRepositoryT<T> where T : BaseEntity
     {

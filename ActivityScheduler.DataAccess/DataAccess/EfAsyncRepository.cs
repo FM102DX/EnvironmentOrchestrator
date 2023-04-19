@@ -5,9 +5,9 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using ActivityScheduler.Shared;
+using ActivityScheduler.Data.Contracts;
 
-
-namespace ActivityScheduler.DataAccess
+namespace ActivityScheduler.Data.DataAccess
 {
     public class EfAsyncRepository<T> : IAsyncRepositoryT<T> where T: BaseEntity
     {

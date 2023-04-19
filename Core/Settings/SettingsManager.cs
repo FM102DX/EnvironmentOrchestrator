@@ -1,4 +1,5 @@
-﻿using ActivityScheduler.DataAccess;
+﻿using ActivityScheduler.Data.Contracts;
+using ActivityScheduler.Data.Models;
 using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;

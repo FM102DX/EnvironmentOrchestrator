@@ -657,6 +657,21 @@
           "buildTransitive/net6.0/System.Text.Json.targets": {}
         }
       },
+      "ActivityScheduler.Data/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "ActivityScheduler.Shared.Pipes": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "7.0.5",
+          "Microsoft.EntityFrameworkCore.Sqlite": "7.0.5"
+        },
+        "compile": {
+          "bin/placeholder/ActivityScheduler.Data.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ActivityScheduler.Data.dll": {}
+        }
+      },
       "ActivityScheduler.Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
@@ -1567,6 +1582,11 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "ActivityScheduler.Data/1.0.0": {
+      "type": "project",
+      "path": "ActivityScheduler.DataAccess/ActivityScheduler.Data.csproj",
+      "msbuildProject": "ActivityScheduler.DataAccess/ActivityScheduler.Data.csproj"
+    },
     "ActivityScheduler.Shared/1.0.0": {
       "type": "project",
       "path": "ActivityScheduler.Shared/ActivityScheduler.Shared.csproj",
@@ -1580,9 +1600,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
-      "ActivityScheduler.Shared.Pipes >= 1.0.0",
-      "Microsoft.EntityFrameworkCore >= 7.0.5",
-      "Microsoft.EntityFrameworkCore.Sqlite >= 7.0.5",
+      "ActivityScheduler.Data >= 1.0.0",
       "Microsoft.Extensions.DependencyInjection >= 7.0.0",
       "Serilog >= 2.12.0",
       "Serilog.Sinks.File >= 5.0.0",
@@ -1623,8 +1641,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Develop\\ActivityScheduler\\CommunicationServerNetCore\\ActivityScheduler.Shared.Pipes.csproj": {
-              "projectPath": "C:\\Develop\\ActivityScheduler\\CommunicationServerNetCore\\ActivityScheduler.Shared.Pipes.csproj"
+            "C:\\Develop\\ActivityScheduler\\ActivityScheduler.DataAccess\\ActivityScheduler.Data.csproj": {
+              "projectPath": "C:\\Develop\\ActivityScheduler\\ActivityScheduler.DataAccess\\ActivityScheduler.Data.csproj"
             }
           }
         }
@@ -1639,14 +1657,6 @@
       "net6.0-windows7.0": {
         "targetAlias": "net6.0-windows",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": {
-            "target": "Package",
-            "version": "[7.0.5, )"
-          },
-          "Microsoft.EntityFrameworkCore.Sqlite": {
-            "target": "Package",
-            "version": "[7.0.5, )"
-          },
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",
             "version": "[7.0.0, )"

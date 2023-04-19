@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CommunicationServerNetCore\ActivityScheduler.Shared.Pipes.csproj" />
+    <ProjectReference Include="..\ActivityScheduler.DataAccess\ActivityScheduler.Data.csproj" />
   </ItemGroup>
 
 </Project>
