@@ -1,11 +1,10 @@
 ﻿using ActivityScheduler.DataAccess;
-using ActivityScheduler.Service;
+using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ActivityScheduler.Service;
 using System.Xml.Linq;
 
 namespace ActivityScheduler.Core.Settings

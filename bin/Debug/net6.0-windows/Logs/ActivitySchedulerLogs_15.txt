@@ -1,2 +1,0 @@
-2023-04-12 15:38:08.490 +03:00 [INF] Starting ActivityScheduler app
-2023-04-12 15:38:11.204 +03:00 [INF] Context menu opened by r-click

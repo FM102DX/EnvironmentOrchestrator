@@ -1,1 +1,0 @@
-2023-04-12 15:32:39.741 +03:00 [INF] Starting ActivityScheduler app
