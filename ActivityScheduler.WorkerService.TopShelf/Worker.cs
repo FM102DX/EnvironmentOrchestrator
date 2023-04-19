@@ -18,8 +18,8 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private Serilog.ILogger _logger;
         private ActivitySchedulerWorkerApp _app;
         private CancelToken _token;
-        private PipeServerHelper _serverPipe;
-        private PipeListener _pipeClient;
+        private ClientCommunicationObjectT<AppToWorkerMessage> _pipeClient;
+        private ServerCommunicationObjectT<WorkerToAppMessage> _pipeServer;
         public Worker(Serilog.ILogger logger, ActivitySchedulerWorkerApp app)
         {
             _logger = logger;
@@ -36,24 +36,33 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
             _logger.Information("Workes service business logic class constructor--passed ok");
 
-            _serverPipe = new PipeServerHelper("Pipe01");
-            _serverPipe.Run();
 
-            _pipeClient = new PipeListener("Pipe02", _logger);
+            _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
             Task task = Task.Run(() => _pipeClient.Run());
+
+            _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            Task task2 = Task.Run(() => _pipeServer.Run());
+
         }
 
         private void ExecuteEvent2(object? sender, ElapsedEventArgs e)
         {
-            _logger.Information("This is topshelf worker teak");
+            //_logger.Information("This is topshelf worker teak");
         }
 
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
             int x = random.Next(0, 1000);
-            string msg = $"Pipe server is sending message {x} to Pipe01";
-            _serverPipe.SendMessage(msg);
+            string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
+
+            var msgObject = new WorkerToAppMessage()
+            {
+                Message = msg,
+                Result = Shared.CommonOperationResult.SayOk(msg)
+            };
+
+            _pipeServer.SendObject(msgObject);
             _logger.Information(msg);
         }
 
@@ -81,7 +90,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
                         //startInfo.FileName = "C:\\Develop\\Bats\\runwpf.bat";
                         //_logger.Information("...configured data");
-
                         
                         startInfo.UserName = "Admin";
                         string password = "123";
@@ -93,8 +101,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         startInfo.Password = ssPwd;
                         _logger.Information("...configured creds");
                         
-
-
                         process.StartInfo = startInfo;
                         bool rez=process.Start();
                         _logger.Error($"process.Start={rez}");
@@ -109,7 +115,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
                     {
                         _logger.Error($"Failed to start main app with exception = {ex.Message}, innerexception = {ex.InnerException}");
                     }
-
                 }
                 Thread.Sleep(1000);
             }
@@ -120,7 +125,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             _timer2.Stop();
             _timer.Stop();
-            _token.Cancel();
+            //_token.Cancel();
         }
         public void Start()
         {

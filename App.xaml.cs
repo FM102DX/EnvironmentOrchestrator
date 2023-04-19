@@ -33,7 +33,7 @@ namespace ActivityScheduler
     public partial class App : System.Windows.Application
     {
         private ServiceProvider serviceProvider;
-        private Serilog.ILogger Logger;
+        private Serilog.ILogger _logger;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private MainWindow mainWindow;
         private ActivityScheduler.Core.TrayContextMenu trayContextMenu;
@@ -41,8 +41,8 @@ namespace ActivityScheduler
         private EfAsyncRepository<SettingStorageUnit> settingsRepo;
         private ActivitySchedulerApp _app;
         private WorkerServiceManager _workerMgr;
-        private PipeServerHelper _serverPipe;
-        private PipeListener _pipeClient;
+        private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
+        private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
 
         public App()
@@ -59,9 +59,16 @@ namespace ActivityScheduler
         {
             Random random = new Random();
             int x = random.Next(0, 1000);
-            string msg = $"Pipe server is sending message {x} to Pipe02";
-            _serverPipe.SendMessage(msg);
-            Logger.Information(msg);
+            string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
+
+            var msgObject = new AppToWorkerMessage()
+            {
+                Message = msg,
+                Result = Shared.CommonOperationResult.SayOk(msg)
+            };
+
+            _pipeServer.SendObject(msgObject);
+            _logger.Information(msg);
         }
         private void ConfigureServices(ServiceCollection services)
         {
@@ -154,9 +161,9 @@ namespace ActivityScheduler
 
             var _logger = _serviceProvider.GetService<Serilog.ILogger>();
 
-            Logger = _logger;
+            this._logger = _logger;
 
-            Logger.Information("Starting ActivityScheduler app");
+            this._logger.Information("Starting ActivityScheduler app");
 
             var icon = new Icon(SystemIcons.Exclamation, 40, 40);
             
@@ -190,16 +197,13 @@ namespace ActivityScheduler
             }
             _logger.Information($"Point 8");
 
+            _pipeClient = new ClientCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            Task task = Task.Run(() => _pipeClient.Run());
 
-            _serverPipe = new PipeServerHelper("Pipe02");
-            _serverPipe.Run();
+            _pipeServer = new ServerCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
+            Task task2 = Task.Run(() => _pipeServer.Run());
+
             _timer.Start();
-
-            _pipeClient = new PipeListener("Pipe01", _logger);
-            Task task = Task.Run(() => _pipeClient.Run());  
-            
-
-            
 
             mainWindow.Show();
             _logger.Information($"Point 9");
@@ -225,7 +229,7 @@ namespace ActivityScheduler
 
                 menu.IsOpen = true;
 
-                Logger.Information("Context menu opened by r-click");
+                _logger.Information("Context menu opened by r-click");
             }
         }
 

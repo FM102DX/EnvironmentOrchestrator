@@ -11,20 +11,19 @@ using System.IO;
 namespace ActivityScheduler.Shared.Pipes
 {
     
-    public class PipeClientHelper : PipeHelper
+    public class PipeClient : PipeBase
     {
         public event NewMessage NewMessageEvent;
         public event ConnectFail ConnectFailEvent;
-        NamedPipeClientStream NamedPipeClientStream;
+        private NamedPipeClientStream NamedPipeClientStream;
+        private Serilog.ILogger _logger;
 
-        public PipeClientHelper(string PipeName)
+        public PipeClient(string PipeName, Serilog.ILogger logger)
         {
             this.PipeName = PipeName;
+            _logger = logger;
         }
 
-        /// <summary>
-        /// Атрибут: Подключен ли клиент к серверу
-        /// </summary>
         public bool IsConnected
         {
             get
@@ -40,9 +39,6 @@ namespace ActivityScheduler.Shared.Pipes
             }
         }
 
-        /// <summary>
-        /// Запустите клиент
-        /// </summary>
         public override void Run()
         {
             try
@@ -58,9 +54,6 @@ namespace ActivityScheduler.Shared.Pipes
             }
         }
 
-        /// <summary>
-        /// Остановите клиента
-        /// </summary>
         public override void Stop()
         {
             if (this.NamedPipeClientStream != null)
@@ -69,10 +62,6 @@ namespace ActivityScheduler.Shared.Pipes
             }
         }
 
-        /// <summary>
-        /// Отправить сообщение
-        /// </summary>
-        /// <param name="Message">消息内容</param>
         public override void SendMessage(string Message)
         {
             if (this.NamedPipeClientStream.IsConnected)
@@ -91,10 +80,6 @@ namespace ActivityScheduler.Shared.Pipes
             }
         }
 
-        /// <summary>
-        /// Функция обратного вызова для получения данных
-        /// </summary>
-        /// <param name="ar"></param>
         private void PipeReadCallback(IAsyncResult ar)
         {
             this.NamedPipeClientStream = (NamedPipeClientStream)ar.AsyncState;
@@ -102,7 +87,7 @@ namespace ActivityScheduler.Shared.Pipes
             if (count > 0)
             {
                 string message = encoding.GetString(data, 0, count);
-                NewMessageEvent?.Invoke(message); //简化调用方式 等同于if(NewMessageEvent != Null) {NewMessageEvent(message)}
+                NewMessageEvent?.Invoke(message);
                 this.NamedPipeClientStream.BeginRead(data, 0, data.Length, new AsyncCallback(PipeReadCallback), this.NamedPipeClientStream);
             }
             else if (count == 0)

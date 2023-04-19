@@ -8,7 +8,7 @@ namespace ActivityScheduler.Shared.Pipes
 {
     public delegate void NewMessage(string Message);
     public delegate void ConnectFail();
-    public class PipeHelper
+    public class PipeBase
     {
         protected const int PipeInBufferSize = 1024;
         protected const int PipeOutBufferSize = 1024;

@@ -12,15 +12,16 @@ using Serilog;
 namespace ActivityScheduler.Shared.Pipes
 {
     
-    public class PipeServerHelper : PipeHelper
+    public class PipeServer : PipeBase
     {
-        NamedPipeServerStream NamedPipeServerStream;
+        private NamedPipeServerStream NamedPipeServerStream;
         public event NewMessage NewMessageEvent;
+        private Serilog.ILogger _logger;
 
-        public PipeServerHelper(string PipeName)
+        public PipeServer(string PipeName, Serilog.ILogger logger)
         {
             this.PipeName = PipeName;
-            //SimpleLogHelper.Instance.WriteLog(LogType.Info, PipeName);
+            _logger = logger;
         }
 
         public override void Run()
