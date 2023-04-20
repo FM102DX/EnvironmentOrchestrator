@@ -10,6 +10,10 @@
     <Grid>
         <Button Content="Create batch" Name="BatchCreate" HorizontalAlignment="Left" Margin="305,24,0,0" VerticalAlignment="Top" Width="99" Click="BatchCreate_Click" />
         <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="305,59,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
+        <TextBox HorizontalAlignment="Left" Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
+        <TextBlock HorizontalAlignment="Left" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Name="BatchName" Margin="28,110,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
+        <TextBlock HorizontalAlignment="Left" Margin="28,89,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
     </Grid>
 
 </Window>

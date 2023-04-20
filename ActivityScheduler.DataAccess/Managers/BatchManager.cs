@@ -23,28 +23,23 @@ namespace ActivityScheduler.Data.Managers
         {
             _repo = repo;
         }
-       
+
+        public Task<CommonOperationResult> CheckNumber(string number)
+        {
+            return Task.FromResult(Validation.CheckIf6DigitTrasactionNumberIsCorrect(number));
+        }
+        public Task<CommonOperationResult> CheckName(string name)
+        {
+            return Task.FromResult(Validation.CheckIfTransactionOrBatchNameIsCorrect(name));
+        }
+
+        public Task<List<Batch>> GetAll()
+        {
+            return Task.FromResult(_repo.GetAllAsync().Result.ToList());
+        }
 
         public Task<CommonOperationResult> AddNewBatch(Batch batch)
         {
-            CommonOperationResult checkRez;
-
-            //check if number and name fits business-rules
-
-            checkRez = Validation.CheckIf6DigitTrasactionNumberIsCorrect(batch.Number);
-
-            if (!checkRez.Success) 
-            {
-                return Task.FromResult(checkRez);
-            }
-
-            checkRez = Validation.CheckIfTransactionOrBatchNameIsCorrect(batch.Name);
-
-            if (!checkRez.Success)
-            {
-                return Task.FromResult(checkRez);
-            }
-
             //check if number and name is unique
 
             var batches= _repo.GetAllAsync().Result.ToList();

@@ -1,5 +1,7 @@
 ﻿using ActivityScheduler.Data.Contracts;
+using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
+using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +23,13 @@ namespace ActivityScheduler.Core
     /// </summary>
     public partial class NewBatch : Window
     {
-        private App _app;
         private Serilog.ILogger _logger;
         private IAsyncRepositoryT<Batch> _repo;
-        public NewBatch(App app, Serilog.ILogger logger)
+        private BatchManager _batchManager;
+        public NewBatch(BatchManager batchManager, Serilog.ILogger logger)
         {
-            _app = app;
             _logger = logger;
+            _batchManager = batchManager;
             InitializeComponent();
         }
 
@@ -37,6 +39,40 @@ namespace ActivityScheduler.Core
         }
 
         private void BatchCreate_Click(object sender, RoutedEventArgs e)
+        {
+
+            CommonOperationResult chkRez;
+            chkRez = _batchManager.CheckNumber(BatchNumber.Text).Result;
+            if (!chkRez.Success)
+            {
+                MessageBox.Show(chkRez.Message);
+                BatchNumber.Focus();
+                return;
+            }
+
+            chkRez = _batchManager.CheckName(BatchName.Text).Result;
+            if (!chkRez.Success)
+            {
+                MessageBox.Show(chkRez.Message);
+                BatchName.Focus();
+                return;
+            }
+
+
+
+            Batch batch = new Batch();
+            batch.Number = BatchNumber.Text;
+            batch.Name = BatchName.Text;
+            var btcAddRez= _batchManager.AddNewBatch(batch).Result;
+            if(!btcAddRez.Success)
+            {
+                MessageBox.Show(btcAddRez.Message);
+                return;
+            }
+            MessageBox.Show("Btach successfully added");
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }

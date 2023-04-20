@@ -145,9 +145,9 @@ namespace ActivityScheduler.Core.Appilcation
                     }
                     return CommonOperationResult.SayOk();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    string msg = "Failed to start worker service. Try to run this app from administrator";
+                    string msg = $"Failed to start worker service. Try to run this app from administrator. Exception: {ex.Message}, innerexception {ex.InnerException}";
                     _logger.Information(msg);
                     return CommonOperationResult.SayFail(msg);
                 }

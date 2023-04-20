@@ -39,8 +39,13 @@ namespace ActivityScheduler.Shared.Validation
             var m = regex.Matches(source);
             if (m.Count > 0)
             {
-                return CommonOperationResult.SayFail("Only names like This.is.name can be transaction, batch and activity names");
+                return CommonOperationResult.SayFail("Only names like 'This.is.name' can be transaction, batch and activity names");
             }
+            if (source.Length<6) 
+            {
+                return CommonOperationResult.SayFail("Transaction, batch and activity names must be more that 5 digits length");
+            }
+
             return CommonOperationResult.SayOk();
         }
 

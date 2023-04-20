@@ -41,6 +41,7 @@ namespace ActivityScheduler.Data.DataAccess
             */
 
             modelBuilder.Entity<SettingStorageUnit>();
+            modelBuilder.Entity<Batch>();
 
             base.OnModelCreating(modelBuilder);
         }

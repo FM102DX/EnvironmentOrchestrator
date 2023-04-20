@@ -88,3 +88,5 @@ C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\ActivityScheduler.genrunti
 C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\ref\ActivityScheduler.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\ActivityScheduler.Data.dll
 C:\Develop\ActivityScheduler\bin\Debug\net6.0-windows\ActivityScheduler.Data.pdb
+C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\Core\NewBatch.g.cs
+C:\Develop\ActivityScheduler\obj\Debug\net6.0-windows\Core\NewBatch.baml

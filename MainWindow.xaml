@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActivityScheduler"
         Title="MainWindow" Height="450" Width="800"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
         <Button Content="Settings" HorizontalAlignment="Left" Margin="681,97,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
-        <ListBox HorizontalAlignment="Left" Height="316" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" />
+        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="316" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" />
         <Button Content="New batch" Name="NewBatch" HorizontalAlignment="Left" Margin="681,52,0,0" VerticalAlignment="Top" Width="99" Click="NewBatch_Click"/>
     </Grid>
 </Window>

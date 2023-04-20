@@ -2,6 +2,7 @@
 using ActivityScheduler.Core.Settings;
 using ActivityScheduler.Data.Contracts;
 using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
@@ -40,12 +41,14 @@ namespace ActivityScheduler
         private MainWindow mainWindow;
         private ActivityScheduler.Core.TrayContextMenu trayContextMenu;
         private ServiceProvider _serviceProvider;
-        private EfAsyncRepository<SettingStorageUnit> settingsRepo;
+        private EfAsyncRepository<SettingStorageUnit> _settingsRepo;
+        private EfAsyncRepository<Batch> _batchesRepo;
         private ActivitySchedulerApp _app;
         private WorkerServiceManager _workerMgr;
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
+        private BatchManager _batchManager;
 
         public App()
         {
@@ -105,11 +108,12 @@ namespace ActivityScheduler
             EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
             
             sqLiteDbContext.Database.EnsureCreated();
+
             _logger.Information($"Point 1");
             try
             {
-                settingsRepo = new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext);
-                services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => settingsRepo);
+                services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Batch>), (x) => new EfAsyncRepository<Batch>(sqLiteDbContext));
 
                 /*
                  * 
@@ -135,7 +139,9 @@ namespace ActivityScheduler
                  _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
             }
             _logger.Information($"Point 2");
+
             services.AddSingleton<SettingsManager>();
+            services.AddSingleton<BatchManager>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
@@ -159,13 +165,10 @@ namespace ActivityScheduler
 
             SettingsManager mgr = _serviceProvider.GetService<SettingsManager>();
 
-            mainWindow = _serviceProvider.GetService<MainWindow>();
+            _logger = _serviceProvider.GetService<Serilog.ILogger>();
 
-            var _logger = _serviceProvider.GetService<Serilog.ILogger>();
 
-            this._logger = _logger;
-
-            this._logger.Information("Starting ActivityScheduler app");
+            _logger.Information("Starting ActivityScheduler app");
 
             var icon = new Icon(SystemIcons.Exclamation, 40, 40);
             
@@ -174,6 +177,8 @@ namespace ActivityScheduler
             trayContextMenu = new ActivityScheduler.Core.TrayContextMenu(this);
             
             _logger.Information($"Point 5");
+
+            _batchManager = _serviceProvider.GetService<BatchManager>();
 
             //install and run worker service
 
@@ -207,7 +212,7 @@ namespace ActivityScheduler
 
             _timer.Start();
 
-            mainWindow.Show();
+            ShowMainWindow();
             _logger.Information($"Point 9");
         }
 
@@ -237,16 +242,28 @@ namespace ActivityScheduler
 
         public void ShowMainWindow()
         {
-            if(mainWindow.Tag=="Closed")
+
+            if (mainWindow == null)
             {
-                mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr);
+                SetMainWindow();
+            }
+
+
+            if (mainWindow.Tag=="Closed")
+            {
+                SetMainWindow();
             }
             
             mainWindow.WindowState= WindowState.Normal;
             mainWindow.Show();
-
-
         }
+
+        private void SetMainWindow()
+        {
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _logger);
+        }
+
+
         public void HideMainWindow()
         {
             mainWindow.Hide();

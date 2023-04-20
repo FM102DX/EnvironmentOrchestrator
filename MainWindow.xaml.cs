@@ -17,6 +17,7 @@ using Serilog;
 using System.IO;
 using ActivityScheduler.Core.Settings;
 using ActivityScheduler.Core.Appilcation;
+using ActivityScheduler.Data.Managers;
 
 namespace ActivityScheduler
 {
@@ -27,15 +28,17 @@ namespace ActivityScheduler
     {
         private ActivityScheduler.Core.Settings.Settings settingsFrm;
         private ActivitySchedulerApp _app;
-        WorkerServiceManager _workerMgr;
-
-        SettingsManager _settingsManager;
-        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr)
+        private WorkerServiceManager _workerMgr;
+        private BatchManager _batchManager;
+        private Serilog.ILogger _logger;
+        private SettingsManager _settingsManager;
+        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, Serilog.ILogger logger)
         {
-            InitializeComponent();
             _settingsManager = settingsManager;
             _app = app;
             _workerMgr = workerMgr;
+            _logger = logger;
+            _batchManager = batchManager;
             InitializeComponent();
         }
        
@@ -52,7 +55,15 @@ namespace ActivityScheduler
 
         private void NewBatch_Click(object sender, RoutedEventArgs e)
         {
+            NewBatch btc = new NewBatch(_batchManager, _logger);
+            btc.ShowDialog();
+        }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var lst = _batchManager.GetAll().Result;
+            BatchList.Items.Add(lst);
+            
         }
     }
 }
