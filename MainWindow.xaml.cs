@@ -55,15 +55,33 @@ namespace ActivityScheduler
 
         private void NewBatch_Click(object sender, RoutedEventArgs e)
         {
-            NewBatch btc = new NewBatch(_batchManager, _logger);
+            NewBatch btc = new NewBatch(this, _batchManager, _logger);
             btc.ShowDialog();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var lst = _batchManager.GetAll().Result;
-            BatchList.Items.Add(lst);
+            LoadBatchList();
+        }
+
+        public void LoadBatchList()
+        {
+            BatchList.Items.Clear();
+            var lst = _batchManager.GetAll().Result.OrderBy(x=>x.Number).ToList();
             
+            
+            lst.ForEach(x => {
+
+                if (x.IsGroup && (BatchList.Items.Count!=0)) { BatchList.Items.Add(new ListBoxItem() { Tag = "none", Content = $"" });}
+                var lstI = new ListBoxItem() { Tag = x.Id, Content = $"{x.Number}--{x.Name}" };
+                if (x.IsGroup) { lstI.FontWeight = FontWeights.Bold; }
+                BatchList.Items.Add(lstI);
+
+                
+
+
+                });
+
         }
     }
 }

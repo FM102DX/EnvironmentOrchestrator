@@ -26,10 +26,12 @@ namespace ActivityScheduler.Core
         private Serilog.ILogger _logger;
         private IAsyncRepositoryT<Batch> _repo;
         private BatchManager _batchManager;
-        public NewBatch(BatchManager batchManager, Serilog.ILogger logger)
+        private MainWindow _mainWindow;
+        public NewBatch(MainWindow mainWindow, BatchManager batchManager, Serilog.ILogger logger)
         {
             _logger = logger;
             _batchManager = batchManager;
+            _mainWindow = mainWindow;
             InitializeComponent();
         }
 
@@ -37,6 +39,8 @@ namespace ActivityScheduler.Core
         {
             Close();
         }
+
+
 
         private void BatchCreate_Click(object sender, RoutedEventArgs e)
         {
@@ -58,23 +62,31 @@ namespace ActivityScheduler.Core
                 return;
             }
 
-
-
             Batch batch = new Batch();
             batch.Number = BatchNumber.Text;
             batch.Name = BatchName.Text;
+            batch.IsGroup = (bool)IsGroup.IsChecked;
+
             var btcAddRez= _batchManager.AddNewBatch(batch).Result;
             if(!btcAddRez.Success)
             {
                 MessageBox.Show(btcAddRez.Message);
                 return;
             }
-            MessageBox.Show("Btach successfully added");
+            _mainWindow.LoadBatchList();
+            Close();
+
+            //MessageBox.Show("Btach successfully added");
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void IsGroup_Loaded(object sender, RoutedEventArgs e)
+        {
+            IsGroup.IsChecked=false;
         }
     }
 }

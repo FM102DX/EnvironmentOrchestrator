@@ -17,5 +17,6 @@ namespace ActivityScheduler.Data.Models
         public DateTime StartTime { get; set; }
         public TimeSpan Interval { get; set; }
         public TimeSpan Duration { get; set; }
+        public bool IsGroup { get; set; }
     }
 }
