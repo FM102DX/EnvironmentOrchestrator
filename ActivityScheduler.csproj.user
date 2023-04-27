@@ -18,6 +18,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Core\EditBatch.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Core\NewBatch.xaml">
       <SubType>Designer</SubType>
     </Page>

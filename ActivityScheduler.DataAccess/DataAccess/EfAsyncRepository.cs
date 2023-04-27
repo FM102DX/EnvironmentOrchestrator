@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Data.Contracts;
+using System.Linq.Expressions;
 
 namespace ActivityScheduler.Data.DataAccess
 {
@@ -26,6 +27,21 @@ namespace ActivityScheduler.Data.DataAccess
             try
             {
                 var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>());
+                return rez;
+            }
+            catch (Exception ex)
+            {
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
+            }
+        }
+
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            try
+            {
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter));
                 return rez;
             }
             catch (Exception ex)
@@ -144,5 +160,6 @@ namespace ActivityScheduler.Data.DataAccess
 
             return Task.FromResult(rezList);
         }
+
     }
 }

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 C:\Develop\ActivityScheduler\App.xaml
-41885949163
+52092228807
 
-132068325111
+141168040244
 228-312253604
-Core\NewBatch.xaml;Core\Settings\Settings.xaml;Core\TrayContextMenu.xaml;MainWindow.xaml;
+Core\EditBatch.xaml;Core\NewBatch.xaml;Core\Settings\Settings.xaml;Core\TrayContextMenu.xaml;MainWindow.xaml;
 
 True
 

@@ -26,7 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-
+using Activity = ActivityScheduler.Data.Models.Activity;
 
 namespace ActivityScheduler
 {
@@ -49,6 +49,7 @@ namespace ActivityScheduler
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
         private BatchManager _batchManager;
+        private ActivityManager _activityManager;
 
         public App()
         {
@@ -110,9 +111,11 @@ namespace ActivityScheduler
             sqLiteDbContext.Database.EnsureCreated();
 
             _logger.Information($"Point 1");
+
             try
             {
                 services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Activity>), (x) => new EfAsyncRepository<Activity>(sqLiteDbContext));
                 services.AddSingleton(typeof(IAsyncRepositoryT<Batch>), (x) => new EfAsyncRepository<Batch>(sqLiteDbContext));
 
                 /*
@@ -141,7 +144,9 @@ namespace ActivityScheduler
             _logger.Information($"Point 2");
 
             services.AddSingleton<SettingsManager>();
+            services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
+            services.AddSingleton<DataFillManager>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
@@ -167,7 +172,6 @@ namespace ActivityScheduler
 
             _logger = _serviceProvider.GetService<Serilog.ILogger>();
 
-
             _logger.Information("Starting ActivityScheduler app");
 
             var icon = new Icon(SystemIcons.Exclamation, 40, 40);
@@ -179,6 +183,8 @@ namespace ActivityScheduler
             _logger.Information($"Point 5");
 
             _batchManager = _serviceProvider.GetService<BatchManager>();
+
+            _activityManager = _serviceProvider.GetService<ActivityManager>();
 
             //install and run worker service
 
@@ -193,8 +199,8 @@ namespace ActivityScheduler
                 System.Windows.MessageBox.Show(installResult.Message);
                 throw new Exception(installResult.Message);
             }
+            
             _logger.Information($"Point 7");
-
             CommonOperationResult startResult = _workerMgr.StartService();
             
             if (!startResult.Success)
@@ -202,6 +208,7 @@ namespace ActivityScheduler
                 System.Windows.MessageBox.Show(startResult.Message);
                 throw new Exception(startResult.Message);
             }
+
             _logger.Information($"Point 8");
 
             _pipeClient = new ClientCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
@@ -211,6 +218,9 @@ namespace ActivityScheduler
             Task task2 = Task.Run(() => _pipeServer.Run());
 
             _timer.Start();
+
+            var dfm = _serviceProvider.GetService<DataFillManager>();
+            dfm.FillTheModel();
 
             ShowMainWindow();
             _logger.Information($"Point 9");
@@ -260,9 +270,8 @@ namespace ActivityScheduler
 
         private void SetMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _logger);
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _activityManager, _logger);
         }
-
 
         public void HideMainWindow()
         {

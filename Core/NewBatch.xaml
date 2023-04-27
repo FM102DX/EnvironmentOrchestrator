@@ -14,7 +14,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Name="BatchName" Margin="28,110,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
         <TextBlock HorizontalAlignment="Left" Margin="28,89,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
-        <CheckBox Name="IsGroup" Content="Is group" HorizontalAlignment="Left" Margin="28,158,0,0" VerticalAlignment="Top" Loaded="IsGroup_Loaded"/>
+        <CheckBox Name="IsGroup" Content="Is group" HorizontalAlignment="Left" Margin="28,158,0,0" VerticalAlignment="Top" />
     </Grid>
 
 </Window>

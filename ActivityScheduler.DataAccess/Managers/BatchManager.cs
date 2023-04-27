@@ -10,6 +10,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using ActivityScheduler.Shared.Validation;
+using Activity = ActivityScheduler.Data.Models.Activity;
 
 namespace ActivityScheduler.Data.Managers
 {
@@ -19,9 +20,12 @@ namespace ActivityScheduler.Data.Managers
 
         private IAsyncRepositoryT<Batch> _repo;
 
-        public BatchManager(IAsyncRepositoryT<Batch> repo)
+        private ActivityManager _activityManager;
+
+        public BatchManager(IAsyncRepositoryT<Batch> repo, ActivityManager activityManager)
         {
             _repo = repo;
+            _activityManager = activityManager;
         }
 
         public Task<CommonOperationResult> CheckNumber(string number)
@@ -59,6 +63,22 @@ namespace ActivityScheduler.Data.Managers
             var rez=_repo.AddAsync(batch);
 
             return rez;
+        }
+
+        public Task<CommonOperationResult> RemoveAllBatches()
+        {
+            try
+            {
+                var items = _repo.GetAllAsync().Result.ToList();
+
+                items.ForEach(x => _activityManager.RemoveAllBatchActivities(x.Id));
+                
+                return Task.FromResult(CommonOperationResult.SayOk());
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(CommonOperationResult.SayFail($"Failed to remove batches, exception={ex.Message}, innerexception={ex.InnerException}"));
+            }
         }
     }
 }

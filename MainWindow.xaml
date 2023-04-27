@@ -4,11 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActivityScheduler"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="515" Width="1028"
         ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
-        <Button Content="Settings" HorizontalAlignment="Left" Margin="681,97,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
-        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="316" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" />
-        <Button Content="New batch" Name="NewBatch" HorizontalAlignment="Left" Margin="681,52,0,0" VerticalAlignment="Top" Width="99" Click="NewBatch_Click"/>
+        <Button Content="Settings" HorizontalAlignment="Left" Margin="908,95,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
+        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="414" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" SelectionChanged="BatchList_SelectionChanged" />
+        <Button Content="New batch" Name="NewBatch" HorizontalAlignment="Left" Margin="908,64,0,0" VerticalAlignment="Top" Width="99" Click="NewBatch_Click"/>
+        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,159,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch"/>
+        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,128,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
+        <TabControl HorizontalAlignment="Left" Height="382" Margin="278,42,0,0" VerticalAlignment="Top" Width="603">
+            <TabItem Header="Main" Name="Name">
+                <Grid Background="#FFE5E5E5">
+
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchName" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="186"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="IsGroup" Content="Is group" HorizontalAlignment="Left" Margin="324,46,0,0" VerticalAlignment="Top" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

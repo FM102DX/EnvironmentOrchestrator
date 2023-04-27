@@ -18,6 +18,8 @@ using System.IO;
 using ActivityScheduler.Core.Settings;
 using ActivityScheduler.Core.Appilcation;
 using ActivityScheduler.Data.Managers;
+using ActivityScheduler.Data.Models;
+using ActivityScheduler.Data.DataAccess;
 
 namespace ActivityScheduler
 {
@@ -32,13 +34,17 @@ namespace ActivityScheduler
         private BatchManager _batchManager;
         private Serilog.ILogger _logger;
         private SettingsManager _settingsManager;
-        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, Serilog.ILogger logger)
+        private List<Batch> _batchList;
+        private Batch _selectedItem;
+        private ActivityManager _activityManager;
+        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
             _settingsManager = settingsManager;
             _app = app;
             _workerMgr = workerMgr;
             _logger = logger;
             _batchManager = batchManager;
+            _activityManager = activityManager;
             InitializeComponent();
         }
        
@@ -67,21 +73,50 @@ namespace ActivityScheduler
         public void LoadBatchList()
         {
             BatchList.Items.Clear();
-            var lst = _batchManager.GetAll().Result.OrderBy(x=>x.Number).ToList();
-            
-            
-            lst.ForEach(x => {
-
-                if (x.IsGroup && (BatchList.Items.Count!=0)) { BatchList.Items.Add(new ListBoxItem() { Tag = "none", Content = $"" });}
-                var lstI = new ListBoxItem() { Tag = x.Id, Content = $"{x.Number}--{x.Name}" };
-                if (x.IsGroup) { lstI.FontWeight = FontWeights.Bold; }
-                BatchList.Items.Add(lstI);
-
-                
+            _batchList = _batchManager.GetAll().Result.OrderBy(x=>x.Number).ToList();
 
 
+            _batchList.ForEach(x => {
+
+                    if (x.IsGroup && (BatchList.Items.Count!=0)) { BatchList.Items.Add(new ListBoxItem() { Tag = "none", Content = $"" });}
+                    var lstI = new ListBoxItem() { Tag = x, Content = $"{x.Number}--{x.Name}" };
+                    if (x.IsGroup) { lstI.FontWeight = FontWeights.Bold; }
+                    BatchList.Items.Add(lstI);
                 });
 
+        }
+
+        private void BatchList_Selected(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = e.AddedItems.Cast<ListBoxItem>().ToList().FirstOrDefault();
+
+            Batch btc = (Batch)item.Tag;
+            _selectedItem = btc;
+            BatchNumber.IsReadOnly = true;
+            BatchName.IsReadOnly = true;
+            IsGroup.IsHitTestVisible = false;
+            BatchNumber.Text = "";
+            BatchName.Text = "";
+            IsGroup.IsChecked = false;
+            if (btc.IsGroup)
+            {
+                BatchNumber.Text = btc.Number;
+                BatchName.Text = btc.Name;
+                IsGroup.IsChecked = btc.IsGroup;
+            }
+
+            //MessageBox.Show($"{btc.Number}");
+        }
+
+        private void EditBatch_Click(object sender, RoutedEventArgs e)
+        {
+            EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _selectedItem, _logger);
+            editBatch.Show();
         }
     }
 }

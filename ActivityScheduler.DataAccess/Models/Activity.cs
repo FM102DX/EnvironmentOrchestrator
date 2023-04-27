@@ -1,6 +1,7 @@
 ﻿using ActivityScheduler.Data.DataAccess;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,11 @@ namespace ActivityScheduler.Data.Models
     public  class Activity: BaseEntity
     {
         public string Name { get; set; }
+        public Guid BatchId { get; set; }
 
         public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets
-
+        
+        [NotMapped]
         public List<int> ParentIds { get; set; }
 
         public TimeSpan StartTime { get; set; }
@@ -27,6 +30,20 @@ namespace ActivityScheduler.Data.Models
         public bool AlwaysSuccess { get; set; }
 
         public ActivityParentRuleEnum ActivityParentRule { get; set; }
+
+        public ActivityGridViewModel AsViewModel()
+        {
+            ActivityGridViewModel rez= new ActivityGridViewModel();
+            rez.Id = Id;
+            rez.Name = Name;
+            rez.ActivityId = ActivityId;
+            rez.AlwaysSuccess = AlwaysSuccess;
+            rez.StartTime = StartTime;
+            rez.TransactionId = TransactionId;
+            rez.ChildDelay = ChildDelay;
+            return rez;
+        }
+
 
     }
 }
