@@ -46,23 +46,38 @@ namespace ActivityScheduler.Data.Managers
         {
             //check if number and name is unique
 
-            var batches= _repo.GetAllAsync().Result.ToList();
-
-            var numberCount = batches.Where(x => x.Number == batch.Number).ToList().Count;
-            if (numberCount > 0)
+            if (batch.Number!="000000") 
             {
-                return Task.FromResult(CommonOperationResult.SayFail($"The number you entered already exists"));
-            }
+                var batches = _repo.GetAllAsync().Result.ToList();
 
-            var nameCount = batches.Where(x => x.Name == batch.Name).ToList().Count;
-            if (nameCount > 0)
-            {
-                return Task.FromResult(CommonOperationResult.SayFail($"The name you entered already exists"));
+                var numberCount = batches.Where(x => x.Number == batch.Number).ToList().Count;
+                if (numberCount > 0)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"The number you entered already exists"));
+                }
+
+                var nameCount = batches.Where(x => x.Name == batch.Name).ToList().Count;
+                if (nameCount > 0)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"The name you entered already exists"));
+                }
             }
 
             var rez=_repo.AddAsync(batch);
 
             return rez;
+        }
+
+        public Task<CommonOperationResult> RemoveBatch(Guid id)
+        {
+            try
+            {
+                return _repo.DeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(CommonOperationResult.SayFail($"Failed to remove batch, exception={ex.Message}, innerexception={ex.InnerException}"));
+            }
         }
 
         public Task<CommonOperationResult> RemoveAllBatches()

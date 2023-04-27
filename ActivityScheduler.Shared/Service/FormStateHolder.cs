@@ -19,12 +19,19 @@ namespace ActivityScheduler.Shared.Service
             _formStates.Add(stt);
             return stt;
         }
+        public void SetFormState(string stateName)
+        {
+            var stt = _formStates.FirstOrDefault(s => s.Name == stateName);
+            if(stt == null) { return; }
+            stt.Actions.ForEach(x=>x.Invoke());
+        }
+
 
         public class FormState 
         {
             public FormStateHolder Parent { get; set; }
 
-            private List<Action> actions = new List<Action>();
+            public List<Action> Actions { get; set; } = new List<Action>();
             public FormState(string name, FormStateHolder parent)
             {
                 Name = name;
@@ -32,9 +39,7 @@ namespace ActivityScheduler.Shared.Service
             }
             public string Name { get; set; }
 
-            public FormState AddAction(Action action) { actions.Add(action); return this; }
-
+            public FormState AddAction(Action action) { Actions.Add(action); return this; }
         }
-        
     }
 }

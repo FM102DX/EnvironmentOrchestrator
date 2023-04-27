@@ -20,6 +20,9 @@ using ActivityScheduler.Core.Appilcation;
 using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Shared.Service;
+using System.Security.Policy;
+using System.Windows.Forms;
 
 namespace ActivityScheduler
 {
@@ -37,6 +40,8 @@ namespace ActivityScheduler
         private List<Batch> _batchList;
         private Batch _selectedItem;
         private ActivityManager _activityManager;
+        private FormStateHolder formStateHolder = new FormStateHolder();
+        private SelectionMode _selectionMode = SelectionMode.None;
         public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
             _settingsManager = settingsManager;
@@ -45,24 +50,34 @@ namespace ActivityScheduler
             _logger = logger;
             _batchManager = batchManager;
             _activityManager = activityManager;
+
+            formStateHolder.CreateFormState("normal").AddAction(() => {
+                NameTxt.Visibility = Visibility.Hidden;
+                NumberTxt.Visibility = Visibility.Hidden;
+                BatchName.Visibility = Visibility.Visible;
+                BatchNumber.Visibility = Visibility.Visible;
+                IsGroup.Visibility = Visibility.Visible;
+            }).Parent.CreateFormState("isgroup").AddAction(() => {
+                NameTxt.Visibility = Visibility.Visible;
+                NumberTxt.Visibility = Visibility.Visible;
+                BatchName.Visibility = Visibility.Visible;
+                BatchNumber.Visibility = Visibility.Visible;
+                IsGroup.Visibility = Visibility.Hidden;
+            }).Parent.CreateFormState("none").AddAction(() => {
+                NameTxt.Visibility = Visibility.Hidden;
+                NumberTxt.Visibility = Visibility.Hidden;
+                BatchName.Visibility = Visibility.Hidden;
+                BatchNumber.Visibility = Visibility.Hidden;
+                IsGroup.Visibility = Visibility.Hidden;
+            });
+
             InitializeComponent();
         }
        
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
-            settingsFrm.ShowDialog();
-        }
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
             Tag = "Closed";
-        }
-
-        private void NewBatch_Click(object sender, RoutedEventArgs e)
-        {
-            NewBatch btc = new NewBatch(this, _batchManager, _logger);
-            btc.ShowDialog();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -74,27 +89,26 @@ namespace ActivityScheduler
         {
             BatchList.Items.Clear();
             _batchList = _batchManager.GetAll().Result.OrderBy(x=>x.Number).ToList();
-
-
             _batchList.ForEach(x => {
-
                     if (x.IsGroup && (BatchList.Items.Count!=0)) { BatchList.Items.Add(new ListBoxItem() { Tag = "none", Content = $"" });}
                     var lstI = new ListBoxItem() { Tag = x, Content = $"{x.Number}--{x.Name}" };
                     if (x.IsGroup) { lstI.FontWeight = FontWeights.Bold; }
                     BatchList.Items.Add(lstI);
                 });
-
-        }
-
-        private void BatchList_Selected(object sender, RoutedEventArgs e)
-        {
-
+            //select first element
+            BatchList.SelectedIndex=0;
         }
 
         private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = e.AddedItems.Cast<ListBoxItem>().ToList().FirstOrDefault();
-
+            var item =  e.AddedItems.Cast<ListBoxItem>().ToList().FirstOrDefault();
+            if (item == null) { return; }
+            if (item.Tag== "none") 
+            {
+                _selectionMode= SelectionMode.None;
+                formStateHolder.SetFormState("none");
+                return; 
+            }
             Batch btc = (Batch)item.Tag;
             _selectedItem = btc;
             BatchNumber.IsReadOnly = true;
@@ -105,18 +119,78 @@ namespace ActivityScheduler
             IsGroup.IsChecked = false;
             if (btc.IsGroup)
             {
+                _selectionMode = SelectionMode.Group;
+                formStateHolder.SetFormState("isgroup");
+                BatchNumber.Text = btc.Number;
+                BatchName.Text = btc.Name;
+            }
+            else
+            {
+                _selectionMode = SelectionMode.RealBatch;
+                formStateHolder.SetFormState("normal");
                 BatchNumber.Text = btc.Number;
                 BatchName.Text = btc.Name;
                 IsGroup.IsChecked = btc.IsGroup;
             }
-
-            //MessageBox.Show($"{btc.Number}");
         }
 
         private void EditBatch_Click(object sender, RoutedEventArgs e)
         {
-            EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _selectedItem, _logger);
-            editBatch.Show();
+            OpenEditBatchForm();
+        }
+
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
+            settingsFrm.ShowDialog();
+        }
+
+        private void NewBatch_Click(object sender, RoutedEventArgs e)
+        {
+            Batch btc = new Batch();
+            btc.Number = "000000";
+            btc.Name = "New.batch";
+            var rez = _batchManager.AddNewBatch(btc).Result;
+            LoadBatchList();
+        }
+
+        private void DeleteBatch_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedItem == null) { return; }
+            _batchManager.RemoveBatch(_selectedItem.Id);
+            LoadBatchList();
+        }
+
+        private void BatchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            OpenEditBatchForm();
+        }
+
+        private void OpenEditBatchForm()
+        {
+            if (_selectionMode == SelectionMode.RealBatch)
+            {
+                EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _selectedItem, _logger);
+                editBatch.Show();
+            }
+
+        }
+
+        private void NewGroup_Click(object sender, RoutedEventArgs e)
+        {
+            Batch btc = new Batch();
+            btc.Number = "000000";
+            btc.Name = "New.group";
+            btc.IsGroup = true;
+            var rez = _batchManager.AddNewBatch(btc).Result;
+            LoadBatchList();
+        }
+
+        private enum SelectionMode
+        {
+            None=1,
+            Group=2,
+            RealBatch=3
         }
     }
 }

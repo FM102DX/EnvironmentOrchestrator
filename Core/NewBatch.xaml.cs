@@ -40,8 +40,6 @@ namespace ActivityScheduler.Core
             Close();
         }
 
-
-
         private void BatchCreate_Click(object sender, RoutedEventArgs e)
         {
 

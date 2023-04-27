@@ -39,7 +39,7 @@ namespace ActivityScheduler.Core
             _currentBatch= currentBatch;
             _activityManager = activityManager;
             formStateHolder.CreateFormState("isgroup").AddAction(() => { 
-                BatchName.Visibility = Visibility.Visible;
+                BatchName.Visibility = Visibility.Hidden;
                 NumberTb.Visibility = Visibility.Hidden;
                 IsHub.Visibility = Visibility.Hidden;
                 TransactionIdTb.Visibility = Visibility.Hidden;
@@ -117,9 +117,6 @@ namespace ActivityScheduler.Core
             var itemsAct = _activityManager.GetAll(_currentBatch.Id).Result.ToList().Select(x=>x.AsViewModel()).ToList();
             ActivityGrid.ItemsSource = itemsAct;
             ActivityGrid.Columns[0].Visibility=Visibility.Hidden;
-
-            //itemsAct.ForEach(x => ActivityGrid.Items.Add(new ListViewItem() {  }));
-
         }
 
         private void CreateActivity_Click(object sender, RoutedEventArgs e)
