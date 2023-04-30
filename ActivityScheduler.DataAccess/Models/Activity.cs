@@ -43,7 +43,20 @@ namespace ActivityScheduler.Data.Models
             rez.ChildDelay = ChildDelay;
             return rez;
         }
-
-
+        public override Activity Clone()
+        {
+            Activity acv = new Activity();
+            acv.Id = Id;
+            acv.Name = Name;
+            acv.ActivityId = ActivityId;
+            acv.AlwaysSuccess = AlwaysSuccess;
+            acv.StartTime = StartTime;
+            acv.TransactionId = TransactionId;
+            acv.IsDomestic= IsDomestic;
+            acv.IsHub= IsHub;
+            acv.ChildDelay = ChildDelay;
+            ParentIds.ForEach(x => acv.ParentIds.Add(x));
+            return acv;
+        }
     }
 }

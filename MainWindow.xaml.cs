@@ -56,19 +56,16 @@ namespace ActivityScheduler
                 NumberTxt.Visibility = Visibility.Hidden;
                 BatchName.Visibility = Visibility.Visible;
                 BatchNumber.Visibility = Visibility.Visible;
-                IsGroup.Visibility = Visibility.Visible;
             }).Parent.CreateFormState("isgroup").AddAction(() => {
                 NameTxt.Visibility = Visibility.Visible;
                 NumberTxt.Visibility = Visibility.Visible;
                 BatchName.Visibility = Visibility.Visible;
                 BatchNumber.Visibility = Visibility.Visible;
-                IsGroup.Visibility = Visibility.Hidden;
             }).Parent.CreateFormState("none").AddAction(() => {
                 NameTxt.Visibility = Visibility.Hidden;
                 NumberTxt.Visibility = Visibility.Hidden;
                 BatchName.Visibility = Visibility.Hidden;
                 BatchNumber.Visibility = Visibility.Hidden;
-                IsGroup.Visibility = Visibility.Hidden;
             });
 
             InitializeComponent();
@@ -113,10 +110,8 @@ namespace ActivityScheduler
             _selectedItem = btc;
             BatchNumber.IsReadOnly = true;
             BatchName.IsReadOnly = true;
-            IsGroup.IsHitTestVisible = false;
             BatchNumber.Text = "";
             BatchName.Text = "";
-            IsGroup.IsChecked = false;
             if (btc.IsGroup)
             {
                 _selectionMode = SelectionMode.Group;
@@ -130,7 +125,6 @@ namespace ActivityScheduler
                 formStateHolder.SetFormState("normal");
                 BatchNumber.Text = btc.Number;
                 BatchName.Text = btc.Name;
-                IsGroup.IsChecked = btc.IsGroup;
             }
         }
 
@@ -156,7 +150,9 @@ namespace ActivityScheduler
 
         private void DeleteBatch_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedItem == null) { return; }
+            if (_selectionMode == SelectionMode.None) { return; }
+
+                if (_selectedItem == null) { return; }
             _batchManager.RemoveBatch(_selectedItem.Id);
             LoadBatchList();
         }
@@ -168,12 +164,11 @@ namespace ActivityScheduler
 
         private void OpenEditBatchForm()
         {
-            if (_selectionMode == SelectionMode.RealBatch)
+            if (_selectionMode != SelectionMode.None)
             {
                 EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _selectedItem, _logger);
                 editBatch.Show();
             }
-
         }
 
         private void NewGroup_Click(object sender, RoutedEventArgs e)

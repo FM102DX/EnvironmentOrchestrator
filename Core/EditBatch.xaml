@@ -21,7 +21,6 @@
         <TextBlock HorizontalAlignment="Left" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Name="BatchName" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
         <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top"/>
-        <CheckBox Name="IsGroup" Content="Is group" HorizontalAlignment="Left" Margin="294,46,0,0" VerticalAlignment="Top" Grid.ColumnSpan="3" />
         <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="365" Margin="28,88,0,0" VerticalAlignment="Top" Width="482" Grid.ColumnSpan="3" SelectionMode="Single" IsReadOnly="True" CanUserAddRows="False"/>
         <Canvas Margin="179,88,26,119" Grid.ColumnSpan="2" Grid.Column="2">
 

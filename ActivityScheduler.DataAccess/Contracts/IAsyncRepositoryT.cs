@@ -16,7 +16,7 @@ namespace ActivityScheduler.Data.Contracts
 
         public Task<List<T>> GetItemsListAsync();
 
-        public Task<T> GetByIdOrNullAsync(Guid id);
+        public Task<T>? GetByIdOrNullAsync(Guid id);
 
         public Task<int> Count { get; }
 

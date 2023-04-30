@@ -29,16 +29,17 @@ namespace ActivityScheduler.Core
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
         private MainWindow _mainWindow;
-        private FormStateHolder formStateHolder = new FormStateHolder();
+        private FormStateHolder _formStateHolder = new FormStateHolder();
         private Batch _currentBatch;
         public EditBatch(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
         {
             _logger = logger;
             _batchManager = batchManager;
             _mainWindow = mainWindow;
-            _currentBatch= currentBatch;
+            _currentBatch= _batchManager.Clone(currentBatch);
             _activityManager = activityManager;
-            formStateHolder.CreateFormState("isgroup").AddAction(() => { 
+
+            _formStateHolder.CreateFormState("isgroup").AddAction(() => { 
                 BatchName.Visibility = Visibility.Hidden;
                 NumberTb.Visibility = Visibility.Hidden;
                 IsHub.Visibility = Visibility.Hidden;
@@ -52,60 +53,43 @@ namespace ActivityScheduler.Core
                 Starttime.Visibility = Visibility.Visible;
             });
 
+            _batchManager._checker.BindControlToCheck("UpdateNumber",   BatchNumber)
+                                  .BindControlToCheck("UpdateName",     BatchName);
+
             InitializeComponent();
         }
-
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
-
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
-
-        private void IsGroup_Loaded(object sender, RoutedEventArgs e)
-        {
-            IsGroup.IsChecked=false;
-        }
-
         private void BatchSave_Click(object sender, RoutedEventArgs e)
         {
             CommonOperationResult chkRez;
-            chkRez = _batchManager.CheckNumber(BatchNumber.Text).Result;
-            if (!chkRez.Success)
-            {
-                MessageBox.Show(chkRez.Message);
-                BatchNumber.Focus();
-                return;
-            }
 
-            chkRez = _batchManager.CheckName(BatchName.Text).Result;
-            if (!chkRez.Success)
-            {
-                MessageBox.Show(chkRez.Message);
-                BatchName.Focus();
-                return;
-            }
+            _currentBatch.Number = BatchNumber.Text;
+            
+            _currentBatch.Name = BatchName.Text;
 
-            Batch batch = new Batch();
-            batch.Number = BatchNumber.Text;
-            batch.Name = BatchName.Text;
-            batch.IsGroup = (bool)IsGroup.IsChecked;
-            var btcAddRez = _batchManager.AddNewBatch(batch).Result;
+            var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
+            
             if (!btcAddRez.Success)
             {
                 MessageBox.Show(btcAddRez.Message);
                 return;
             }
+            
             _mainWindow.LoadBatchList();
+
             Close();
         }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //  ActivityGrid.Items.Add(new ListViewItem());
+            if (_currentBatch.IsGroup) { _formStateHolder.SetFormState("isgroup"); } else { _formStateHolder.SetFormState("normal"); }
             BatchNumber.Text = _currentBatch.Number;
             BatchName.Text = _currentBatch.Name;
             LoadActivityList();
@@ -118,7 +102,6 @@ namespace ActivityScheduler.Core
             ActivityGrid.ItemsSource = itemsAct;
             ActivityGrid.Columns[0].Visibility=Visibility.Hidden;
         }
-
         private void CreateActivity_Click(object sender, RoutedEventArgs e)
         {
             //add new activity to batch and re-read it into grid 

@@ -20,6 +20,8 @@ namespace ActivityScheduler.Data.Managers
 
         public void FillTheModel()
         {
+            _batchManager.RemoveAllBatches();
+
             Batch batch1 = new Batch();
             batch1.Number = "100101";
             batch1.Name = "Env.checkin";

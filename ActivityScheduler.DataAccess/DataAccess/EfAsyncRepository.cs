@@ -26,7 +26,7 @@ namespace ActivityScheduler.Data.DataAccess
         {
             try
             {
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>());
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().AsNoTracking());
                 return rez;
             }
             catch (Exception ex)
@@ -41,7 +41,7 @@ namespace ActivityScheduler.Data.DataAccess
         {
             try
             {
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter));
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).AsNoTracking());
                 return rez;
             }
             catch (Exception ex)
@@ -52,7 +52,7 @@ namespace ActivityScheduler.Data.DataAccess
             }
         }
 
-        public Task<T> GetByIdOrNullAsync(Guid id)
+        public Task<T>? GetByIdOrNullAsync(Guid id)
         {
             return _context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
         }
@@ -79,7 +79,9 @@ namespace ActivityScheduler.Data.DataAccess
 
         public Task<CommonOperationResult> UpdateAsync(T t)
         {
-            _context.Set<T>().Update(t);
+            var ent = GetByIdOrNullAsync(t.Id).Result;
+            if (ent == null) { return Task.FromResult(CommonOperationResult.SayFail()); }
+            _context.Entry(ent).CurrentValues.SetValues(t);
             var rez = _context.SaveChanges();
             return Task.FromResult(CommonOperationResult.SayOk(rez.ToString()));
         }

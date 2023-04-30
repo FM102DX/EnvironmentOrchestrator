@@ -18,5 +18,10 @@ namespace ActivityScheduler.Data.DataAccess
         public DateTime CreatedDateTime { get; set; }
         public DateTime? LastModifiedDatTime { get; set; }
 
+        public virtual BaseEntity Clone()
+        {
+            return new BaseEntity() { };
+        }
+
     }
 }

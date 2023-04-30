@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ActivityScheduler.Shared.Validation;
 using Activity = ActivityScheduler.Data.Models.Activity;
+using System.Xml.Linq;
 
 namespace ActivityScheduler.Data.Managers
 {
@@ -21,15 +22,6 @@ namespace ActivityScheduler.Data.Managers
         public ActivityManager(IAsyncRepositoryT<Activity> repo)
         {
             _repo = repo;
-        }
-
-        public Task<CommonOperationResult> CheckNumber(string number)
-        {
-            return Task.FromResult(Validation.CheckIf6DigitTrasactionNumberIsCorrect(number));
-        }
-        public Task<CommonOperationResult> CheckName(string name)
-        {
-            return Task.FromResult(Validation.CheckIfTransactionOrBatchNameIsCorrect(name));
         }
 
         public Task<List<Activity>> GetAll()
@@ -59,6 +51,22 @@ namespace ActivityScheduler.Data.Managers
         public Task<List<Activity>> GetAll(Guid batchId)
         {
             return Task.FromResult(_repo.GetAllAsync(x => x.BatchId == batchId).Result.ToList());
+        }
+
+        public Activity Clone(Activity sca)
+        {
+            Activity acv = new Activity();
+            acv.Id = sca.Id;
+            acv.Name = sca.Name;
+            acv.ActivityId = sca.ActivityId;
+            acv.AlwaysSuccess = sca.AlwaysSuccess;
+            acv.StartTime = sca.StartTime;
+            acv.TransactionId = sca.TransactionId;
+            acv.IsDomestic = sca.IsDomestic;
+            acv.IsHub = sca.IsHub;
+            acv.ChildDelay = sca.ChildDelay;
+            sca.ParentIds.ForEach(x => acv.ParentIds.Add(x));
+            return acv;
         }
     }
 }

@@ -20,12 +20,10 @@
         <TabControl HorizontalAlignment="Left" Height="382" Margin="278,42,0,0" VerticalAlignment="Top" Width="603">
             <TabItem Header="Main" Name="Name">
                 <Grid Background="#FFE5E5E5">
-
                     <TextBox HorizontalAlignment="Left" x:Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
                     <TextBlock HorizontalAlignment="Left" Name="NumberTxt" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
                     <TextBox HorizontalAlignment="Left" x:Name="BatchName" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="186"/>
                     <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" Name="NameTxt" VerticalAlignment="Top"/>
-                    <CheckBox x:Name="IsGroup" Content="Is group" HorizontalAlignment="Left" Margin="324,46,0,0" VerticalAlignment="Top" />
                 </Grid>
             </TabItem>
             <TabItem Header="TabItem">
