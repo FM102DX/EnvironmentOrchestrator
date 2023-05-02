@@ -164,6 +164,7 @@ namespace ActivityScheduler.Data.Managers
             newBatch.Duration = sourceBatch.Duration;
             newBatch.Number = sourceBatch.Number;
             newBatch.IsGroup = sourceBatch.IsGroup;
+
             return newBatch;
         }
     }

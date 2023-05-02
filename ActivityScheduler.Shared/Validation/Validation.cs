@@ -49,6 +49,25 @@ namespace ActivityScheduler.Shared.Validation
             return CommonOperationResult.SayOk();
         }
 
+        public static CommonOperationResult CheckActivityId(string source)
+        {
+            Regex regex;
+            source = StrRemoveArrSymbols(source, @"\|/^");
+            // regex = new Regex("[^a-zA-Zа-яА-Я0-9() +-_:;!?@#.*]", RegexOptions.IgnoreCase);
+            //source = regex.Replace(source, "");
+            regex = new Regex("[^0-9]", RegexOptions.IgnoreCase);
+            var m = regex.Matches(source);
+            if (m.Count > 0)
+            {
+                return CommonOperationResult.SayFail("Only digits allowed in transaction, batch and activity numbers");
+            }
+            if (source.Length >3)
+            {
+                return CommonOperationResult.SayFail("Activity Id should be not more than 3 digits length, e.g. 10, 100, 120, ... 900, 950");
+            }
+            return CommonOperationResult.SayOk();
+        }
+
         public static string StrRemoveArrSymbols(string source, string symbols)
         {
             string text = "";
