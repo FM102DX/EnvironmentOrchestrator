@@ -3,33 +3,30 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ActivityScheduler.Core"
+        xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Edit Batch" Height="503" Width="904"
         ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="313*"/>
-            <ColumnDefinition Width="29*"/>
-            <ColumnDefinition Width="336*"/>
-            <ColumnDefinition Width="226*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Content="Save batch" Name="BatchSave" HorizontalAlignment="Left" Margin="79,12,0,0" VerticalAlignment="Top" Width="99" Click="BatchSave_Click" Grid.Column="3"  />
+        <Button Content="Save batch" Name="BatchSave" HorizontalAlignment="Left" Margin="757,12,0,0" VerticalAlignment="Top" Width="99" Click="BatchSave_Click"  />
 
-        <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Left" Margin="79,39,0,0" VerticalAlignment="Top" Width="99" Grid.Column="3" Click="CreateActivity_Click"  />
-        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="79,68,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" Grid.Column="3" />
+        <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Left" Margin="757,39,0,0" VerticalAlignment="Top" Width="99" Click="CreateActivity_Click"  />
+        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="757,68,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
 
         <TextBlock HorizontalAlignment="Left" Name="BatchNumberLabel" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top" />
         <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
 
         <TextBlock HorizontalAlignment="Left" Name="BatchNameLabel" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" />
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155"/>
+        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155" />
 
-        <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="365" Margin="28,88,0,0" VerticalAlignment="Top" Width="482" Grid.ColumnSpan="3" SelectionMode="Single" IsReadOnly="True" CanUserAddRows="False" SelectionChanged="ActivityGrid_SelectionChanged"/>
-        <Canvas Name ="ActivityEditCanvas" Margin="179,88,26,119" Grid.ColumnSpan="2" Grid.Column="2">
+        <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="365" Margin="28,88,0,0" VerticalAlignment="Top" Width="482" SelectionMode="Single" IsReadOnly="True" CanUserAddRows="False" SelectionChanged="ActivityGrid_SelectionChanged"/>
+        <Canvas Name ="ActivityEditCanvas" Margin="521,88,26,119">
 
             <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="21" VerticalAlignment="Top" />
-            <TextBox TextWrapping="Wrap" Name="ActivityIdTb" Text="" Width="57" HorizontalAlignment="Center" Canvas.Left="98" Canvas.Top="22" VerticalAlignment="Top"/>
+            <TextBox TextWrapping="Wrap" Name="ActivityIdTb" Text="" Width="57" HorizontalAlignment="Center" Canvas.Left="98" Canvas.Top="22" VerticalAlignment="Top"  TextChanged="ActivityIdTb_TextChanged"/>
 
             <TextBlock TextWrapping="Wrap" Text="Name" Canvas.Left="10" Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBox TextWrapping="Wrap" Name="ActivityNameTb" Text="" Width="256" Canvas.Left="98" Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -42,8 +39,11 @@
             <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="159" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBox TextWrapping="Wrap" Name="StartTimeTb" Text="" Width="69" Canvas.Left="101" Canvas.Top="159" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <CheckBox Content="Is domestic" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="89" Name="IsDomestic" Canvas.Left="101" Canvas.Top="134"/>
-            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="248" Canvas.Top="250" Click="SaveActivityBtn_Click"  />
 
+
+            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="248" Canvas.Top="250" Click="SaveActivityBtn_Click"  />
+            <TextBox TextWrapping="Wrap" x:Name="mask" Text="" Width="69" Canvas.Left="101" Canvas.Top="210" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <wpfx:MaskedTextBox Width="138" Height="24" Mask="(000) 000-0000" Canvas.Left="103" Canvas.Top="236" HorizontalAlignment="Left" VerticalAlignment="Center" />
         </Canvas>
 
     </Grid>

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,6 +37,7 @@ namespace ActivityScheduler.Core
         private Batch _currentBatch;
         private Activity _currentActivity;
         private List<Activity> _activitiesList = new List<Activity>();
+        private TimeSpan _actStartTime { get; set; }
 
         public EditBatch(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
         {
@@ -198,6 +200,7 @@ namespace ActivityScheduler.Core
             //TimeSpan ts = (TimeSpan)"00:00:00";
 
             TimeSpan.TryParseExact(StartTimeTb.Text, "hh\\:mm\\:ss", CultureInfo.CurrentCulture, out TimeSpan ts);
+
             activity.StartTime = ts;
 
             return activity;
@@ -208,6 +211,14 @@ namespace ActivityScheduler.Core
         private void SaveActivityBtn_Click(object sender, RoutedEventArgs e)
         {
             Activity activity = GetActivityFromFields();
+
+        }
+
+        private void ActivityIdTb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string s = Regex.Replace(((TextBox)sender).Text, @"[^\d.]", "");
+            if (s.Length > 3) { s = s.Substring(0,3); }
+            ((TextBox)sender).Text = s;
 
         }
     }

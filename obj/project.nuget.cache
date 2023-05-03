@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Npyt/cQHLIqbNlMZWb/AI0tDmX5MVcz4SG6zkqLN+gD+2rCjiT0Z/iSEATVN1qGT/w3zalCpSCU4tYjx7Y8G2Q==",
+  "dgSpecHash": "8VQXbfFnLOKftEdGiG0J4mhMVSI1olQGKSjIwiVCHKFkIgdSXJylPDJCRROEYsRW758mThOiJJCAiO7/AdHiMQ==",
   "success": true,
   "projectFilePath": "C:\\Develop\\ActivityScheduler\\ActivityScheduler.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\extended.wpf.toolkit\\4.5.0\\extended.wpf.toolkit.4.5.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.data.sqlite.core\\7.0.5\\microsoft.data.sqlite.core.7.0.5.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore\\7.0.5\\microsoft.entityframeworkcore.7.0.5.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\7.0.5\\microsoft.entityframeworkcore.abstractions.7.0.5.nupkg.sha512",
