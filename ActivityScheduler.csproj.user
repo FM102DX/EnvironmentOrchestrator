@@ -7,9 +7,6 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Core\NewBatch.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Core\Settings\Settings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -18,10 +15,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Core\EditBatch.xaml">
+    <Page Update="Core\SetParentActivities.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Core\NewBatch.xaml">
+    <Page Update="Core\EditBatch.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Core\Settings\Settings.xaml">

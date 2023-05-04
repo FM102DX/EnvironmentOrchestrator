@@ -9,9 +9,10 @@ namespace ActivityScheduler.Shared
     public class CommonOperationResult
     {
         public bool Success { get; set; }
-        public string? Message { get; set; }
+        public string Message { get; set; } = "";
         public object? ReturningValue { get; set; }
         public object? ControlObject { get; set; } //used to drag form controls through these messages
+        public Action? StoredAction { get; set; } //used to drag Action delegates through these messages
 
         public static CommonOperationResult GetInstance(bool success, string msg, object returningValue = null)
         {

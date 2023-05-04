@@ -14,6 +14,7 @@ namespace ActivityScheduler.Data.Executors
         private List<Check> _items = new List<Check>();
 
         private Dictionary<string, object> _itemToControlBindings = new Dictionary<string, object>();
+        private Dictionary<string, Action> _itemToActionBindings = new Dictionary<string, Action>();
 
         public CheckExecutor() { }
         public CheckExecutor<T> AddCheck(List<string> checkGroupNames, string checkName, Func<T, CommonOperationResult> funcDef) 
@@ -30,10 +31,18 @@ namespace ActivityScheduler.Data.Executors
             }
             return this; 
         }
+        public CheckExecutor<T> BindActionToCheck(string groupNamePlusCheckName, Action action)
+        {
+            if (!_itemToActionBindings.ContainsKey(groupNamePlusCheckName))
+            {
+                _itemToActionBindings.Add(groupNamePlusCheckName, action);
+            }
+            return this;
+        }
 
         public CommonOperationResult PerformCheck(string checkGroup, T t)
         {
-            var checkItems = _items.Where(x => x.Group.Contains(checkGroup));
+            var checkItems = _items.Where(x => x.Group.Contains(checkGroup)).ToList();
 
             foreach (var item in checkItems)
             {
@@ -41,7 +50,8 @@ namespace ActivityScheduler.Data.Executors
 
                 if (!rez.Success)
                 {
-                    rez.ControlObject = _itemToControlBindings.FirstOrDefault(x=>x.Key==$"{item.Group}{item.Name}");
+                    rez.ControlObject = _itemToControlBindings.FirstOrDefault(x=>x.Key==$"{checkGroup}{item.Name}").Value;
+                    rez.StoredAction = _itemToActionBindings.FirstOrDefault(x => x.Key == $"{checkGroup}{item.Name}").Value;
                     return rez;
                 }
             }

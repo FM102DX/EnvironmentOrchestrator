@@ -45,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Core\SetParentActivities.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Core\EditBatch.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

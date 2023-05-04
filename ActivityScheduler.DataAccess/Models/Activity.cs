@@ -41,6 +41,8 @@ namespace ActivityScheduler.Data.Models
             rez.StartTime = StartTime;
             rez.TransactionId = TransactionId;
             rez.ChildDelay = ChildDelay;
+            rez.IsDomestic = IsDomestic;
+            rez.IsHub = IsHub;
             return rez;
         }
         public override Activity Clone()

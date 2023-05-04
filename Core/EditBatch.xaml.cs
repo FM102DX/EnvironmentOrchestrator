@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
 using static System.Windows.Forms.DataFormats;
 
 namespace ActivityScheduler.Core
@@ -38,6 +40,7 @@ namespace ActivityScheduler.Core
         private Activity _currentActivity;
         private List<Activity> _activitiesList = new List<Activity>();
         private TimeSpan _actStartTime { get; set; }
+        private bool _saveActivityStopMarker=false;
 
         public EditBatch(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
         {
@@ -66,7 +69,7 @@ namespace ActivityScheduler.Core
 
             _batchManager._checker.BindControlToCheck("UpdateNumber", BatchNumberTb)
                                   .BindControlToCheck("UpdateName",   BatchNameTb);
-
+            _activityManager._checker.BindActionToCheck("UpdateTransactionId", () => { TransactionIdTb.Focus(); TransactionIdTb.SelectAll();});
             InitializeComponent();
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
@@ -89,7 +92,7 @@ namespace ActivityScheduler.Core
             
             if (!btcAddRez.Success)
             {
-                MessageBox.Show(btcAddRez.Message);
+                System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
                 return;
             }
             
@@ -175,16 +178,15 @@ namespace ActivityScheduler.Core
             TransactionIdTb.Text=activity.TransactionId.ToString();
             IsDomestic.IsChecked= activity.IsDomestic;
             StartTimeTb.Text=activity.StartTime.ToString();
-
+            AlwaysSuccess.IsChecked = activity.AlwaysSuccess;
         }
 
         private Activity GetActivityFromFields()
         {
-            //checks here
-            
-            //creating activity
             Activity activity = new Activity();
+
             activity.Id = _currentActivity.Id;
+
             activity.BatchId = _currentBatch.Id;
 
             activity.ActivityId = Convert.ToInt32(ActivityIdTb.Text);
@@ -203,15 +205,34 @@ namespace ActivityScheduler.Core
 
             activity.StartTime = ts;
 
+            activity.AlwaysSuccess= (bool)AlwaysSuccess.IsChecked;
+
             return activity;
-
-
         }
 
         private void SaveActivityBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (_saveActivityStopMarker) return;
+            MsgLabel.Text = "";
             Activity activity = GetActivityFromFields();
+            var rez = _activityManager.ModifyActivity(activity).Result;
+            if (!rez.Success)
+            {
+                //focus on field
+                
+                if (rez.StoredAction !=null) rez.StoredAction.Invoke();
+                //Task.Run(() => ShowFormErrorMessage(rez.Message));
+                MsgLabel.Text = rez.Message;
+                return;
+            }
 
+            LoadActivityGrid();
+        }
+        private void ShowFormErrorMessage(string text)
+        {
+            MsgLabel.Text = text;
+            Thread.Sleep(3000);
+            MsgLabel.Text ="";
         }
 
         private void ActivityIdTb_TextChanged(object sender, TextChangedEventArgs e)
@@ -219,7 +240,27 @@ namespace ActivityScheduler.Core
             string s = Regex.Replace(((TextBox)sender).Text, @"[^\d.]", "");
             if (s.Length > 3) { s = s.Substring(0,3); }
             ((TextBox)sender).Text = s;
+        }
 
+        private void StartTimeTb_LostFocus(object sender, RoutedEventArgs e)
+        {
+            _saveActivityStopMarker = false;
+            var rezCtrl = (MaskedTextBox)sender;
+            var rezTxt = (rezCtrl).Text;
+            bool convertRez=TimeSpan.TryParseExact(rezTxt, "hh\\:mm\\:ss", CultureInfo.CurrentCulture, out TimeSpan ts);
+            if (!convertRez)
+            {
+                StartTimeTb.Text = "";
+                //StartTimeTb.Focus();
+                _saveActivityStopMarker=true;
+                MsgLabel.Text="Please enter a valid timespan, for example 02:15:30";
+
+            }
+        }
+
+        private void ReloadGrid_Click(object sender, RoutedEventArgs e)
+        {
+            LoadActivityGrid();
         }
     }
 }
