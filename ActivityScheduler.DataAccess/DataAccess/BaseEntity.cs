@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ActivityScheduler.DataAccess
+namespace ActivityScheduler.Data.DataAccess
 {
     public class BaseEntity
     {
@@ -12,11 +12,16 @@ namespace ActivityScheduler.DataAccess
             CreatedDateTime = DateTime.Now;
         }
 
-        public string? SysMessage { get; set; } //for debug purposes
+        public string? Tag { get; set; }
         public string ShortTimeStamp { get { return $"{CreatedDateTime.ToShortDateString()} {CreatedDateTime.ToShortTimeString()}"; } }
 
         public DateTime CreatedDateTime { get; set; }
         public DateTime? LastModifiedDatTime { get; set; }
+
+        public virtual BaseEntity Clone()
+        {
+            return new BaseEntity() { };
+        }
 
     }
 }

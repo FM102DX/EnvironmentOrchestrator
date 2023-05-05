@@ -5,9 +5,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using ActivityScheduler.Shared;
+using ActivityScheduler.Data.Contracts;
+using System.Linq.Expressions;
 
-
-namespace ActivityScheduler.DataAccess
+namespace ActivityScheduler.Data.DataAccess
 {
     public class EfAsyncRepository<T> : IAsyncRepositoryT<T> where T: BaseEntity
     {
@@ -25,7 +26,7 @@ namespace ActivityScheduler.DataAccess
         {
             try
             {
-                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>());
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().AsNoTracking());
                 return rez;
             }
             catch (Exception ex)
@@ -36,7 +37,22 @@ namespace ActivityScheduler.DataAccess
             }
         }
 
-        public Task<T> GetByIdOrNullAsync(Guid id)
+        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter)
+        {
+            try
+            {
+                var rez = Task.FromResult((IEnumerable<T>)_context.Set<T>().Where(filter).AsNoTracking());
+                return rez;
+            }
+            catch (Exception ex)
+            {
+                List<T> lst = new List<T>();
+                IEnumerable<T> en = (IEnumerable<T>)lst;
+                return Task.FromResult(en);
+            }
+        }
+
+        public Task<T>? GetByIdOrNullAsync(Guid id)
         {
             return _context.Set<T>().SingleOrDefaultAsync(e => e.Id == id);
         }
@@ -63,7 +79,9 @@ namespace ActivityScheduler.DataAccess
 
         public Task<CommonOperationResult> UpdateAsync(T t)
         {
-            _context.Set<T>().Update(t);
+            var ent = GetByIdOrNullAsync(t.Id).Result;
+            if (ent == null) { return Task.FromResult(CommonOperationResult.SayFail()); }
+            _context.Entry(ent).CurrentValues.SetValues(t);
             var rez = _context.SaveChanges();
             return Task.FromResult(CommonOperationResult.SayOk(rez.ToString()));
         }
@@ -144,5 +162,6 @@ namespace ActivityScheduler.DataAccess
 
             return Task.FromResult(rezList);
         }
+
     }
 }
