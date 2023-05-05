@@ -151,10 +151,27 @@ namespace ActivityScheduler
         private void DeleteBatch_Click(object sender, RoutedEventArgs e)
         {
             if (_selectionMode == SelectionMode.None) { return; }
-
-                if (_selectedItem == null) { return; }
-            _batchManager.RemoveBatch(_selectedItem.Id);
+            if (_selectedItem == null) { return; }
+            var rez = _batchManager.RemoveBatch(_selectedItem.Id).Result;
+            if (!rez.Success)
+            {
+                ShowRed($"{rez.Message}");
+            }
             LoadBatchList();
+        }
+
+
+        private void ShowRed(string text)
+        {
+            // InfoTb.font
+            InfoTb.Text = text;
+            InfoTb.Foreground = Brushes.Red;
+        }
+        private void ShowGreen(string text)
+        {
+            // InfoTb.font
+            InfoTb.Text = text;
+            InfoTb.Foreground = Brushes.Green;
         }
 
         private void BatchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

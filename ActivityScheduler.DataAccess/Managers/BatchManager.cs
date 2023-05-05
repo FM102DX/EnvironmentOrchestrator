@@ -129,7 +129,25 @@ namespace ActivityScheduler.Data.Managers
         {
             try
             {
-                return _repo.DeleteAsync(id);
+                //cant remove batch if it contains activities
+                var actv = _activityManager.GetAll(id).Result;
+
+                if (actv.Count>0)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"Cannot remove batch because it contains {actv.Count} activities"));
+                }
+
+                var delRez=_repo.DeleteAsync(id).Result;
+
+                if (!delRez.Success)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"Cannot remove batch because of error: {delRez.Message}"));
+                }
+                else
+                {
+                    return _activityManager.RemoveAllBatchActivities(id);
+                }
+
             }
             catch (Exception ex)
             {
@@ -142,11 +160,16 @@ namespace ActivityScheduler.Data.Managers
             try
             {
                 var items = _repo.GetAllAsync().Result.ToList();
-                items.ForEach(x =>
+
+                foreach (var x in items)
                 {
-                    RemoveBatch(x.Id);
-                    _activityManager.RemoveAllBatchActivities(x.Id);
-                });
+                    var rez = RemoveBatch(x.Id).Result;
+
+                    if (!rez.Success)
+                    {
+                        return Task.FromResult(CommonOperationResult.SayFail($"Failed to remove batch={rez.Message}"));
+                    }
+                }
                 return Task.FromResult(CommonOperationResult.SayOk());
             }
             catch (Exception ex)

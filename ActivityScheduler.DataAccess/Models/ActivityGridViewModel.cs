@@ -11,13 +11,16 @@ namespace ActivityScheduler.Data.Models
     public  class ActivityGridViewModel
     {
         public Guid Id { get; set; }
+
+        public int ActivityId { get; set; }
+
+        public string? ParentActivities { get; set; }
+        
         public string Name { get; set; }
 
-        public int ActivityId { get; set; } 
-        
         public TimeSpan StartTime { get; set; }
 
-        public String TransactionId { get; set; } 
+        public String? TransactionId { get; set; } 
 
         public bool IsDomestic { get; set; } 
         

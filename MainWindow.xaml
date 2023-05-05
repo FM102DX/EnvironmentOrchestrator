@@ -13,11 +13,11 @@
         <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch"/>
         <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
 
-        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="414" Margin="24,0,0,0" VerticalAlignment="Center" Width="231" SelectionChanged="BatchList_SelectionChanged" MouseDoubleClick="BatchList_MouseDoubleClick" />
+        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="382" Margin="23,73,0,0" VerticalAlignment="Top" Width="229" SelectionChanged="BatchList_SelectionChanged" MouseDoubleClick="BatchList_MouseDoubleClick" />
 
 
 
-        <TabControl HorizontalAlignment="Left" Height="382" Margin="278,42,0,0" VerticalAlignment="Top" Width="603">
+        <TabControl HorizontalAlignment="Left" Height="382" Margin="273,73,0,0" VerticalAlignment="Top" Width="603">
             <TabItem Header="Main" Name="Name">
                 <Grid Background="#FFE5E5E5">
                     <TextBox HorizontalAlignment="Left" x:Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
@@ -31,5 +31,6 @@
             </TabItem>
         </TabControl>
         <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black" Click="DeleteBatch_Click"/>
+        <TextBlock Name="InfoTb" HorizontalAlignment="Left" Margin="273,22,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="603" Height="38"/>
     </Grid>
 </Window>

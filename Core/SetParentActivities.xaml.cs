@@ -31,27 +31,26 @@ namespace ActivityScheduler.Core
     public partial class SetParentActivities : Window
     {
         private Serilog.ILogger _logger;
-        private IAsyncRepositoryT<Activity> _repo;
-        private BatchManager _batchManager;
         private ActivityManager _activityManager;
-        private MainWindow _mainWindow;
         private FormStateHolder _formStateHolder = new FormStateHolder();
         private Batch _currentBatch;
         private Activity _currentActivity;
         private List<Activity> _activitiesList = new List<Activity>();
-        private TimeSpan _actStartTime { get; set; }
-        private bool _saveActivityStopMarker=false;
+        private EditBatch _parentFrm;
+        private List<ParentActivitySelectionViewModel> _itemsAct =new List<ParentActivitySelectionViewModel>();
 
-        public SetParentActivities(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
+        public SetParentActivities(EditBatch parentFrm, ActivityManager activityManager, Batch currentBatch,  Activity currentActivity, Serilog.ILogger logger)
         {
             _logger = logger;
-            _batchManager = batchManager;
-            _mainWindow = mainWindow;
-            _currentBatch= _batchManager.Clone(currentBatch);
+            _currentBatch = currentBatch;
+            _parentFrm = parentFrm;
             _activityManager = activityManager;
+            _currentActivity= currentActivity;
+            InitializeComponent();
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
+            _parentFrm.BufferIn = "-1";
             Close();
         }
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -60,31 +59,48 @@ namespace ActivityScheduler.Core
         }
         private void BatchSave_Click(object sender, RoutedEventArgs e)
         {
-            CommonOperationResult chkRez;
 
-            var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
-            
-            if (!btcAddRez.Success)
-            {
-                System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
-                return;
-            }
-            
-            _mainWindow.LoadBatchList();
-
-            Close();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_currentBatch.IsGroup) { _formStateHolder.SetFormState("isgroup"); } else { _formStateHolder.SetFormState("normal"); }
+            InfoTb.Text = $"{_currentActivity.ActivityId}--{_currentActivity.Name}";
+            
             LoadActivityGrid();
         }
         private void LoadActivityGrid()
         {
-       
             LoadActivities();
 
-            var itemsAct = _activitiesList.Select(x=>x.AsViewModel()).ToList();
+            _itemsAct = _activitiesList.Select(x=>x.AsViewModel()).ToList().Select(x=>new ParentActivitySelectionViewModel() { Id=x.Id, Selected=false, ActivityId=x.ActivityId, Text = x.Name }).ToList();
+
+            var x = _currentActivity.GetParentActionIds().ToArray();
+            
+            foreach(ParentActivitySelectionViewModel y in _itemsAct)
+            {
+                if (x.Contains(y.ActivityId)) 
+                { 
+                    y.Selected = true;
+                }
+            }
+           
+
+
+            ActivityGrid.ItemsSource = _itemsAct;
+
+            (new[] { 0 }).ToList().ForEach(x => { ActivityGrid.Columns[x].Visibility = Visibility.Hidden; }); //hide columns
+
+            ActivityGrid.Columns[1].IsReadOnly = false;
+            ActivityGrid.Columns[2].IsReadOnly = true;
+            ActivityGrid.Columns[3].IsReadOnly = true;
+        }
+
+        public class ParentActivitySelectionViewModel
+        {
+            public Guid Id{ get; set; }
+            public bool Selected { get; set;}
+            public int ActivityId { get; set; }
+            public string Text { get; set; }
+
         }
 
         private void LoadActivities()
@@ -115,16 +131,16 @@ namespace ActivityScheduler.Core
             LoadActivityGrid();
         }
 
-        private void ActivityIdTb_TextChanged(object sender, TextChangedEventArgs e)
+        private void Save_Click(object sender, RoutedEventArgs e)
         {
-            string s = Regex.Replace(((TextBox)sender).Text, @"[^\d.]", "");
-            if (s.Length > 3) { s = s.Substring(0,3); }
-            ((TextBox)sender).Text = s;
-        }
+            //string x = string.Join(',',_itemsAct.Where(x=>x.Selected==true).ToList().Select(x=>x.ActivityId).ToList());
 
-        private void ReloadGrid_Click(object sender, RoutedEventArgs e)
-        {
-            LoadActivityGrid();
+            //System.Windows.MessageBox.Show(x);
+
+            _parentFrm.BufferIn = string.Join(',', _itemsAct.Where(x => x.Selected == true).ToList().Select(x => x.ActivityId).ToList());
+
+            Close();
+
         }
     }
 }

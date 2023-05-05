@@ -5,16 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Edit Batch" Height="503" Width="499"
-        ResizeMode="NoResize" Loaded="Window_Loaded">
-    <Grid HorizontalAlignment="Center" Width="477">
-        <Button Content="Save batch" Name="BatchSave" HorizontalAlignment="Left" Margin="350,22,0,0" VerticalAlignment="Top" Width="99" Click="BatchSave_Click"  />
-        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="350,54,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
-        <TextBlock HorizontalAlignment="Left" Name="BatchNumberLabel" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top" />
-        <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
-        <TextBlock HorizontalAlignment="Left" Name="BatchNameLabel" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" />
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="155" />
-        <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="381" Margin="28,88,0,0" VerticalAlignment="Top" Width="261" SelectionMode="Single" IsReadOnly="True" CanUserAddRows="False" />
+        Title="Set parent activiries" Height="429" Width="637"
+        ResizeMode="CanResize" Loaded="Window_Loaded">
+    <Grid HorizontalAlignment="Center" Width="618" Margin="0,0,0,-1">
+        <Button Content="Save" Name="Save" HorizontalAlignment="Left" Margin="494,29,0,0" VerticalAlignment="Top" Width="99" Click="Save_Click"  />
+        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="494,65,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
+        <TextBlock HorizontalAlignment="Left" Name="InfoTb" Margin="19,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="434" />
+        <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="330" Margin="10,65,0,0" VerticalAlignment="Top" Width="443" SelectionMode="Single" CanUserAddRows="False">
+        </DataGrid>
     </Grid>
 
 </Window>

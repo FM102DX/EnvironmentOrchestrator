@@ -41,6 +41,7 @@ namespace ActivityScheduler.Core
         private List<Activity> _activitiesList = new List<Activity>();
         private TimeSpan _actStartTime { get; set; }
         private bool _saveActivityStopMarker=false;
+        public string BufferIn { get; set; }
 
         public EditBatch(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
         {
@@ -57,6 +58,9 @@ namespace ActivityScheduler.Core
                 BatchNameTb.Visibility = Visibility.Visible;
                 ActivityGrid.Visibility = Visibility.Hidden;
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
+                CreateActivity.Visibility = Visibility.Hidden;
+                DeleteActivityBtn.Visibility = Visibility.Hidden;
+
             }).Parent.CreateFormState("normal").AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -65,6 +69,9 @@ namespace ActivityScheduler.Core
                 BatchNameTb.Visibility = Visibility.Visible;
                 ActivityGrid.Visibility = Visibility.Visible;
                 ActivityEditCanvas.Visibility = Visibility.Visible;
+                CreateActivity.Visibility = Visibility.Visible;
+                DeleteActivityBtn.Visibility = Visibility.Visible;
+
             });
 
             _batchManager._checker.BindControlToCheck("UpdateNumber", BatchNumberTb)
@@ -179,6 +186,7 @@ namespace ActivityScheduler.Core
             IsDomestic.IsChecked= activity.IsDomestic;
             StartTimeTb.Text=activity.StartTime.ToString();
             AlwaysSuccess.IsChecked = activity.AlwaysSuccess;
+            ParentActivitiesTb.Text = activity.ParentActivities;
         }
 
         private Activity GetActivityFromFields()
@@ -207,25 +215,31 @@ namespace ActivityScheduler.Core
 
             activity.AlwaysSuccess= (bool)AlwaysSuccess.IsChecked;
 
+            activity.ParentActivities = ParentActivitiesTb.Text;
+
             return activity;
         }
 
         private void SaveActivityBtn_Click(object sender, RoutedEventArgs e)
         {
             if (_saveActivityStopMarker) return;
+            SaveCurrentActivity();
+        }
+
+        private void SaveCurrentActivity()
+        {
             MsgLabel.Text = "";
             Activity activity = GetActivityFromFields();
             var rez = _activityManager.ModifyActivity(activity).Result;
             if (!rez.Success)
             {
                 //focus on field
-                
-                if (rez.StoredAction !=null) rez.StoredAction.Invoke();
+                if (rez.StoredAction != null) rez.StoredAction.Invoke();
+
                 //Task.Run(() => ShowFormErrorMessage(rez.Message));
                 MsgLabel.Text = rez.Message;
                 return;
             }
-
             LoadActivityGrid();
         }
         private void ShowFormErrorMessage(string text)
@@ -254,12 +268,31 @@ namespace ActivityScheduler.Core
                 //StartTimeTb.Focus();
                 _saveActivityStopMarker=true;
                 MsgLabel.Text="Please enter a valid timespan, for example 02:15:30";
-
             }
         }
 
         private void ReloadGrid_Click(object sender, RoutedEventArgs e)
         {
+            LoadActivityGrid();
+        }
+
+        private void SetParentActivitiesBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SetParentActivities frm = new SetParentActivities(this, _activityManager, _currentBatch, _currentActivity, _logger);
+            frm.ShowDialog();
+            ParentActivitiesTb.Text = BufferIn;
+            if (BufferIn !="-1")
+            {
+                SaveCurrentActivity();
+            }
+        }
+
+        private void DeleteActivityBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentActivity == null) return;
+            var qRez = System.Windows.MessageBox.Show("Really delete?","",MessageBoxButton.OKCancel);
+            if (qRez == MessageBoxResult.Cancel) return;
+            _activityManager.RemoveActivity(_currentActivity.Id);
             LoadActivityGrid();
         }
     }

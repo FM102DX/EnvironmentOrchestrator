@@ -148,8 +148,21 @@ namespace ActivityScheduler.Data.Managers
             acv.IsDomestic = sca.IsDomestic;
             acv.IsHub = sca.IsHub;
             acv.ChildDelay = sca.ChildDelay;
-            sca.ParentIds.ForEach(x => acv.ParentIds.Add(x));
             return acv;
+        }
+
+        public Task<CommonOperationResult> RemoveActivity(Guid id)
+        {
+            var delRez = _repo.DeleteAsync(id);
+
+            if (!delRez.Result.Success)
+            {
+                return Task.FromResult(CommonOperationResult.SayFail($"Cannot remove activity because of error: {delRez.Result.Message}"));
+            }
+
+
+
+            return delRez;
         }
     }
 }

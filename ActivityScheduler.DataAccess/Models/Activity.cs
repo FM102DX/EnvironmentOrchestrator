@@ -10,14 +10,12 @@ namespace ActivityScheduler.Data.Models
 {
     public  class Activity: BaseEntity
     {
-        public string Name { get; set; }
         public Guid BatchId { get; set; }
+        public string Name { get; set; }
+
 
         public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets
         
-        [NotMapped]
-        public List<int> ParentIds { get; set; }
-
         public TimeSpan StartTime { get; set; }
 
         public String TransactionId { get; set; } //number of transaction in this script / foreign script
@@ -28,6 +26,25 @@ namespace ActivityScheduler.Data.Models
         public TimeSpan ChildDelay { get; set; } // starttime that's passed to another script as parameter, is for ChildDelay more than fact starttime
 
         public bool AlwaysSuccess { get; set; }
+        public string? ParentActivities { get; set; }
+
+        public List<int> GetParentActionIds()
+        {
+            if (string.IsNullOrEmpty(ParentActivities)) { return new List<int>(); }
+            
+            var x = ParentActivities.Split(',').ToList();
+
+            List<int> y;
+
+            try
+            {
+                y = x.Select(i => Convert.ToInt32(i)).ToList();
+            }
+            
+            catch { return new List<int>(); }
+            
+            return y;
+        }
 
         public ActivityParentRuleEnum ActivityParentRule { get; set; }
 
@@ -43,6 +60,7 @@ namespace ActivityScheduler.Data.Models
             rez.ChildDelay = ChildDelay;
             rez.IsDomestic = IsDomestic;
             rez.IsHub = IsHub;
+            rez.ParentActivities = ParentActivities;
             return rez;
         }
         public override Activity Clone()
@@ -57,7 +75,7 @@ namespace ActivityScheduler.Data.Models
             acv.IsDomestic= IsDomestic;
             acv.IsHub= IsHub;
             acv.ChildDelay = ChildDelay;
-            ParentIds.ForEach(x => acv.ParentIds.Add(x));
+            acv.ParentActivities = ParentActivities;
             return acv;
         }
     }
