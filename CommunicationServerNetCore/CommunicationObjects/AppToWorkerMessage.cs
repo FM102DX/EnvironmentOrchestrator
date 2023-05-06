@@ -10,7 +10,7 @@ namespace ActivityScheduler.Shared.Pipes
 {
     public class AppToWorkerMessage: CommunicationMessageBase, ISelfSerializableObject, ISelfDeSerializableObject<AppToWorkerMessage>
     {
-        public AppToWorkerMessage() 
+        public AppToWorkerMessage() :base()
         { 
 
         }
@@ -25,5 +25,7 @@ namespace ActivityScheduler.Shared.Pipes
         {
             return JsonConvert.SerializeObject(this);
         }
+        public string? TransactionId { get; set; }
+        public DateTime? StartTime { get; set; }
     }
 }

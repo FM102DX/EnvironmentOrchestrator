@@ -270,7 +270,7 @@ namespace ActivityScheduler
 
         private void SetMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _activityManager, _logger);
+            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _activityManager, _logger, _pipeServer, _pipeClient);
         }
 
         public void HideMainWindow()

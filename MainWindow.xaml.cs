@@ -23,13 +23,16 @@ using ActivityScheduler.Data.DataAccess;
 using ActivityScheduler.Shared.Service;
 using System.Security.Policy;
 using System.Windows.Forms;
+using ActivityScheduler.Shared.Pipes;
+using System.Timers;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ActivityScheduler
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         private ActivityScheduler.Core.Settings.Settings settingsFrm;
         private ActivitySchedulerApp _app;
@@ -38,11 +41,14 @@ namespace ActivityScheduler
         private Serilog.ILogger _logger;
         private SettingsManager _settingsManager;
         private List<Batch> _batchList;
-        private Batch _selectedItem;
+        private Batch _currentBatch;
         private ActivityManager _activityManager;
         private FormStateHolder formStateHolder = new FormStateHolder();
         private SelectionMode _selectionMode = SelectionMode.None;
-        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
+        private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
+        private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
+        private readonly System.Timers.Timer _timer;
+        public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger, ServerCommunicationObjectT<AppToWorkerMessage> pipeServer, ClientCommunicationObjectT<WorkerToAppMessage> pipeClient)
         {
             _settingsManager = settingsManager;
             _app = app;
@@ -50,6 +56,10 @@ namespace ActivityScheduler
             _logger = logger;
             _batchManager = batchManager;
             _activityManager = activityManager;
+            _pipeClient = pipeClient;
+            _pipeServer = pipeServer;
+
+            InitializeComponent();
 
             formStateHolder.CreateFormState("normal").AddAction(() => {
                 NameTxt.Visibility = Visibility.Hidden;
@@ -68,7 +78,8 @@ namespace ActivityScheduler
                 BatchNumber.Visibility = Visibility.Hidden;
             });
 
-            InitializeComponent();
+            _timer = new System.Timers.Timer(500) { AutoReset = true };
+            _timer.Elapsed += ProcessMessages;
         }
        
         protected override void OnClosed(EventArgs e)
@@ -80,6 +91,7 @@ namespace ActivityScheduler
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadBatchList();
+            _timer.Start();
         }
 
         public void LoadBatchList()
@@ -107,7 +119,7 @@ namespace ActivityScheduler
                 return; 
             }
             Batch btc = (Batch)item.Tag;
-            _selectedItem = btc;
+            _currentBatch = btc;
             BatchNumber.IsReadOnly = true;
             BatchName.IsReadOnly = true;
             BatchNumber.Text = "";
@@ -151,8 +163,8 @@ namespace ActivityScheduler
         private void DeleteBatch_Click(object sender, RoutedEventArgs e)
         {
             if (_selectionMode == SelectionMode.None) { return; }
-            if (_selectedItem == null) { return; }
-            var rez = _batchManager.RemoveBatch(_selectedItem.Id).Result;
+            if (_currentBatch == null) { return; }
+            var rez = _batchManager.RemoveBatch(_currentBatch.Id).Result;
             if (!rez.Success)
             {
                 ShowRed($"{rez.Message}");
@@ -183,7 +195,7 @@ namespace ActivityScheduler
         {
             if (_selectionMode != SelectionMode.None)
             {
-                EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _selectedItem, _logger);
+                EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _currentBatch, _logger);
                 editBatch.Show();
             }
         }
@@ -203,6 +215,48 @@ namespace ActivityScheduler
             None=1,
             Group=2,
             RealBatch=3
+        }
+
+        private void RunBatch_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (_currentBatch == null) return;
+
+            //send message to service
+
+            _pipeServer.SendObject(new AppToWorkerMessage()
+            {
+                Command = "startbatch",
+                StartTime = DateTime.Now,  
+                TransactionId = _currentBatch.Number
+            });
+        }
+
+
+        private void AddBatchTbLine(string text)
+        {
+            InfoRunBatchTb.Dispatcher.Invoke(() =>
+            {
+                InfoRunBatchTb.Text += text;
+                InfoRunBatchTb.Text += System.Environment.NewLine;
+            });
+        }
+
+        private void ProcessMessages(object? sender, ElapsedEventArgs e)
+        {
+            WorkerToAppMessage? m = _pipeClient.Take();
+
+            if (m == null) { AddBatchTbLine("Got null"); return; }
+
+            AddBatchTbLine($"Command={m.Command} number = {_pipeClient.StackCount}");
+
+            if (string.IsNullOrEmpty(m.Command)) return;
+
+            if (m.Command.ToLower() == "ping")
+            {
+                AddBatchTbLine(m.Message);
+            }
+            Task.Delay(100);
         }
     }
 }

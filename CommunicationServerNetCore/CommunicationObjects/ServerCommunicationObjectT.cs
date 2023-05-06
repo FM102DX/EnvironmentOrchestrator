@@ -28,7 +28,9 @@ namespace ActivityScheduler.Shared.Pipes
 
         public void SendObject(T t)
         {
-            _clientPipe.SendMessage(t.Serialize());
+            var msg = t.Serialize();
+            _clientPipe.SendMessage(msg);
+            _logger.Information($"Server of {PipeName} is sending message {msg}");
         }
 
 

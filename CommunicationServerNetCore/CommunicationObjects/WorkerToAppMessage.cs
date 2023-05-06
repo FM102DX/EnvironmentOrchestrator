@@ -11,7 +11,7 @@ namespace ActivityScheduler.Shared.Pipes
     {
 
 
-        public WorkerToAppMessage() 
+        public WorkerToAppMessage() : base()
         { 
 
         }

@@ -10,7 +10,7 @@
         <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Click="NewBatch_Click"  />
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Click="NewGroup_Click"/>
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Click="Settings_Click"/>
-        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch"/>
+        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch" Click="RunBatch_Click"/>
         <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
 
         <ListBox Name="BatchList" HorizontalAlignment="Left" Height="382" Margin="23,73,0,0" VerticalAlignment="Top" Width="229" SelectionChanged="BatchList_SelectionChanged" MouseDoubleClick="BatchList_MouseDoubleClick" />
@@ -26,8 +26,10 @@
                     <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" Name="NameTxt" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Info">
+                <Grid Background="#FFE5E5E5">
+                    <TextBlock Name="InfoRunBatchTb"  HorizontalAlignment="Center" TextWrapping="Wrap" Text="SampleText" VerticalAlignment="Center" Width="577" Height="334"/>
+                </Grid>
             </TabItem>
         </TabControl>
         <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black" Click="DeleteBatch_Click"/>

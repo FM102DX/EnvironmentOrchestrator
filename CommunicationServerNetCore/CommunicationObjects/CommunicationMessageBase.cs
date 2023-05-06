@@ -13,5 +13,7 @@ namespace ActivityScheduler.Shared.Pipes
         public string? Message { get; set; }
 
         public CommonOperationResult? Result { get; set; }
+
+        public string? Command { get; set; }
     }
 }

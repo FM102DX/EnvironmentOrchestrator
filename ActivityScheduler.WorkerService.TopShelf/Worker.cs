@@ -26,16 +26,15 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _logger.Information("Workes service business logic class constructor");
 
             //timer 1
-            _timer = new System.Timers.Timer(1000) { AutoReset = true };
+            _timer = new System.Timers.Timer(500) { AutoReset = true };
             _timer.Elapsed += SendPipeMessage;
 
             //timer 2
-            _timer2 = new System.Timers.Timer(1000) { AutoReset = true };
+            //_timer2 = new System.Timers.Timer(500) { AutoReset = true };
             //_timer2.Elapsed += ExecuteEvent2;
             _app= app;
 
             _logger.Information("Workes service business logic class constructor--passed ok");
-
 
             _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
             Task task = Task.Run(() => _pipeClient.Run());
@@ -59,11 +58,12 @@ namespace ActivityScheduler.WorkerService.TopShelf
             var msgObject = new WorkerToAppMessage()
             {
                 Message = msg,
+                Command="ping",
                 Result = Shared.CommonOperationResult.SayOk(msg)
             };
 
             _pipeServer.SendObject(msgObject);
-            _logger.Information(msg);
+            _logger.Information($"Worker service is sending message: {msg}");
         }
 
         private void CheckMainAppRunning(CancelToken token)
@@ -123,13 +123,13 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         public void Stop()
         {
-            _timer2.Stop();
+            //_timer2.Stop();
             _timer.Stop();
             //_token.Cancel();
         }
         public void Start()
         {
-            _timer2.Start();
+            //_timer2.Start();
             _timer.Start();
             //_token = new CancelToken();
             //CheckMainAppRunning(_token);
