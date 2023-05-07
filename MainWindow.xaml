@@ -28,7 +28,8 @@
             </TabItem>
             <TabItem Header="Info">
                 <Grid Background="#FFE5E5E5">
-                    <TextBlock Name="InfoRunBatchTb"  HorizontalAlignment="Center" TextWrapping="Wrap" Text="SampleText" VerticalAlignment="Center" Width="577" Height="334"/>
+
+                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
                 </Grid>
             </TabItem>
         </TabControl>

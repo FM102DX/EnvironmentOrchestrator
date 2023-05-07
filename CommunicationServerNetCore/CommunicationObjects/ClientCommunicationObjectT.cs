@@ -49,7 +49,10 @@ namespace ActivityScheduler.Shared.Pipes
 
         public T? Take()
         {
+            _logger.Information($"Taking incoming mail from stack, now {Stack.Count} messages in queue");
+
             if (Stack.Count == 0) return default(T);
+            
             return Stack.Pop();
         }
     }

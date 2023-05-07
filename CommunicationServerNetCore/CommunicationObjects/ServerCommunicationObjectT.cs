@@ -30,7 +30,7 @@ namespace ActivityScheduler.Shared.Pipes
         {
             var msg = t.Serialize();
             _clientPipe.SendMessage(msg);
-            _logger.Information($"Server of {PipeName} is sending message {msg}");
+            //_logger.Information($"Server of {PipeName} is sending message {msg}");
         }
 
 

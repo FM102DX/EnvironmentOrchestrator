@@ -14,7 +14,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
     public class Worker
     {
         private readonly System.Timers.Timer _timer;
-        private readonly System.Timers.Timer _timer2;
+        private readonly System.Timers.Timer _checkMailTimer;
         private Serilog.ILogger _logger;
         private ActivitySchedulerWorkerApp _app;
         private CancelToken _token;
@@ -29,10 +29,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _timer = new System.Timers.Timer(500) { AutoReset = true };
             _timer.Elapsed += SendPipeMessage;
 
-            //timer 2
-            //_timer2 = new System.Timers.Timer(500) { AutoReset = true };
-            //_timer2.Elapsed += ExecuteEvent2;
-            _app= app;
+            //_checkMailTimer 2
+            _checkMailTimer = new System.Timers.Timer(500) { AutoReset = true };
+            _checkMailTimer.Elapsed += CheckMail;
+            _app = app;
 
             _logger.Information("Workes service business logic class constructor--passed ok");
 
@@ -44,9 +44,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         }
 
-        private void ExecuteEvent2(object? sender, ElapsedEventArgs e)
+        private void CheckMail(object? sender, ElapsedEventArgs e)
         {
-            //_logger.Information("This is topshelf worker teak");
+            _logger.Information($"listening to incoming stack");
+            AppToWorkerMessage? m = _pipeClient.Take();
+            
+            if (m == null) { _logger.Information($"got null"); return; }
+
+            _logger.Information($"got message, m.Command.ToLower={m.Command.ToLower()}");
+
+            if (m.Command.ToLower() == "startbatch")
+            {
+                _logger.Information($"got message of startbatch type");
+            }
+            Task.Delay(100);
         }
 
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
@@ -63,7 +74,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             };
 
             _pipeServer.SendObject(msgObject);
-            _logger.Information($"Worker service is sending message: {msg}");
+            //_logger.Information($"Worker service is sending message: {msg}");
         }
 
         private void CheckMainAppRunning(CancelToken token)
@@ -123,16 +134,18 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         public void Stop()
         {
-            //_timer2.Stop();
+            
             _timer.Stop();
+            _checkMailTimer.Stop();
             //_token.Cancel();
         }
         public void Start()
         {
-            //_timer2.Start();
+            
             _timer.Start();
+            _checkMailTimer.Start();
+           
             //_token = new CancelToken();
-            //CheckMainAppRunning(_token);
         }
 
         private class CancelToken

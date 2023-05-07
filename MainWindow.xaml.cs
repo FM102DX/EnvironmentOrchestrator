@@ -239,6 +239,7 @@ namespace ActivityScheduler
             {
                 InfoRunBatchTb.Text += text;
                 InfoRunBatchTb.Text += System.Environment.NewLine;
+                InfoRunBatchTb.CaretIndex = InfoRunBatchTb.Text.Length;
             });
         }
 
@@ -248,13 +249,13 @@ namespace ActivityScheduler
 
             if (m == null) { AddBatchTbLine("Got null"); return; }
 
-            AddBatchTbLine($"Command={m.Command} number = {_pipeClient.StackCount}");
+            //AddBatchTbLine($"Command={m.Command} number = {_pipeClient.StackCount}");
 
             if (string.IsNullOrEmpty(m.Command)) return;
 
             if (m.Command.ToLower() == "ping")
             {
-                AddBatchTbLine(m.Message);
+                AddBatchTbLine($"Command={m.Command} Message={m.Message}");
             }
             Task.Delay(100);
         }
