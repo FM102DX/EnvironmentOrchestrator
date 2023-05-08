@@ -16,9 +16,12 @@ namespace ActivityScheduler.Shared.Pipes
 
         public string? Command { get; set; }
 
+        public string MessageType { get; set; }
+
         public CommunicationMessageBase()
         {
             Id= new Guid();
+            MessageType = "info";
         }
     }
 }

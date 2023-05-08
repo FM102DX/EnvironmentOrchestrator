@@ -36,7 +36,7 @@ namespace ActivityScheduler.WorkerService
         public String? WinServiceName => "A01";
         public String? WinServiceDiaplayName => "A01_Display_Name";
         public String? WinServiceDescription => "A01_Description";
-
+        public String? DataDirectory { get => "C:\\Develop\\ActivityScheduler\\bin\\Debug\\net6.0-windows\\Data"; }
 
     }
 }

@@ -7,7 +7,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using ActivityScheduler.Data.Contracts;
+using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Data.Managers;
+using ActivityScheduler.Data.Models;
+using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace ActivityScheduler.WorkerService.TopShelf
 {
@@ -20,8 +27,17 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private CancelToken _token;
         private ClientCommunicationObjectT<AppToWorkerMessage> _pipeClient;
         private ServerCommunicationObjectT<WorkerToAppMessage> _pipeServer;
+        private BatchRunner _batchRunner;
+        private BatchManager _batchManager;
+        private ActivityManager _activityManager;
+        private ServiceProvider _serviceProvider;
         public Worker(Serilog.ILogger logger, ActivitySchedulerWorkerApp app)
         {
+
+            ServiceCollection services = new ServiceCollection();
+            ConfigureServices(services);
+            _serviceProvider = services.BuildServiceProvider();
+
             _logger = logger;
             _logger.Information("Workes service business logic class constructor");
 
@@ -42,8 +58,43 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
             Task task2 = Task.Run(() => _pipeServer.Run());
 
-        }
 
+        }
+        private void ConfigureServices(ServiceCollection services)
+        {
+
+            string logFilePath = System.IO.Path.Combine(_app.LogsDirectory, Functions.GetNextFreeFileName(_app.LogsDirectory, "ActivitySchedulerLogs", "txt"));
+
+            Serilog.ILogger _logger = new LoggerConfiguration()
+                  .WriteTo.File(logFilePath)
+                  .CreateLogger();
+
+            services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
+
+            EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
+
+            sqLiteDbContext.Database.EnsureCreated();
+
+            try
+            {
+                services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Data.Models.Activity>), (x) => new EfAsyncRepository<Data.Models.Activity>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Batch>), (x) => new EfAsyncRepository<Batch>(sqLiteDbContext));
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
+            }
+            _logger.Information($"Point 2");
+
+            services.AddSingleton<SettingsManager>();
+            services.AddSingleton<ActivityManager>();
+            services.AddSingleton<BatchManager>();
+            services.AddSingleton<DataFillManager>();
+
+        }
         private void CheckMail(object? sender, ElapsedEventArgs e)
         {
             _logger.Information($"listening to incoming stack");
@@ -63,73 +114,14 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
-            int x = random.Next(0, 1000);
-            string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
+            //int x = random.Next(0, 1000);
+            //string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
 
             var msgObject = new WorkerToAppMessage()
             {
-                Message = msg,
-                Command="ping",
-                Result = Shared.CommonOperationResult.SayOk(msg)
+                MessageType = "runningbatchesInfo"
             };
-
             _pipeServer.SendObject(msgObject);
-            //_logger.Information($"Worker service is sending message: {msg}");
-        }
-
-        private void CheckMainAppRunning(CancelToken token)
-        {
-            do
-            {
-                Process[] pname = Process.GetProcessesByName(_app.MainAppProcessName);
-                _logger.Information($"Doing main loop, pname.Length={pname.Length}");
-                if (pname.Length == 0)
-                {
-                    //main app not running, need to start
-                    _logger.Information("Main app not running, need to start");
-                    try
-                    {
-                        System.Security.SecureString ssPwd = new System.Security.SecureString();
-                        System.Diagnostics.Process process = new System.Diagnostics.Process();
-                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                        startInfo.UseShellExecute = false;
-                        startInfo.CreateNoWindow = false;
-                        //startInfo.FileName = _app.MainAppDirectory;
-                        startInfo.FileName = "cmd.exe";
-                        startInfo.Arguments = $"/C {_app.MainAppDirectory}";
-
-                        //startInfo.FileName = "C:\\Develop\\Bats\\runwpf.bat";
-                        //_logger.Information("...configured data");
-                        
-                        startInfo.UserName = "Admin";
-                        string password = "123";
-                        for (int x = 0; x < password.Length; x++)
-                        {
-                            ssPwd.AppendChar(password[x]);
-                        }
-                        password = "";
-                        startInfo.Password = ssPwd;
-                        _logger.Information("...configured creds");
-                        
-                        process.StartInfo = startInfo;
-                        bool rez=process.Start();
-                        _logger.Error($"process.Start={rez}");
-                        Thread.Sleep(5000);
-                        pname = Process.GetProcessesByName(_app.MainAppProcessName);
-                        if (pname.Length == 0)
-                        {
-                            _logger.Error("Failed to start main app");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Failed to start main app with exception = {ex.Message}, innerexception = {ex.InnerException}");
-                    }
-                }
-                Thread.Sleep(1000);
-            }
-            while (!token.Cancelled);
         }
 
         public void Stop()
@@ -137,15 +129,12 @@ namespace ActivityScheduler.WorkerService.TopShelf
             
             _timer.Stop();
             _checkMailTimer.Stop();
-            //_token.Cancel();
         }
         public void Start()
         {
             
             _timer.Start();
             _checkMailTimer.Start();
-           
-            //_token = new CancelToken();
         }
 
         private class CancelToken

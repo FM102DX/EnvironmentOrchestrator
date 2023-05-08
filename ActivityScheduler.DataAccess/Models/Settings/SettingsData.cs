@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ActivityScheduler.Core.Settings
+namespace ActivityScheduler.Data.Models.Settings
 {
     public class SettingsData
     {
