@@ -11,10 +11,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
 {
     public  class BatchRunner
     {
-        BatchManager _batchManager;
-        Serilog.ILogger _logger;
+        private BatchManager _batchManager;
+        private Serilog.ILogger _logger;
 
-        List<string> _batches = new List<string>();
+        private List<string> _batches = new List<string>();
 
         public BatchRunner(BatchManager batchManager, Serilog.ILogger logger)
         {
@@ -36,6 +36,16 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 Batches = _batches
             };
+        }
+
+        public string GetRunBatchList()
+        {
+            return string.Join(",", _batches);
+        }
+
+        public int GetRunBatchCount()
+        {
+            return _batches.Count;
         }
 
     }

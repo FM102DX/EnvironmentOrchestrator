@@ -28,5 +28,6 @@ namespace ActivityScheduler.Data.Models.Communication
             return JsonConvert.SerializeObject(this);
         }
         public RunningBatchesInfo RunningBatches { get; set; }
+
     }
 }

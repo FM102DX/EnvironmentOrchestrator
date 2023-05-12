@@ -4,6 +4,8 @@ using ActivityScheduler.Data.Contracts;
 using ActivityScheduler.Data.DataAccess;
 using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
+using ActivityScheduler.Data.Models.Communication;
+using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
 using Microsoft.Extensions.DependencyInjection;

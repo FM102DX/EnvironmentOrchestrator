@@ -26,6 +26,8 @@ using System.Windows.Forms;
 using ActivityScheduler.Shared.Pipes;
 using System.Timers;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using ActivityScheduler.Data.Models.Settings;
+using ActivityScheduler.Data.Models.Communication;
 
 namespace ActivityScheduler
 {
@@ -251,12 +253,13 @@ namespace ActivityScheduler
 
             //AddBatchTbLine($"Command={m.Command} number = {_pipeClient.StackCount}");
 
-            if (string.IsNullOrEmpty(m.Command)) return;
-
-            if (m.Command.ToLower() == "ping")
+            if (m.MessageType.ToLower() == "runningbatchesinfo")
             {
-                AddBatchTbLine($"Command={m.Command} Message={m.Message}");
+                AddBatchTbLine($"Type={m.MessageType} BtcCount={m.RunningBatches.Batches.Count} Batches={string.Join(",", m.RunningBatches.Batches)} ");
             }
+
+
+            
             Task.Delay(100);
         }
     }

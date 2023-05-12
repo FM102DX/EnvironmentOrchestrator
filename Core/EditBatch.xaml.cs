@@ -167,7 +167,6 @@ namespace ActivityScheduler.Core
 
         private void ActivityGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             if (e.AddedItems.Count == 0) {return;}
 
             var item = (ActivityGridViewModel)e.AddedItems[0];
