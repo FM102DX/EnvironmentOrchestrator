@@ -1,5 +1,6 @@
 ﻿using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models.Communication;
+using ActivityScheduler.Shared;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,14 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _batchManager=batchManager;
             _logger=logger;
         }
-        public void RunBatch(string BatchId) 
+        public CommonOperationResult RunBatch(string batchId) 
         {
-            _batches.Add(BatchId);  
+            if (batchId == "100101") 
+            {
+                _batches.Add(batchId);
+                return CommonOperationResult.SayOk();
+            }
+            return CommonOperationResult.SayFail($"Failed to start batch {batchId}");
         }
 
         public void StopBatch(string BatchId)

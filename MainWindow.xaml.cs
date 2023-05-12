@@ -228,6 +228,7 @@ namespace ActivityScheduler
 
             _pipeServer.SendObject(new AppToWorkerMessage()
             {
+                MessageType="Command",
                 Command = "startbatch",
                 StartTime = DateTime.Now,  
                 TransactionId = _currentBatch.Number
@@ -258,8 +259,14 @@ namespace ActivityScheduler
                 AddBatchTbLine($"Type={m.MessageType} BtcCount={m.RunningBatches.Batches.Count} Batches={string.Join(",", m.RunningBatches.Batches)} ");
             }
 
+            if (m.MessageType.ToLower() == "CommandExecutionResult".ToLower())
+            {
+                if (!m.Result.Success)
+                {
+                    System.Windows.MessageBox.Show($"Unsuccessful operation: {m.Result.Message}");
+                }
+            }
 
-            
             Task.Delay(100);
         }
     }

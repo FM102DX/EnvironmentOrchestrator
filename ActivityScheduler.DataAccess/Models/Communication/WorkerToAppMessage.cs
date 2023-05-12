@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
 using Newtonsoft.Json;
 

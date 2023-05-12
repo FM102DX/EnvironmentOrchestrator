@@ -15,6 +15,7 @@ using ActivityScheduler.Data.Models.Communication;
 using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -100,14 +101,29 @@ namespace ActivityScheduler.WorkerService.TopShelf
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
             var btcr = _serviceProvider.GetService<BatchRunner>();
 
-            if (m == null) { _logger.Information($"got null"); return; }
+            if (m == null) 
+            { 
+                _logger.Information($"got null");
+                return; 
+            }
 
-            _logger.Information($"got message, m.Command.ToLower={m.Command.ToLower()}");
+            _logger.Information($"Got message, MessageType={m.MessageType} Command={m.Command.ToLower()}");
 
-            if (m.Command.ToLower() == "startbatch")
+            if(m.MessageType.ToLower()=="Command".ToLower())
             {
-                _logger.Information($"got message of startbatch type");
-                btcr.RunBatch(m.TransactionId);
+                if (m.Command.ToLower() == "startbatch")
+                {
+                    _logger.Information($"got message of startbatch type");
+                    Task.Run(()=> {
+                        var rez=btcr.RunBatch(m.TransactionId);
+                        var msgObject = new WorkerToAppMessage()
+                        {
+                            MessageType = "CommandExecutionResult".ToLower(),
+                            Result=rez
+                        };
+                        _pipeServer.SendObject(msgObject);
+                    });
+                }
             }
             Task.Delay(100);
         }
