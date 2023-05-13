@@ -28,6 +28,7 @@ using System.Timers;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Data.Models.Communication;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ActivityScheduler
 {
@@ -50,6 +51,7 @@ namespace ActivityScheduler
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
+        private List<string> _runningBatches = new List<string>();
         public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger, ServerCommunicationObjectT<AppToWorkerMessage> pipeServer, ClientCommunicationObjectT<WorkerToAppMessage> pipeClient)
         {
             _settingsManager = settingsManager;
@@ -246,17 +248,66 @@ namespace ActivityScheduler
             });
         }
 
+        private void 
+
         private void ProcessMessages(object? sender, ElapsedEventArgs e)
         {
             WorkerToAppMessage? m = _pipeClient.Take();
 
             if (m == null) { AddBatchTbLine("Got null"); return; }
 
-            //AddBatchTbLine($"Command={m.Command} number = {_pipeClient.StackCount}");
-
             if (m.MessageType.ToLower() == "runningbatchesinfo")
             {
-                AddBatchTbLine($"Type={m.MessageType} BtcCount={m.RunningBatches.Batches.Count} Batches={string.Join(",", m.RunningBatches.Batches)} ");
+                if (m.RunningBatches.Batches.Count==0)
+                {
+                    AddBatchTbLine("Batches running: none");
+                }
+                else
+                {
+                    _runningBatches = new List<string>();
+
+                    m.RunningBatches.Batches.ForEach(x=> _runningBatches.Add(x));
+
+                    AddBatchTbLine($"Batches running: {string.Join(",",m.RunningBatches.Batches)}");
+
+                    Tabs.Dispatcher.Invoke(() =>
+                    {
+                        foreach (var x in m.RunningBatches.Batches)
+                        {
+                            //check if tab with this name exists
+
+                            var tab1 = Tabs.Items[0];
+
+                            var lst1 = Tabs.Items.OfType<TabItem>().ToList();
+
+                            var lst2 = lst1.Where(y => y.Header.ToString() == x).ToList();
+
+                            if (lst2.Count == 0)
+                            {
+                                //tab not opened, need to open
+                                var tbi = new TabItem();
+                                tbi.Header = x;
+                                //tbi.Name = x.ToString();
+
+                                StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
+                                stackPanel.Children.Add(new System.Windows.Controls.TextBox { Height = 60, Width = 60, TextWrapping = TextWrapping.Wrap, Text = "Some text" });
+
+                                var listBox = new System.Windows.Controls.ListBox();
+                                listBox.Items.Add(new ListBoxItem { Content = "Text" });
+                                listBox.Items.Add(new ListBoxItem { Content = "Text to" });
+                                listBox.Items.Add(new ListBoxItem { Content = "And text" });
+
+                                StackPanel stackPanelAsContent = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical, HorizontalAlignment = 0 };
+                                stackPanelAsContent.Children.Add(stackPanel);
+                                stackPanelAsContent.Children.Add(listBox);
+                                tbi.Content = stackPanelAsContent;
+
+
+                                Tabs.Items.Add(tbi);
+                            }
+                        }
+                    });
+                }
             }
 
             if (m.MessageType.ToLower() == "CommandExecutionResult".ToLower())

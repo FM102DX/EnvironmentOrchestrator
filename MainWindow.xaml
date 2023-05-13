@@ -17,8 +17,8 @@
 
 
 
-        <TabControl HorizontalAlignment="Left" Height="382" Margin="273,73,0,0" VerticalAlignment="Top" Width="603">
-            <TabItem Header="Main" Name="Name">
+        <TabControl HorizontalAlignment="Left" Height="382" Margin="273,73,0,0" VerticalAlignment="Top" Width="603" Name="Tabs">
+            <TabItem Header="Main" Name="Main">
                 <Grid Background="#FFE5E5E5">
                     <TextBox HorizontalAlignment="Left" x:Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
                     <TextBlock HorizontalAlignment="Left" Name="NumberTxt" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
@@ -26,7 +26,7 @@
                     <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" Name="NameTxt" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Info">
+            <TabItem Header="Info" Name="Info">
                 <Grid Background="#FFE5E5E5">
 
                     <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
