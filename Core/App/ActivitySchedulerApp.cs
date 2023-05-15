@@ -74,5 +74,8 @@ namespace ActivityScheduler.Core.Appilcation
         public String? WinServiceName => "A01";
         public String? WinServiceDiaplayName => "A01_Display_Name";
         public String? WinServiceDescription => "A01_Description";
+
+        public string PlayIconFullPath => Path.Combine(IconsDirectory, "PlayIcon.jpg");
+        public string NoneIconFullPath => Path.Combine(IconsDirectory, "NoneIcon.jpg");
     }
 }

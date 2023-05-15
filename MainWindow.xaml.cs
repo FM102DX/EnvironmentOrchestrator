@@ -52,6 +52,7 @@ namespace ActivityScheduler
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
         private List<string> _runningBatches = new List<string>();
+        private List<BatchListBoxViewModel> _batchListItemSource = new List<BatchListBoxViewModel>();
         public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger, ServerCommunicationObjectT<AppToWorkerMessage> pipeServer, ClientCommunicationObjectT<WorkerToAppMessage> pipeClient)
         {
             _settingsManager = settingsManager;
@@ -100,29 +101,43 @@ namespace ActivityScheduler
 
         public void LoadBatchList()
         {
-            BatchList.Items.Clear();
-            _batchList = _batchManager.GetAll().Result.OrderBy(x=>x.Number).ToList();
+            _batchList = _batchManager.GetAll().Result.OrderBy(x => x.Number).ToList();
             _batchList.ForEach(x => {
-                    if (x.IsGroup && (BatchList.Items.Count!=0)) { BatchList.Items.Add(new ListBoxItem() { Tag = "none", Content = $"" });}
-                    var lstI = new ListBoxItem() { Tag = x, Content = $"{x.Number}--{x.Name}" };
-                    if (x.IsGroup) { lstI.FontWeight = FontWeights.Bold; }
-                    BatchList.Items.Add(lstI);
-                });
-            //select first element
-            BatchList.SelectedIndex=0;
+                if (x.IsGroup && (BatchList.Items.Count != 0)) 
+                {
+                    _batchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = true, BatchObject=null, ImageSource = _app.NoneIconFullPath});
+                }
+                _batchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject=x, ImageSource = _app.NoneIconFullPath });
+            });
+            BatchList.ItemsSource = _batchListItemSource;
+        }
+
+        private void ArrangeBatchListRunningStatus()
+        {
+            foreach (var _batch in BatchList.Items) 
+            {
+                ListBoxItem lsti = (ListBoxItem)_batch;
+                Batch btc = (Batch)lsti.Tag;
+                if (_runningBatches.Contains(btc.Number))
+                {
+                    //its running, now mark it as running
+
+                }
+            }
+            
         }
 
         private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item =  e.AddedItems.Cast<ListBoxItem>().ToList().FirstOrDefault();
+            var item =  e.AddedItems.Cast<BatchListBoxViewModel>().ToList().FirstOrDefault();
             if (item == null) { return; }
-            if (item.Tag== "none") 
+            if (item.BatchObject == null) 
             {
                 _selectionMode= SelectionMode.None;
                 formStateHolder.SetFormState("none");
-                return; 
+                return;
             }
-            Batch btc = (Batch)item.Tag;
+            Batch btc = (Batch)item.BatchObject;
             _currentBatch = btc;
             BatchNumber.IsReadOnly = true;
             BatchName.IsReadOnly = true;
@@ -248,8 +263,6 @@ namespace ActivityScheduler
             });
         }
 
-        private void 
-
         private void ProcessMessages(object? sender, ElapsedEventArgs e)
         {
             WorkerToAppMessage? m = _pipeClient.Take();
@@ -301,8 +314,6 @@ namespace ActivityScheduler
                                 stackPanelAsContent.Children.Add(stackPanel);
                                 stackPanelAsContent.Children.Add(listBox);
                                 tbi.Content = stackPanelAsContent;
-
-
                                 Tabs.Items.Add(tbi);
                             }
                         }
