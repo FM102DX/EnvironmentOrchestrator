@@ -14,7 +14,7 @@ namespace ActivityScheduler.Data.Models
 
         public bool IsSpacer { get; set; }
         public bool IsGroup { get; set; }
-
+        public string BatchNumber { get; set; }
         public string Text { get; set; }
         public string ImageSource { get; set; }
 

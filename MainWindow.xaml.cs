@@ -29,6 +29,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Data.Models.Communication;
 using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Threading;
 
 namespace ActivityScheduler
 {
@@ -53,6 +54,9 @@ namespace ActivityScheduler
         private readonly System.Timers.Timer _timer;
         private List<string> _runningBatches = new List<string>();
         private List<BatchListBoxViewModel> _batchListItemSource = new List<BatchListBoxViewModel>();
+
+        public List<BatchListBoxViewModel> BatchListItemSource => _batchListItemSource;
+
         public MainWindow(SettingsManager settingsManager, ActivitySchedulerApp app, WorkerServiceManager workerMgr, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger, ServerCommunicationObjectT<AppToWorkerMessage> pipeServer, ClientCommunicationObjectT<WorkerToAppMessage> pipeClient)
         {
             _settingsManager = settingsManager;
@@ -99,32 +103,41 @@ namespace ActivityScheduler
             _timer.Start();
         }
 
+        private bool IsBatchRunning(string number)
+        {
+            var items=_runningBatches.Where(x => x == number).ToList();
+            return items.Count > 0;
+        }
+
         public void LoadBatchList()
         {
             _batchList = _batchManager.GetAll().Result.OrderBy(x => x.Number).ToList();
             _batchList.ForEach(x => {
+
                 if (x.IsGroup && (BatchList.Items.Count != 0)) 
                 {
                     _batchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = true, BatchObject=null, ImageSource = _app.NoneIconFullPath});
                 }
-                _batchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject=x, ImageSource = _app.NoneIconFullPath });
+
+                string src = IsBatchRunning(x.Number) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
+
+                _batchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber=x.Number, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject=x, ImageSource = src });
+
             });
-            BatchList.ItemsSource = _batchListItemSource;
+            //BatchList.Dispatcher.Invoke(() => { BatchList.ItemsSource = _batchListItemSource; });
+            
         }
 
         private void ArrangeBatchListRunningStatus()
         {
-            foreach (var _batch in BatchList.Items) 
-            {
-                ListBoxItem lsti = (ListBoxItem)_batch;
-                Batch btc = (Batch)lsti.Tag;
-                if (_runningBatches.Contains(btc.Number))
-                {
-                    //its running, now mark it as running
+            _batchListItemSource.ForEach(x => {
+                string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.PlayIconFullPath;
+                x.ImageSource = src;
+            });
 
-                }
-            }
-            
+            //BatchList.Dispatcher.BeginInvoke(DispatcherPriority.Render,  () =>  {BatchList.ItemsSource = _batchListItemSource; });
+
+    //        BatchList.Dispatcher.Invoke(() => { BatchList.ItemsSource = _batchListItemSource; });
         }
 
         private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -281,7 +294,9 @@ namespace ActivityScheduler
 
                     m.RunningBatches.Batches.ForEach(x=> _runningBatches.Add(x));
 
-                    AddBatchTbLine($"Batches running: {string.Join(",",m.RunningBatches.Batches)}");
+                    AddBatchTbLine($"Batches running: {string.Join(",", _runningBatches)}");
+
+                    ArrangeBatchListRunningStatus();
 
                     Tabs.Dispatcher.Invoke(() =>
                     {
@@ -330,6 +345,15 @@ namespace ActivityScheduler
             }
 
             Task.Delay(100);
+        }
+
+        private void Test01_Click(object sender, RoutedEventArgs e)
+        {
+            _batchListItemSource.ForEach(item => { item.Text = "none"; });
+
+
+
+           // BatchList.Dispatcher.Invoke(() => { BatchList.ItemsSource = null; BatchList.ItemsSource = _batchListItemSource; });
         }
     }
 }

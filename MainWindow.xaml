@@ -12,13 +12,25 @@
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Click="Settings_Click"/>
         <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch" Click="RunBatch_Click"/>
         <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
+        <Button Content="Test" HorizontalAlignment="Left" Margin="908,250,0,0" VerticalAlignment="Top" Width="99" Name="Test01" Click="Test01_Click"/>
 
-        <ListBox Name="BatchList" HorizontalAlignment="Left" Height="382" Margin="23,73,0,0" VerticalAlignment="Top" Width="229" SelectionChanged="BatchList_SelectionChanged" MouseDoubleClick="BatchList_MouseDoubleClick">
+        <ListBox 
+            Name="BatchList" 
+            HorizontalAlignment="Left" 
+            Height="382" 
+            Margin="29,73,0,0" 
+            VerticalAlignment="Top" 
+            Width="229" 
+            SelectionChanged="BatchList_SelectionChanged" 
+            MouseDoubleClick="BatchList_MouseDoubleClick"
+            ItemsSource="{Binding Source=BatchListItemSource}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Text}" Margin="0,0,0,0" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                        <Image Source="{Binding Path=ImageSource}" Margin="3,3,0,0" Width="15" Height="15" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <StackPanel Orientation="Horizontal" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <TextBlock Text="{Binding Path=BatchNumber}" Margin="0,0,0,0"   />
+                        <TextBlock Text="--" />
+                        <TextBlock Text="{Binding Path=Text}" Margin="0,0,0,0" />
+                        <Image Source="{Binding Path=ImageSource}" Margin="3,3,0,0" Width="15" Height="15"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
