@@ -89,23 +89,21 @@ namespace ActivityScheduler.Core
         }
         private void BatchSave_Click(object sender, RoutedEventArgs e)
         {
-            CommonOperationResult chkRez;
+            //CommonOperationResult chkRez;
 
-            _currentBatch.Number = BatchNumberTb.Text;
+            //_currentBatch.Number = BatchNumberTb.Text;
             
-            _currentBatch.Name = BatchNameTb.Text;
+            //_currentBatch.Name = BatchNameTb.Text;
 
-            var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
+            //var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
             
-            if (!btcAddRez.Success)
-            {
-                System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
-                return;
-            }
+            //if (!btcAddRez.Success)
+            //{
+            //    System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
+            //    return;
+            //}
             
-            _mainWindow.LoadBatchList();
-
-            Close();
+            //Close();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

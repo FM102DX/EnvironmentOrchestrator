@@ -149,6 +149,9 @@ namespace ActivityScheduler
             services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
             services.AddSingleton<DataFillManager>();
+            services.AddSingleton(typeof(ServerCommunicationObjectT<AppToWorkerMessage>), new ServerCommunicationObjectT<AppToWorkerMessage>("pipe02", _logger));
+            services.AddSingleton(typeof(ClientCommunicationObjectT<WorkerToAppMessage>), new ClientCommunicationObjectT<WorkerToAppMessage>("pipe01", _logger));
+            services.AddSingleton<MainWindowViewModel>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
@@ -272,7 +275,7 @@ namespace ActivityScheduler
 
         private void SetMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _activityManager, _logger, _pipeServer, _pipeClient);
+            mainWindow = new MainWindow(_serviceProvider.GetService<MainWindowViewModel>());
         }
 
         public void HideMainWindow()

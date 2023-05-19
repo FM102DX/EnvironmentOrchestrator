@@ -7,12 +7,13 @@
         Title="MainWindow" Height="515" Width="1028"
         ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
-        <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Click="NewBatch_Click"  />
-        <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Click="NewGroup_Click"/>
+        <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Command="{Binding CreateBatchCmd}"  />
+        <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Command="{Binding CreateGroupCmd}" />
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Click="Settings_Click"/>
         <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch" Click="RunBatch_Click"/>
         <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
-        <Button Content="Test" HorizontalAlignment="Left" Margin="908,250,0,0" VerticalAlignment="Top" Width="99" Name="Test01" Click="Test01_Click"/>
+        <Button Content="Test2"      HorizontalAlignment="Left" Margin="908,0,0,0" VerticalAlignment="Center" Width="99" Name="Test2" Command="{Binding TestCmd2}" />
+
 
         <ListBox 
             Name="BatchList" 
@@ -21,9 +22,7 @@
             Margin="29,73,0,0" 
             VerticalAlignment="Top" 
             Width="229" 
-            SelectionChanged="BatchList_SelectionChanged" 
-            MouseDoubleClick="BatchList_MouseDoubleClick"
-            ItemsSource="{Binding Source=BatchListItemSource}">
+            ItemsSource="{Binding BatchListItemSource, Mode=OneWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -49,11 +48,12 @@
             <TabItem Header="Info" Name="Info">
                 <Grid Background="#FFE5E5E5">
 
-                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
+                    <TextBox Text="{Binding InfoRunBatchText}" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
                 </Grid>
             </TabItem>
         </TabControl>
         <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black" Click="DeleteBatch_Click"/>
         <TextBlock Name="InfoTb" HorizontalAlignment="Left" Margin="273,22,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="603" Height="38"/>
+        <TextBox Name="MakitaTextBox" HorizontalAlignment="Left" Margin="908,271,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="105" Text="{Binding MakitaTextBox2, Mode=OneWay}"/>
     </Grid>
 </Window>
