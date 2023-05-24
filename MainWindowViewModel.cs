@@ -30,7 +30,37 @@ namespace ActivityScheduler
         private Serilog.ILogger _logger;
         private SettingsManager _settingsManager;
         private List<Batch> _batchList;
-        private Batch _currentBatch;
+        private BatchListBoxViewModel _selectedItem;
+        public  BatchListBoxViewModel SelectedItem 
+        { 
+            get { return _selectedItem; } 
+            set
+            {
+                _selectedItem = value;
+                if (_selectedItem == null) 
+                {
+                    _selectionMode = SelectionMode.None;
+                    CurrentBatch = null; 
+                    return; 
+                }
+                CurrentBatch =_batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
+                
+                if (CurrentBatch == null) return;
+
+                if (CurrentBatch.IsGroup) 
+                {
+                    _selectionMode = SelectionMode.Group;
+                }
+                else
+                {
+                    _selectionMode = SelectionMode.RealBatch;
+                }
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
+
+            }
+        }
+        public Batch? CurrentBatch { get; set; }
         private ActivityManager _activityManager;
 
         private SelectionMode _selectionMode = SelectionMode.None;
@@ -42,10 +72,10 @@ namespace ActivityScheduler
         public string MakitaTextBox2=> MakitaTextBox;
         public string MakitaTextBox { get; set; } = "Initial text";
 
-
         public string InfoRunBatchText { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
         public ObservableCollection<BatchListBoxViewModel> BatchListItemSource { get; set; }
@@ -55,6 +85,7 @@ namespace ActivityScheduler
         public ICommand TestCmd2 { get; private set; }
         public ICommand TestCmd3 { get; private set; }
         public ICommand CreateGroupCmd { get; private set; }
+        public ICommand DeleteBatchOrGroupCmd { get; private set; }
 
         public MainWindowViewModel(
                                         SettingsManager settingsManager, 
@@ -100,6 +131,18 @@ namespace ActivityScheduler
                 LoadBatchList();
             });
 
+            DeleteBatchOrGroupCmd = new ActionCommand(() => {
+                if (_selectionMode == SelectionMode.None) { return; }
+                if (CurrentBatch == null) { return; }
+                var rez = _batchManager.RemoveBatch(CurrentBatch.Id).Result;
+                if (!rez.Success)
+                {
+                    MessageBox.Show(rez.AsShrotString());
+                    //ShowRed($"{rez.Message}");
+                }
+                LoadBatchList();
+            });
+
             TestCmd = new ActionCommand(() => { MessageBox.Show("this is test command"); });
             TestCmd2 = new ActionCommand(() => {
 
@@ -138,7 +181,7 @@ namespace ActivityScheduler
 
                 if (x.IsGroup)
                 {
-                    BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = true, BatchObject = null, ImageSource = _app.NoneIconFullPath });
+                   // BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = true, BatchObject = null, ImageSource = _app.NoneIconFullPath });
                 }
 
                 string src = IsBatchRunning(x.Number) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
@@ -146,6 +189,13 @@ namespace ActivityScheduler
                 BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber = x.Number, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject = x, ImageSource = src });
 
             });
+
+            //select first record
+            if(BatchListItemSource.Count>0)
+            {
+                SelectedItem = BatchListItemSource[0];
+            }
+            
 
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatchListItemSource"));
 

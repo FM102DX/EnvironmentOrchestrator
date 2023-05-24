@@ -38,7 +38,6 @@ namespace ActivityScheduler
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
-
         private FormStateHolder formStateHolder = new FormStateHolder();
 
         public MainWindow(MainWindowViewModel dataContext)
@@ -73,12 +72,17 @@ namespace ActivityScheduler
         {
           //  LoadBatchList();
            // _timer.Start();
+
+            
+        
         }
 
 
 
         private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            
+            
             //var item =  e.AddedItems.Cast<BatchListBoxViewModel>().ToList().FirstOrDefault();
             //if (item == null) { return; }
             //if (item.BatchObject == null) 
@@ -117,7 +121,7 @@ namespace ActivityScheduler
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
           //  settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
-           //+ settingsFrm.ShowDialog();
+          //+ settingsFrm.ShowDialog();
         }
 
         private void DeleteBatch_Click(object sender, RoutedEventArgs e)

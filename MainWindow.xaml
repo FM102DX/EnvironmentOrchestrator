@@ -6,6 +6,19 @@
         xmlns:local="clr-namespace:ActivityScheduler"
         Title="MainWindow" Height="515" Width="1028"
         ResizeMode="NoResize" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
+            <Style.Setters>
+                <Setter Property="Control.FontWeight" Value="Normal" />
+            </Style.Setters>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsGroup}" Value="True">
+                    <Setter Property="Control.FontWeight" Value="Bold"/>
+                    <Setter Property="Control.Margin" Value="0,10,0,0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Command="{Binding CreateBatchCmd}"  />
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Command="{Binding CreateGroupCmd}" />
@@ -22,32 +35,32 @@
             Margin="29,73,0,0" 
             VerticalAlignment="Top" 
             Width="229" 
+            ItemContainerStyle="{StaticResource ListItemStyle}" 
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
             ItemsSource="{Binding BatchListItemSource, Mode=OneWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <TextBlock Text="{Binding Path=BatchNumber}" Margin="0,0,0,0"   />
-                        <TextBlock Text="--" />
-                        <TextBlock Text="{Binding Path=Text}" Margin="0,0,0,0" />
+                        <TextBlock Text="{Binding Path=BatchNumber}" Margin="0,0,0,0" Name="n1"  />
+                        <TextBlock Text="--" Name="n2" />
+                        <TextBlock Text="{Binding Path=Text}" Margin="0,0,0,0" Name="n3"/>
                         <Image Source="{Binding Path=ImageSource}" Margin="3,3,0,0" Width="15" Height="15"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-
         <TabControl HorizontalAlignment="Left" Height="382" Margin="273,73,0,0" VerticalAlignment="Top" Width="603" Name="Tabs">
             <TabItem Header="Main" Name="Main">
-                <Grid Background="#FFE5E5E5">
-                    <TextBox HorizontalAlignment="Left" x:Name="BatchNumber" Margin="28,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="78"/>
-                    <TextBlock HorizontalAlignment="Left" Name="NumberTxt" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" x:Name="BatchName" Margin="125,45,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="186"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" Name="NameTxt" VerticalAlignment="Top"/>
+                <Grid Background="#FFE5E5E5" >
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchNumber"    Margin="28,45,0,0"  TextWrapping="Wrap"     Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" VerticalAlignment="Top" Width="78"/>
+                    <TextBlock HorizontalAlignment="Left" Name="NumberTxt"      Margin="28,24,0,0"  TextWrapping="Wrap"     Text="Number" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchName"      Margin="125,45,0,0" TextWrapping="Wrap"     Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" VerticalAlignment="Top" Width="186"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0"   TextWrapping="Wrap"                         Text="Name"         Name="NameTxt"      VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Info" Name="Info">
                 <Grid Background="#FFE5E5E5">
-
                     <TextBox Text="{Binding InfoRunBatchText}" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
                 </Grid>
             </TabItem>
