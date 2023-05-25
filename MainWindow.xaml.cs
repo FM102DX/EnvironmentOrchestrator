@@ -44,20 +44,35 @@ namespace ActivityScheduler
         {
             DataContext = dataContext;
             formStateHolder.CreateFormState("normal").AddAction(() => {
-                NameTxt.Visibility = Visibility.Hidden;
-                NumberTxt.Visibility = Visibility.Hidden;
-                BatchName.Visibility = Visibility.Visible;
-                BatchNumber.Visibility = Visibility.Visible;
+                NameTxt.Visibility      = Visibility.Hidden;
+                NumberTxt.Visibility    = Visibility.Hidden;
+                BatchName.Visibility    = Visibility.Visible;
+                BatchNumber.Visibility  = Visibility.Visible;
+                
+                RunBatch.Visibility     = Visibility.Visible;
+                DeleteBatch.Visibility  = Visibility.Visible;
+                EditBatch.Visibility    = Visibility.Visible;
+
             }).Parent.CreateFormState("isgroup").AddAction(() => {
-                NameTxt.Visibility = Visibility.Visible;
-                NumberTxt.Visibility = Visibility.Visible;
-                BatchName.Visibility = Visibility.Visible;
-                BatchNumber.Visibility = Visibility.Visible;
+                NameTxt.Visibility      = Visibility.Visible;
+                NumberTxt.Visibility    = Visibility.Visible;
+                BatchName.Visibility    = Visibility.Visible;
+                BatchNumber.Visibility  = Visibility.Visible;
+                
+                RunBatch.Visibility     = Visibility.Hidden;
+                DeleteBatch.Visibility  = Visibility.Visible;
+                EditBatch.Visibility    = Visibility.Visible;
+
             }).Parent.CreateFormState("none").AddAction(() => {
-                NameTxt.Visibility = Visibility.Hidden;
-                NumberTxt.Visibility = Visibility.Hidden;
-                BatchName.Visibility = Visibility.Hidden;
-                BatchNumber.Visibility = Visibility.Hidden;
+                NameTxt.Visibility      = Visibility.Hidden;
+                NumberTxt.Visibility    = Visibility.Hidden;
+                BatchName.Visibility    = Visibility.Hidden;
+                BatchNumber.Visibility  = Visibility.Hidden;
+
+                RunBatch.Visibility     = Visibility.Hidden;
+                DeleteBatch.Visibility  = Visibility.Hidden;
+                EditBatch.Visibility    = Visibility.Hidden;
+
             });
             InitializeComponent();
         }

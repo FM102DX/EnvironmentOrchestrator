@@ -195,10 +195,8 @@ namespace ActivityScheduler
             {
                 SelectedItem = BatchListItemSource[0];
             }
-            
 
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatchListItemSource"));
-
         }
 
         private void ArrangeBatchListRunningStatus()
