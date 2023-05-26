@@ -61,12 +61,12 @@
             </TabItem>
             <TabItem Header="Info" Name="Info">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox Text="{Binding InfoRunBatchText}" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTb" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="FormStateServiceField0" Text="{Binding SelectionModeVar, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black" Click="DeleteBatch_Click"/>
+        <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black"/>
         <TextBlock Name="InfoTb" HorizontalAlignment="Left" Margin="273,22,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="603" Height="38"/>
-        <TextBox Name="MakitaTextBox" HorizontalAlignment="Left" Margin="908,271,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="105" Text="{Binding MakitaTextBox2, Mode=OneWay}"/>
+        <TextBox HorizontalAlignment="Left" Margin="908,271,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="105" Name="FormStateServiceField" Text="{Binding SelectionModeVar, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" TextChanged="FormStateServiceField_TextChanged"/>
     </Grid>
 </Window>

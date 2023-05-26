@@ -37,33 +37,33 @@ namespace ActivityScheduler
             set
             {
                 _selectedItem = value;
+
                 if (_selectedItem == null) 
                 {
-                    _selectionMode = SelectionMode.None;
+                    SelectionModeVar = SelectionMode.None;
                     CurrentBatch = null; 
                     return; 
                 }
+
                 CurrentBatch =_batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
                 
                 if (CurrentBatch == null) return;
 
                 if (CurrentBatch.IsGroup) 
                 {
-                    _selectionMode = SelectionMode.Group;
+                    SelectionModeVar = SelectionMode.Group;
                 }
                 else
                 {
-                    _selectionMode = SelectionMode.RealBatch;
+                    SelectionModeVar = SelectionMode.RealBatch;
                 }
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
-
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectionModeVar"));
             }
         }
         public Batch? CurrentBatch { get; set; }
         private ActivityManager _activityManager;
 
-        private SelectionMode _selectionMode = SelectionMode.None;
+        public  SelectionMode SelectionModeVar { get; set; }= SelectionMode.None;
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
@@ -132,7 +132,7 @@ namespace ActivityScheduler
             });
 
             DeleteBatchOrGroupCmd = new ActionCommand(() => {
-                if (_selectionMode == SelectionMode.None) { return; }
+                if (SelectionModeVar == SelectionMode.None) { return; }
                 if (CurrentBatch == null) { return; }
                 var rez = _batchManager.RemoveBatch(CurrentBatch.Id).Result;
                 if (!rez.Success)
@@ -284,16 +284,14 @@ namespace ActivityScheduler
                     System.Windows.MessageBox.Show($"Unsuccessful operation: {m.Result.Message}");
                 }
             }
-
             Task.Delay(100);
         }
 
-        private enum SelectionMode
+        public enum SelectionMode
         {
             None = 1,
             Group = 2,
             RealBatch = 3
         }
-
     }
 }

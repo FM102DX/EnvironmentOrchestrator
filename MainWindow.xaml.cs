@@ -30,22 +30,42 @@ using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Data.Models.Communication;
 using static System.Net.Mime.MediaTypeNames;
 using System.Windows.Threading;
+using Binding = System.Windows.Data.Binding;
 
 namespace ActivityScheduler
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+
+
     public partial class MainWindow : System.Windows.Window
     {
+        public MainWindowViewModel.SelectionMode SelectionModeVar { get; set; }
+
         private FormStateHolder formStateHolder = new FormStateHolder();
+
+        private ActivityScheduler.MainWindowViewModel.SelectionMode _selectionMode;
+        private ActivityScheduler.MainWindowViewModel.SelectionMode SelectionMode
+        { 
+            get 
+            { 
+                return _selectionMode;
+            }
+            set 
+            {
+                _selectionMode = value;
+            }
+        }
 
         public MainWindow(MainWindowViewModel dataContext)
         {
             DataContext = dataContext;
-            formStateHolder.CreateFormState("normal").AddAction(() => {
-                NameTxt.Visibility      = Visibility.Hidden;
-                NumberTxt.Visibility    = Visibility.Hidden;
+            formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatch.ToString()).AddAction(() => {
+                NameTxt.Visibility      = Visibility.Visible;
+                NumberTxt.Visibility    = Visibility.Visible;
                 BatchName.Visibility    = Visibility.Visible;
                 BatchNumber.Visibility  = Visibility.Visible;
                 
@@ -53,7 +73,7 @@ namespace ActivityScheduler
                 DeleteBatch.Visibility  = Visibility.Visible;
                 EditBatch.Visibility    = Visibility.Visible;
 
-            }).Parent.CreateFormState("isgroup").AddAction(() => {
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.Group.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Visible;
                 NumberTxt.Visibility    = Visibility.Visible;
                 BatchName.Visibility    = Visibility.Visible;
@@ -63,7 +83,7 @@ namespace ActivityScheduler
                 DeleteBatch.Visibility  = Visibility.Visible;
                 EditBatch.Visibility    = Visibility.Visible;
 
-            }).Parent.CreateFormState("none").AddAction(() => {
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.None.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Hidden;
                 NumberTxt.Visibility    = Visibility.Hidden;
                 BatchName.Visibility    = Visibility.Hidden;
@@ -74,6 +94,7 @@ namespace ActivityScheduler
                 EditBatch.Visibility    = Visibility.Hidden;
 
             });
+
             InitializeComponent();
         }
        
@@ -92,42 +113,6 @@ namespace ActivityScheduler
         
         }
 
-
-
-        private void BatchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
-            
-            //var item =  e.AddedItems.Cast<BatchListBoxViewModel>().ToList().FirstOrDefault();
-            //if (item == null) { return; }
-            //if (item.BatchObject == null) 
-            //{
-            //    _selectionMode= SelectionMode.None;
-            //    formStateHolder.SetFormState("none");
-            //    return;
-            //}
-            //Batch btc = (Batch)item.BatchObject;
-            //_currentBatch = btc;
-            //BatchNumber.IsReadOnly = true;
-            //BatchName.IsReadOnly = true;
-            //BatchNumber.Text = "";
-            //BatchName.Text = "";
-            //if (btc.IsGroup)
-            //{
-            //    _selectionMode = SelectionMode.Group;
-            //    formStateHolder.SetFormState("isgroup");
-            //    BatchNumber.Text = btc.Number;
-            //    BatchName.Text = btc.Name;
-            //}
-            //else
-            //{
-            //    _selectionMode = SelectionMode.RealBatch;
-            //    formStateHolder.SetFormState("normal");
-            //    BatchNumber.Text = btc.Number;
-            //    BatchName.Text = btc.Name;
-            //}
-        }
-
         private void EditBatch_Click(object sender, RoutedEventArgs e)
         {
             OpenEditBatchForm();
@@ -138,19 +123,6 @@ namespace ActivityScheduler
           //  settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
           //+ settingsFrm.ShowDialog();
         }
-
-        private void DeleteBatch_Click(object sender, RoutedEventArgs e)
-        {
-            //if (_selectionMode == SelectionMode.None) { return; }
-            //if (_currentBatch == null) { return; }
-            //var rez = _batchManager.RemoveBatch(_currentBatch.Id).Result;
-            //if (!rez.Success)
-            //{
-            //    ShowRed($"{rez.Message}");
-            //}
-            //LoadBatchList();
-        }
-
 
         private void ShowRed(string text)
         {
@@ -202,5 +174,9 @@ namespace ActivityScheduler
             //});
         }
 
+        private void FormStateServiceField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            formStateHolder.SetFormState(FormStateServiceField.Text);
+        }
     }
 }
