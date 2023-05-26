@@ -34,7 +34,6 @@ namespace ActivityScheduler.Core
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
-        private MainWindow _mainWindow;
         private FormStateHolder _formStateHolder = new FormStateHolder();
         private Batch _currentBatch;
         private Activity _currentActivity;
@@ -43,11 +42,10 @@ namespace ActivityScheduler.Core
         private bool _saveActivityStopMarker=false;
         public string BufferIn { get; set; }
 
-        public EditBatch(MainWindow mainWindow, BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
+        public EditBatch(BatchManager batchManager,  ActivityManager activityManager,  Batch currentBatch, Serilog.ILogger logger)
         {
             _logger = logger;
             _batchManager = batchManager;
-            _mainWindow = mainWindow;
             _currentBatch= _batchManager.Clone(currentBatch);
             _activityManager = activityManager;
 
@@ -89,21 +87,21 @@ namespace ActivityScheduler.Core
         }
         private void BatchSave_Click(object sender, RoutedEventArgs e)
         {
-            //CommonOperationResult chkRez;
+            CommonOperationResult chkRez;
 
-            //_currentBatch.Number = BatchNumberTb.Text;
+            _currentBatch.Number = BatchNumberTb.Text;
             
-            //_currentBatch.Name = BatchNameTb.Text;
+            _currentBatch.Name = BatchNameTb.Text;
 
-            //var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
+            var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
             
-            //if (!btcAddRez.Success)
-            //{
-            //    System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
-            //    return;
-            //}
+            if (!btcAddRez.Success)
+            {
+                System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
+                return;
+            }
             
-            //Close();
+            Close();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

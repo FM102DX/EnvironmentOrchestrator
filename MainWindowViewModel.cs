@@ -31,25 +31,25 @@ namespace ActivityScheduler
         private SettingsManager _settingsManager;
         private List<Batch> _batchList;
         private BatchListBoxViewModel _selectedItem;
-        public  BatchListBoxViewModel SelectedItem 
-        { 
-            get { return _selectedItem; } 
+        public BatchListBoxViewModel SelectedItem
+        {
+            get { return _selectedItem; }
             set
             {
                 _selectedItem = value;
 
-                if (_selectedItem == null) 
+                if (_selectedItem == null)
                 {
                     SelectionModeVar = SelectionMode.None;
-                    CurrentBatch = null; 
-                    return; 
+                    CurrentBatch = null;
+                    return;
                 }
 
-                CurrentBatch =_batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
-                
+                CurrentBatch = _batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
+
                 if (CurrentBatch == null) return;
 
-                if (CurrentBatch.IsGroup) 
+                if (CurrentBatch.IsGroup)
                 {
                     SelectionModeVar = SelectionMode.Group;
                 }
@@ -57,8 +57,13 @@ namespace ActivityScheduler
                 {
                     SelectionModeVar = SelectionMode.RealBatch;
                 }
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectionModeVar"));
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectionModeVar"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
+
+                if (SelectionModeChanged != null)
+                {
+                    SelectionModeChanged(SelectionModeVar);
+                }
             }
         }
         public Batch? CurrentBatch { get; set; }
@@ -87,6 +92,13 @@ namespace ActivityScheduler
         public ICommand TestCmd3 { get; private set; }
         public ICommand CreateGroupCmd { get; private set; }
         public ICommand DeleteBatchOrGroupCmd { get; private set; }
+        public ICommand OpenSettingsFrmCmd { get; private set; }
+        
+        public ICommand EditBatchCmd { get; private set; }
+
+        public event SelectionModeChangedDelegate SelectionModeChanged;
+        
+        public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
 
         public MainWindowViewModel(
                                         SettingsManager settingsManager, 
@@ -132,33 +144,45 @@ namespace ActivityScheduler
                 LoadBatchList();
             });
 
-            DeleteBatchOrGroupCmd = new ActionCommand(() => {
+            DeleteBatchOrGroupCmd = new ActionCommand(() =>
+            {
                 if (SelectionModeVar == SelectionMode.None) { return; }
                 if (CurrentBatch == null) { return; }
                 var rez = _batchManager.RemoveBatch(CurrentBatch.Id).Result;
                 if (!rez.Success)
                 {
                     MessageBox.Show(rez.AsShrotString());
-                    //ShowRed($"{rez.Message}");
                 }
-                LoadBatchList();
             });
+
+            OpenSettingsFrmCmd = new ActionCommand(() => {
+                settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
+                settingsFrm.ShowDialog();
+            });
+
+            EditBatchCmd = new ActionCommand(() => {
+                if (SelectionModeVar != SelectionMode.None && CurrentBatch!=null)
+                {
+                    EditBatch editBatch = new EditBatch(_batchManager, _activityManager, CurrentBatch, _logger);
+                    editBatch.Show();
+                }
+            });
+            
 
             TestCmd = new ActionCommand(() => { MessageBox.Show("this is test command"); });
             TestCmd2 = new ActionCommand(() => {
 
-                // PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatchListItemSource")); 
-
-                //CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs("BatchListItemSource"));
-
             });
+
             TestCmd3 = new ActionCommand(() => 
             { 
                 MakitaTextBox = GetRandomNumberString();
                 MessageBox.Show($"MakitaTextBox ={MakitaTextBox}");
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MakitaTextBox2")); 
             });
+
             InfoRunBatchText = "Test010101";
+            _timer.Start();
             LoadBatchList();
         }
 
@@ -188,7 +212,6 @@ namespace ActivityScheduler
                 string src = IsBatchRunning(x.Number) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
 
                 BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber = x.Number, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject = x, ImageSource = src });
-
             });
 
             //select first record
@@ -196,26 +219,22 @@ namespace ActivityScheduler
             {
                 SelectedItem = BatchListItemSource[0];
             }
-
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BatchListItemSource"));
         }
 
         private void ArrangeBatchListRunningStatus()
         {
-            //BatchListItemSource.ForEach(x => {
-            //    string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.PlayIconFullPath;
-            //    x.ImageSource = src;
-            //});
-
-            //BatchList.Dispatcher.BeginInvoke(DispatcherPriority.Render,  () =>  {BatchList.ItemsSource = _batchListItemSource; });
-
-            //        BatchList.Dispatcher.Invoke(() => { BatchList.ItemsSource = _batchListItemSource; });
+            foreach(var x in BatchListItemSource) 
+            {
+                string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.PlayIconFullPath;
+                x.ImageSource = src;
+            }
         }
 
         private void AddBatchTbLine(string text)
         {
             InfoRunBatchText += text;
             InfoRunBatchText += System.Environment.NewLine;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("InfoRunBatchText"));
         }
 
         private void ProcessMessages(object? sender, ElapsedEventArgs e)

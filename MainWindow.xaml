@@ -22,11 +22,10 @@
     <Grid>
         <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Command="{Binding CreateBatchCmd}"  />
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Command="{Binding CreateGroupCmd}" />
-        <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Click="Settings_Click"/>
+        <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Command="{Binding OpenSettingsFrmCmd}"/>
         <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch" />
-        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Click="EditBatch_Click"/>
-        <Button Content="Test2"      HorizontalAlignment="Left" Margin="908,0,0,0" VerticalAlignment="Center" Width="99" Name="Test2" Command="{Binding TestCmd2}" />
-
+        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Command="{Binding EditBatchCmd}" />
+        <Button Content="Test2"      HorizontalAlignment="Left" Margin="908,0,0,0" VerticalAlignment="Center" Width="99" Name="Test2"    Command="{Binding TestCmd2}" />
 
         <ListBox 
             Name="BatchList" 
@@ -61,7 +60,7 @@
             </TabItem>
             <TabItem Header="Info" Name="Info">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="FormStateServiceField0" Text="{Binding SelectionModeVar, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTextTb" Text="{Binding InfoRunBatchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
                 </Grid>
             </TabItem>
         </TabControl>

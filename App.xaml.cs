@@ -149,8 +149,8 @@ namespace ActivityScheduler
             services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
             services.AddSingleton<DataFillManager>();
-            services.AddSingleton(typeof(ServerCommunicationObjectT<AppToWorkerMessage>), new ServerCommunicationObjectT<AppToWorkerMessage>("pipe02", _logger));
-            services.AddSingleton(typeof(ClientCommunicationObjectT<WorkerToAppMessage>), new ClientCommunicationObjectT<WorkerToAppMessage>("pipe01", _logger));
+            services.AddSingleton(typeof(ServerCommunicationObjectT<AppToWorkerMessage>), new ServerCommunicationObjectT<AppToWorkerMessage>("app2service", _logger));
+            services.AddSingleton(typeof(ClientCommunicationObjectT<WorkerToAppMessage>), new ClientCommunicationObjectT<WorkerToAppMessage>("service2app", _logger));
             services.AddSingleton<MainWindowViewModel>();
 
         }
@@ -216,10 +216,10 @@ namespace ActivityScheduler
 
             _logger.Information($"Point 8");
 
-            _pipeClient = new ClientCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            _pipeClient = _serviceProvider.GetService<ClientCommunicationObjectT<WorkerToAppMessage>>();
             Task task = Task.Run(() => _pipeClient.Run());
 
-            _pipeServer = new ServerCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
+            _pipeServer = _serviceProvider.GetService<ServerCommunicationObjectT<AppToWorkerMessage>>();
             Task task2 = Task.Run(() => _pipeServer.Run());
 
             _timer.Start();

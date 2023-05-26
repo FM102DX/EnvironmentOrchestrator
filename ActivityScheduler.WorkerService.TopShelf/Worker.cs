@@ -49,10 +49,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _checkMailTimer.Elapsed += CheckMail;
             _app = app;
 
-            _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
+            _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("app2service", _logger);
             Task task = Task.Run(() => _pipeClient.Run());
 
-            _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("service2app", _logger);
             Task task2 = Task.Run(() => _pipeServer.Run());
 
             _logger.Information("Worker service constructor passed");
@@ -134,7 +134,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             var btcr = _serviceProvider.GetService<BatchRunner>();
             //int x = random.Next(0, 1000);
             //string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
-
+            
             var msgObject = new WorkerToAppMessage()
             {
                 MessageType = "runningbatchesInfo",

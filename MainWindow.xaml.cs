@@ -48,6 +48,8 @@ namespace ActivityScheduler
         private FormStateHolder formStateHolder = new FormStateHolder();
 
         private ActivityScheduler.MainWindowViewModel.SelectionMode _selectionMode;
+
+        private MainWindowViewModel viewModel;
         private ActivityScheduler.MainWindowViewModel.SelectionMode SelectionMode
         { 
             get 
@@ -63,6 +65,11 @@ namespace ActivityScheduler
         public MainWindow(MainWindowViewModel dataContext)
         {
             DataContext = dataContext;
+            
+            viewModel = (MainWindowViewModel)DataContext;
+
+            viewModel.SelectionModeChanged += ViewModel_SelectionModeChanged;
+
             formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatch.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Visible;
                 NumberTxt.Visibility    = Visibility.Visible;
@@ -96,7 +103,12 @@ namespace ActivityScheduler
 
             InitializeComponent();
         }
-       
+
+        private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
+        {
+            formStateHolder.SetFormState(selectionMode.ToString());
+        }
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -109,34 +121,9 @@ namespace ActivityScheduler
               // _timer.Start();
         }
 
-        private void EditBatch_Click(object sender, RoutedEventArgs e)
-        {
-            OpenEditBatchForm();
-        }
-
-        private void Settings_Click(object sender, RoutedEventArgs e)
-        {
-          //  settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
-          //+ settingsFrm.ShowDialog();
-        }
-
-        private void BatchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            OpenEditBatchForm();
-        }
-
-        private void OpenEditBatchForm()
-        {
-            //if (_selectionMode != SelectionMode.None)
-            //{
-            //    EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _currentBatch, _logger);
-            //    editBatch.Show();
-            //}
-        }
-
         private void FormStateServiceField_TextChanged(object sender, TextChangedEventArgs e)
         {
-            formStateHolder.SetFormState(FormStateServiceField.Text);
+            
         }
     }
 }
