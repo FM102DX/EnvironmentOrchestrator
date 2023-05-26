@@ -156,7 +156,6 @@ namespace ActivityScheduler
         }
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            
             var app = _serviceProvider.GetService<ActivitySchedulerApp>();
 
             string iconFileFullPath = Path.Combine(app.IconsDirectory, "app.ico");

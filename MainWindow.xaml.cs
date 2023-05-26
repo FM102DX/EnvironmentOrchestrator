@@ -117,8 +117,9 @@ namespace ActivityScheduler
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-              //  LoadBatchList();
-              // _timer.Start();
+            if ((viewModel != null) && (viewModel.LoadBatchListCmd.CanExecute(null)))
+                viewModel.LoadBatchListCmd.Execute(null);
+            BatchList.Focus();
         }
 
         private void FormStateServiceField_TextChanged(object sender, TextChangedEventArgs e)

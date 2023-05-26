@@ -95,6 +95,9 @@ namespace ActivityScheduler
         public ICommand OpenSettingsFrmCmd { get; private set; }
         
         public ICommand EditBatchCmd { get; private set; }
+        public ICommand RunBatchCmd { get; private set; }
+        public ICommand StopBatchCmd { get; private set; }
+        public ICommand LoadBatchListCmd { get; private set; }
 
         public event SelectionModeChangedDelegate SelectionModeChanged;
         
@@ -167,23 +170,26 @@ namespace ActivityScheduler
                     editBatch.Show();
                 }
             });
-            
 
-            TestCmd = new ActionCommand(() => { MessageBox.Show("this is test command"); });
-            TestCmd2 = new ActionCommand(() => {
-
+            RunBatchCmd = new ActionCommand(() => {
+                if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
+                {
+                    _pipeServer.SendObject(new AppToWorkerMessage()
+                    {
+                        MessageType = "Command",
+                        Command = "startbatch",
+                        StartTime = DateTime.Now,
+                        TransactionId = CurrentBatch.Number
+                    });
+                }
             });
 
-            TestCmd3 = new ActionCommand(() => 
-            { 
-                MakitaTextBox = GetRandomNumberString();
-                MessageBox.Show($"MakitaTextBox ={MakitaTextBox}");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MakitaTextBox2")); 
+            LoadBatchListCmd = new ActionCommand(() => {
+                LoadBatchList();
             });
 
-            InfoRunBatchText = "Test010101";
             _timer.Start();
-            LoadBatchList();
+            // LoadBatchList();
         }
 
         private string GetRandomNumberString()
@@ -203,15 +209,8 @@ namespace ActivityScheduler
             BatchListItemSource.Clear();
             _batchList = _batchManager.GetAll().Result.OrderBy(x => x.Number).ToList();
             _batchList.ForEach(x => {
-
-                if (x.IsGroup)
-                {
-                   // BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, IsSpacer = true, BatchObject = null, ImageSource = _app.NoneIconFullPath });
-                }
-
                 string src = IsBatchRunning(x.Number) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
-
-                BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber = x.Number, IsSpacer = false, IsGroup = x.IsGroup, Text = x.Name, BatchObject = x, ImageSource = src });
+                BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber = x.Number, IsGroup = x.IsGroup, Text = x.Name, BatchObject = x, ImageSource = src });
             });
 
             //select first record
@@ -225,15 +224,14 @@ namespace ActivityScheduler
         {
             foreach(var x in BatchListItemSource) 
             {
-                string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.PlayIconFullPath;
+                string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
                 x.ImageSource = src;
             }
         }
 
         private void AddBatchTbLine(string text)
         {
-            InfoRunBatchText += text;
-            InfoRunBatchText += System.Environment.NewLine;
+            InfoRunBatchText = text+ System.Environment.NewLine+InfoRunBatchText;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("InfoRunBatchText"));
         }
 

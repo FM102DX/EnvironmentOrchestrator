@@ -58,7 +58,9 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _logger.Information("Worker service constructor passed");
 
             ServiceCollection services = new ServiceCollection();
+
             ConfigureServices(services);
+            
             _serviceProvider = services.BuildServiceProvider();
 
             _logger.Information("Worker service ConfigureServices passed");
@@ -99,7 +101,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             _logger.Information($"listening to incoming stack");
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
-            var btcr = _serviceProvider.GetService<BatchRunner>();
+            var batchRunner = _serviceProvider.GetService<BatchRunner>();
 
             if (m == null) 
             { 
@@ -115,7 +117,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 {
                     _logger.Information($"got message of startbatch type");
                     Task.Run(()=> {
-                        var rez=btcr.RunBatch(m.TransactionId);
+                        var rez=batchRunner.RunBatch(m.TransactionId);
                         var msgObject = new WorkerToAppMessage()
                         {
                             MessageType = "CommandExecutionResult".ToLower(),

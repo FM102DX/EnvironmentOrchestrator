@@ -23,7 +23,7 @@
         <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top" Width="99" Name="NewBatch" Command="{Binding CreateBatchCmd}"  />
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top" Width="99" Name="NewGroup" Command="{Binding CreateGroupCmd}" />
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top" Width="99" Name="Settings" Command="{Binding OpenSettingsFrmCmd}"/>
-        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch" />
+        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top" Width="99" Name="RunBatch"  Command="{Binding RunBatchCmd}"/> 
         <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top" Width="99" Name="EditBatch" Command="{Binding EditBatchCmd}" />
         <Button Content="Test2"      HorizontalAlignment="Left" Margin="908,0,0,0" VerticalAlignment="Center" Width="99" Name="Test2"    Command="{Binding TestCmd2}" />
 

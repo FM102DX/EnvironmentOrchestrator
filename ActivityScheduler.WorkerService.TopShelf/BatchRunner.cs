@@ -26,6 +26,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             if (batchId == "100101") 
             {
+                if (_batches.Contains(batchId))
+                {
+                    return CommonOperationResult.SayFail($"Cant start batch {batchId} because its already running");
+                }
                 _batches.Add(batchId);
                 return CommonOperationResult.SayOk();
             }
