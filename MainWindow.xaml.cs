@@ -92,7 +92,6 @@ namespace ActivityScheduler
                 RunBatch.Visibility     = Visibility.Hidden;
                 DeleteBatch.Visibility  = Visibility.Hidden;
                 EditBatch.Visibility    = Visibility.Hidden;
-
             });
 
             InitializeComponent();
@@ -106,11 +105,8 @@ namespace ActivityScheduler
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-          //  LoadBatchList();
-           // _timer.Start();
-
-            
-        
+              //  LoadBatchList();
+              // _timer.Start();
         }
 
         private void EditBatch_Click(object sender, RoutedEventArgs e)
@@ -122,19 +118,6 @@ namespace ActivityScheduler
         {
           //  settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
           //+ settingsFrm.ShowDialog();
-        }
-
-        private void ShowRed(string text)
-        {
-            // InfoTb.font
-            //InfoTb.Text = text;
-            //InfoTb.Foreground = Brushes.Red;
-        }
-        private void ShowGreen(string text)
-        {
-            // InfoTb.font
-            //InfoTb.Text = text;
-            //InfoTb.Foreground = Brushes.Green;
         }
 
         private void BatchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -149,29 +132,6 @@ namespace ActivityScheduler
             //    EditBatch editBatch = new EditBatch(this, _batchManager, _activityManager, _currentBatch, _logger);
             //    editBatch.Show();
             //}
-        }
-
-        private void NewGroup_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-
-
-        private void RunBatch_Click(object sender, RoutedEventArgs e)
-        {
-
-            //if (_currentBatch == null) return;
-
-            ////send message to service
-
-            //_pipeServer.SendObject(new AppToWorkerMessage()
-            //{
-            //    MessageType="Command",
-            //    Command = "startbatch",
-            //    StartTime = DateTime.Now,  
-            //    TransactionId = _currentBatch.Number
-            //});
         }
 
         private void FormStateServiceField_TextChanged(object sender, TextChangedEventArgs e)

@@ -58,6 +58,7 @@ namespace ActivityScheduler
                     SelectionModeVar = SelectionMode.RealBatch;
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectionModeVar"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
             }
         }
         public Batch? CurrentBatch { get; set; }
