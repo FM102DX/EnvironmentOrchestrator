@@ -39,7 +39,9 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 return CommonOperationResult.SayFail($"Cant stop batch {batchId} because its not running");
             }
+            
             _batches.RemoveAll(x => x == batchId);
+
             return CommonOperationResult.SayOk();
         }
         public RunningBatchesInfo GetRunningBatchesInfo()

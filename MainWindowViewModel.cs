@@ -31,6 +31,7 @@ namespace ActivityScheduler
         private Serilog.ILogger _logger;
         private SettingsManager _settingsManager;
         private List<Batch> _batchList;
+        private List<Batch> _runningBatchList;
         private BatchListBoxViewModel _selectedItem;
         public BatchListBoxViewModel SelectedItem
         {
@@ -87,7 +88,7 @@ namespace ActivityScheduler
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly System.Timers.Timer _timer;
-        private List<string> _runningBatches = new List<string>();
+        private List<string> _runningBatchesNumberList = new List<string>();
         public string MakitaTextBox2=> MakitaTextBox;
         public string MakitaTextBox { get; set; } = "Initial text";
         public string InfoRunBatchText { get; set; }
@@ -107,8 +108,11 @@ namespace ActivityScheduler
         public ICommand LoadBatchListCmd { get; private set; }
 
         public event SelectionModeChangedDelegate SelectionModeChanged;
-        
         public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
+
+        public event RunningBatchesInfoUpdatedDelegate RunningBatchesInfoUpdated;
+        public delegate void RunningBatchesInfoUpdatedDelegate(List<Batch> runningBatchList);
+
 
         public MainWindowViewModel(
                                         SettingsManager settingsManager, 
@@ -226,7 +230,7 @@ namespace ActivityScheduler
 
         private bool IsBatchRunning(string number)
         {
-            var items = _runningBatches.Where(x => x == number).ToList();
+            var items = _runningBatchesNumberList.Where(x => x == number).ToList();
             return items.Count > 0;
         }
 
@@ -279,54 +283,21 @@ namespace ActivityScheduler
 
             if (m.MessageType.ToLower() == "runningbatchesinfo")
             {
-                _runningBatches = m.RunningBatches.Batches;
+                _runningBatchesNumberList = m.RunningBatches.Batches;
                 
                 ArrangeBatchListRunningStatus();
 
                 if (m.RunningBatches.Batches.Count == 0)
                 {
                     AddBatchTbLine("Batches running: none");
+                    _runningBatchList = new List<Batch>();
                 }
                 else
                 {
-                    AddBatchTbLine($"Batches running: {string.Join(",", _runningBatches)}");
-
-                    //Tabs.Dispatcher.Invoke(() =>
-                    //{
-                    //    foreach (var x in m.RunningBatches.Batches)
-                    //    {
-                    //        //check if tab with this name exists
-
-                    //        var tab1 = Tabs.Items[0];
-
-                    //        var lst1 = Tabs.Items.OfType<TabItem>().ToList();
-
-                    //        var lst2 = lst1.Where(y => y.Header.ToString() == x).ToList();
-
-                    //        if (lst2.Count == 0)
-                    //        {
-                    //            //tab not opened, need to open
-                    //            var tbi = new TabItem();
-                    //            tbi.Header = x;
-                    //            //tbi.Name = x.ToString();
-
-                    //            StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
-                    //            stackPanel.Children.Add(new System.Windows.Controls.TextBox { Height = 60, Width = 60, TextWrapping = TextWrapping.Wrap, Text = "Some text" });
-
-                    //            var listBox = new System.Windows.Controls.ListBox();
-                    //            listBox.Items.Add(new ListBoxItem { Content = "Text" });
-                    //            listBox.Items.Add(new ListBoxItem { Content = "Text to" });
-                    //            listBox.Items.Add(new ListBoxItem { Content = "And text" });
-
-                    //            StackPanel stackPanelAsContent = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical, HorizontalAlignment = 0 };
-                    //            stackPanelAsContent.Children.Add(stackPanel);
-                    //            stackPanelAsContent.Children.Add(listBox);
-                    //            tbi.Content = stackPanelAsContent;
-                    //            Tabs.Items.Add(tbi);
-                    //        }
-                    //    }
-                    //});
+                    AddBatchTbLine($"Batches running: {string.Join(",", _runningBatchesNumberList)}");
+                    _runningBatchList = _batchList.Where(x=> _runningBatchesNumberList.Contains(x.Number)).ToList();
                 }
+                RunningBatchesInfoUpdated(_runningBatchList);
             }
 
             if (m.MessageType.ToLower() == "CommandExecutionResult".ToLower())

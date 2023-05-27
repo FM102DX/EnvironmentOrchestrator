@@ -72,6 +72,8 @@ namespace ActivityScheduler
 
             viewModel.ListSourceChanged += ViewModel_ListSourceChanged;
 
+            viewModel.RunningBatchesInfoUpdated += ViewModel_RunningBatchesInfoUpdated;
+
             formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Visible;
                 NumberTxt.Visibility    = Visibility.Visible;
@@ -120,10 +122,55 @@ namespace ActivityScheduler
             InitializeComponent();
         }
 
+        private void ViewModel_RunningBatchesInfoUpdated(List<Batch> runningBatchList)
+        {
+            //here syncronize tabs with batches
+
+            Tabs.Dispatcher.Invoke(() =>
+            {
+                foreach (var x in runningBatchList)
+                {
+                    //check if tab with this name exists
+
+                    var tab1 = Tabs.Items[0];
+
+                    var lst1 = Tabs.Items.OfType<TabItem>().ToList();
+
+                    var lst2 = lst1.Where(y => y.Header.ToString() == x.Name).ToList();
+
+                    if (lst2.Count == 0)
+                    {
+                        //tab not opened, need to open
+                        var tbi = new TabItem();
+                        tbi.Header = x;
+                        //tbi.Name = x.ToString();
+
+                        StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
+                        stackPanel.Children.Add(new System.Windows.Controls.TextBox { Height = 60, Width = 60, TextWrapping = TextWrapping.Wrap, Text = "Some text" });
+
+                        var listBox = new System.Windows.Controls.ListBox();
+                        listBox.Items.Add(new ListBoxItem { Content = "Text" });
+                        listBox.Items.Add(new ListBoxItem { Content = "Text to" });
+                        listBox.Items.Add(new ListBoxItem { Content = "And text" });
+
+                        StackPanel stackPanelAsContent = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical, HorizontalAlignment = 0 };
+                        stackPanelAsContent.Children.Add(stackPanel);
+                        stackPanelAsContent.Children.Add(listBox);
+                        tbi.Content = stackPanelAsContent;
+                        Tabs.Items.Add(tbi);
+                    }
+                }
+            });
+
+
+        }
+
         private void ViewModel_ListSourceChanged()
         {
             BatchList.Dispatcher.Invoke(()=> { BatchList.Items.Refresh(); });
         }
+
+
 
         private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
         {
