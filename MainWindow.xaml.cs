@@ -70,13 +70,25 @@ namespace ActivityScheduler
 
             viewModel.SelectionModeChanged += ViewModel_SelectionModeChanged;
 
-            formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatch.ToString()).AddAction(() => {
+            viewModel.ListSourceChanged += ViewModel_ListSourceChanged;
+
+            formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Visible;
                 NumberTxt.Visibility    = Visibility.Visible;
                 BatchName.Visibility    = Visibility.Visible;
                 BatchNumber.Visibility  = Visibility.Visible;
-                
+                RunBatch.Visibility     = Visibility.Hidden;
+                StopBatch.Visibility    = Visibility.Visible;
+                DeleteBatch.Visibility  = Visibility.Visible;
+                EditBatch.Visibility    = Visibility.Visible;
+
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchStopped.ToString()).AddAction(() => {
+                NameTxt.Visibility      = Visibility.Visible;
+                NumberTxt.Visibility    = Visibility.Visible;
+                BatchName.Visibility    = Visibility.Visible;
+                BatchNumber.Visibility  = Visibility.Visible;
                 RunBatch.Visibility     = Visibility.Visible;
+                StopBatch.Visibility    = Visibility.Hidden;
                 DeleteBatch.Visibility  = Visibility.Visible;
                 EditBatch.Visibility    = Visibility.Visible;
 
@@ -87,6 +99,8 @@ namespace ActivityScheduler
                 BatchNumber.Visibility  = Visibility.Visible;
                 
                 RunBatch.Visibility     = Visibility.Hidden;
+                StopBatch.Visibility    = Visibility.Hidden;
+
                 DeleteBatch.Visibility  = Visibility.Visible;
                 EditBatch.Visibility    = Visibility.Visible;
 
@@ -97,6 +111,8 @@ namespace ActivityScheduler
                 BatchNumber.Visibility  = Visibility.Hidden;
 
                 RunBatch.Visibility     = Visibility.Hidden;
+                StopBatch.Visibility    = Visibility.Hidden;
+
                 DeleteBatch.Visibility  = Visibility.Hidden;
                 EditBatch.Visibility    = Visibility.Hidden;
             });
@@ -104,9 +120,16 @@ namespace ActivityScheduler
             InitializeComponent();
         }
 
+        private void ViewModel_ListSourceChanged()
+        {
+            BatchList.Dispatcher.Invoke(()=> { BatchList.Items.Refresh(); });
+        }
+
         private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
         {
-            formStateHolder.SetFormState(selectionMode.ToString());
+            this.Dispatcher.Invoke(() => {
+                formStateHolder.SetFormState(selectionMode.ToString());
+            });
         }
 
         protected override void OnClosed(EventArgs e)
@@ -117,7 +140,7 @@ namespace ActivityScheduler
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if ((viewModel != null) && (viewModel.LoadBatchListCmd.CanExecute(null)))
+            if ((viewModel != null) && viewModel.LoadBatchListCmd.CanExecute(null))
                 viewModel.LoadBatchListCmd.Execute(null);
             BatchList.Focus();
         }

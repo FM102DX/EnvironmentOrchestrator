@@ -126,6 +126,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         _pipeServer.SendObject(msgObject);
                     });
                 }
+                if (m.Command.ToLower() == "stopbatch")
+                {
+                    _logger.Information($"got message of stopbatch type");
+                    Task.Run(() => {
+                        var rez = batchRunner.StopBatch(m.TransactionId);
+                        var msgObject = new WorkerToAppMessage()
+                        {
+                            MessageType = "CommandExecutionResult".ToLower(),
+                            Result = rez
+                        };
+                        _pipeServer.SendObject(msgObject);
+                    });
+                }
+
             }
             Task.Delay(100);
         }

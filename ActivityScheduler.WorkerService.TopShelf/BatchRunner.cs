@@ -1,4 +1,5 @@
 ﻿using ActivityScheduler.Data.Managers;
+using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.Models.Communication;
 using ActivityScheduler.Shared;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -24,21 +25,22 @@ namespace ActivityScheduler.WorkerService.TopShelf
         }
         public CommonOperationResult RunBatch(string batchId) 
         {
-            if (batchId == "100101") 
+            if (_batches.Contains(batchId))
             {
-                if (_batches.Contains(batchId))
-                {
-                    return CommonOperationResult.SayFail($"Cant start batch {batchId} because its already running");
-                }
-                _batches.Add(batchId);
-                return CommonOperationResult.SayOk();
+                return CommonOperationResult.SayFail($"Cant start batch {batchId} because its already running");
             }
-            return CommonOperationResult.SayFail($"Failed to start batch {batchId}");
+            _batches.Add(batchId);
+            return CommonOperationResult.SayOk();
         }
 
-        public void StopBatch(string BatchId)
+        public CommonOperationResult StopBatch(string batchId)
         {
-            _batches.RemoveAll(x => x == BatchId);
+            if (!_batches.Contains(batchId))
+            {
+                return CommonOperationResult.SayFail($"Cant stop batch {batchId} because its not running");
+            }
+            _batches.RemoveAll(x => x == batchId);
+            return CommonOperationResult.SayOk();
         }
         public RunningBatchesInfo GetRunningBatchesInfo()
         {
