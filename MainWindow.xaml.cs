@@ -130,20 +130,17 @@ namespace ActivityScheduler
             {
                 foreach (var x in runningBatchList)
                 {
-                    //check if tab with this name exists
 
-                    var tab1 = Tabs.Items[0];
+                    //open tabs wich are running but not opened
 
-                    var lst1 = Tabs.Items.OfType<TabItem>().ToList();
-
-                    var lst2 = lst1.Where(y => y.Header.ToString() == x.Name).ToList();
+                    var lst2 = Tabs.Items.OfType<TabItem>().ToList().Where(y => y.Header == x.Name).ToList();
 
                     if (lst2.Count == 0)
                     {
                         //tab not opened, need to open
                         var tbi = new TabItem();
-                        tbi.Header = x;
-                        //tbi.Name = x.ToString();
+                        tbi.Header = x.Name;
+                        //tbi.Name = x.Name;
 
                         StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
                         stackPanel.Children.Add(new System.Windows.Controls.TextBox { Height = 60, Width = 60, TextWrapping = TextWrapping.Wrap, Text = "Some text" });
@@ -162,7 +159,21 @@ namespace ActivityScheduler
                 }
             });
 
+            Tabs.Dispatcher.Invoke(() => {
 
+                var lst3 = Tabs.Items.OfType<TabItem>().ToList();
+
+                lst3.ForEach(x =>
+                {
+                    bool notContainingInRunningBatches = runningBatchList.Select(y => y.Name).ToList().Contains(x.Header);
+                    bool isMainTab = x.Name.ToLower() == "main";
+                    bool isInfoTab = x.Name.ToLower() == "info";
+                    if (!notContainingInRunningBatches && !isMainTab && !isInfoTab)
+                    {
+                           Tabs.Items.Remove(x);
+                    }
+                });
+            });
         }
 
         private void ViewModel_ListSourceChanged()
