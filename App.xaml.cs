@@ -6,6 +6,7 @@ using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.Models.Communication;
 using ActivityScheduler.Data.Models.Settings;
+using ActivityScheduler.Gui.MainWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
 using Microsoft.Extensions.DependencyInjection;

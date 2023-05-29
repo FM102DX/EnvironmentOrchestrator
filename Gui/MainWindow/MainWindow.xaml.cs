@@ -31,15 +31,10 @@ using ActivityScheduler.Data.Models.Communication;
 using static System.Net.Mime.MediaTypeNames;
 using System.Windows.Threading;
 using Binding = System.Windows.Data.Binding;
+using ActivityScheduler.Gui.MainWindow;
 
 namespace ActivityScheduler
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
-
-
 
     public partial class MainWindow : System.Windows.Window
     {
@@ -47,10 +42,10 @@ namespace ActivityScheduler
 
         private FormStateHolder formStateHolder = new FormStateHolder();
 
-        private ActivityScheduler.MainWindowViewModel.SelectionMode _selectionMode;
+        private MainWindowViewModel.SelectionMode _selectionMode;
 
         private MainWindowViewModel viewModel;
-        private ActivityScheduler.MainWindowViewModel.SelectionMode SelectionMode
+        private MainWindowViewModel.SelectionMode SelectionMode
         { 
             get 
             { 

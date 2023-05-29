@@ -20,11 +20,11 @@ using System.Windows;
 using System.Windows.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace ActivityScheduler
+namespace ActivityScheduler.Gui.MainWindow
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private ActivityScheduler.Core.Settings.Settings settingsFrm;
+        private Core.Settings.Settings settingsFrm;
         private ActivitySchedulerApp _app;
         private WorkerServiceManager _workerMgr;
         private BatchManager _batchManager;
@@ -74,7 +74,7 @@ namespace ActivityScheduler
                     SelectionModeVar = SelectionMode.RealBatchStopped;
                 }
             }
-            
+
             if (SelectionModeChanged != null)
             {
                 SelectionModeChanged(SelectionModeVar);
@@ -84,16 +84,16 @@ namespace ActivityScheduler
         public Batch? CurrentBatch { get; set; }
         private ActivityManager _activityManager;
 
-        public  SelectionMode SelectionModeVar { get; set; }= SelectionMode.None;
+        public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
-        private readonly System.Timers.Timer _timer;
+        private readonly Timer _timer;
         private List<string> _runningBatchesNumberList = new List<string>();
-        public string MakitaTextBox2=> MakitaTextBox;
+        public string MakitaTextBox2 => MakitaTextBox;
         public string MakitaTextBox { get; set; } = "Initial text";
         public string InfoRunBatchText { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
-        public event Action ListSourceChanged; 
+        public event Action ListSourceChanged;
         public ObservableCollection<BatchListBoxViewModel> BatchListItemSource { get; set; }
         public ICommand CreateBatchCmd { get; private set; }
         public ICommand TestCmd { get; private set; }
@@ -115,15 +115,15 @@ namespace ActivityScheduler
 
 
         public MainWindowViewModel(
-                                        SettingsManager settingsManager, 
-                                        ActivitySchedulerApp app, 
-                                        WorkerServiceManager workerMgr, 
-                                        BatchManager batchManager, 
-                                        ActivityManager activityManager, 
-                                        Serilog.ILogger logger, 
-                                        ServerCommunicationObjectT<AppToWorkerMessage> pipeServer, 
+                                        SettingsManager settingsManager,
+                                        ActivitySchedulerApp app,
+                                        WorkerServiceManager workerMgr,
+                                        BatchManager batchManager,
+                                        ActivityManager activityManager,
+                                        Serilog.ILogger logger,
+                                        ServerCommunicationObjectT<AppToWorkerMessage> pipeServer,
                                         ClientCommunicationObjectT<WorkerToAppMessage> pipeClient
-            ) 
+            )
         {
 
             _settingsManager = settingsManager;
@@ -135,12 +135,13 @@ namespace ActivityScheduler
             _pipeClient = pipeClient;
             _pipeServer = pipeServer;
 
-            _timer = new System.Timers.Timer(500) { AutoReset = true };
+            _timer = new Timer(500) { AutoReset = true };
             _timer.Elapsed += ProcessMessages;
 
             BatchListItemSource = new ObservableCollection<BatchListBoxViewModel>();
 
-            CreateBatchCmd = new ActionCommand(() => {
+            CreateBatchCmd = new ActionCommand(() =>
+            {
                 Batch btc = new Batch();
                 btc.Number = "000000";
                 btc.Name = "New.batch";
@@ -149,7 +150,8 @@ namespace ActivityScheduler
                 LoadBatchList();
             });
 
-            CreateGroupCmd = new ActionCommand(() => {
+            CreateGroupCmd = new ActionCommand(() =>
+            {
                 Batch btc = new Batch();
                 btc.Number = "000000";
                 btc.Name = "New.group";
@@ -169,20 +171,23 @@ namespace ActivityScheduler
                 }
             });
 
-            OpenSettingsFrmCmd = new ActionCommand(() => {
+            OpenSettingsFrmCmd = new ActionCommand(() =>
+            {
                 settingsFrm = new Core.Settings.Settings(_settingsManager, _app, _workerMgr);
                 settingsFrm.ShowDialog();
             });
 
-            EditBatchCmd = new ActionCommand(() => {
-                if (SelectionModeVar != SelectionMode.None && CurrentBatch!=null)
+            EditBatchCmd = new ActionCommand(() =>
+            {
+                if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
                 {
                     EditBatch editBatch = new EditBatch(_batchManager, _activityManager, CurrentBatch, _logger);
                     editBatch.Show();
                 }
             });
 
-            RunBatchCmd = new ActionCommand(() => {
+            RunBatchCmd = new ActionCommand(() =>
+            {
                 if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
                 {
                     _pipeServer.SendObject(new AppToWorkerMessage()
@@ -193,10 +198,11 @@ namespace ActivityScheduler
                         TransactionId = CurrentBatch.Number
                     });
                 }
-                
+
             });
 
-            StopBatchCmd = new ActionCommand(() => {
+            StopBatchCmd = new ActionCommand(() =>
+            {
                 if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
                 {
                     _pipeServer.SendObject(new AppToWorkerMessage()
@@ -210,11 +216,13 @@ namespace ActivityScheduler
 
             });
 
-            LoadBatchListCmd = new ActionCommand(() => {
+            LoadBatchListCmd = new ActionCommand(() =>
+            {
                 LoadBatchList();
             });
 
-            TestCmd = new ActionCommand(() => {
+            TestCmd = new ActionCommand(() =>
+            {
                 ArrangeBatchListRunningStatus();
             });
 
@@ -238,7 +246,8 @@ namespace ActivityScheduler
         {
             BatchListItemSource.Clear();
             _batchList = _batchManager.GetAll().Result.OrderBy(x => x.Number).ToList();
-            _batchList.ForEach(x => {
+            _batchList.ForEach(x =>
+            {
                 // string src = IsBatchRunning(x.Number) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
                 string src = "";
                 BatchListItemSource.Add(new BatchListBoxViewModel() { Id = x.Id, BatchNumber = x.Number, IsGroup = x.IsGroup, Text = x.Name, BatchObject = x, ImageSource = src });
@@ -247,7 +256,7 @@ namespace ActivityScheduler
             ArrangeBatchListRunningStatus();
 
             //select first record
-            if (BatchListItemSource.Count>0)
+            if (BatchListItemSource.Count > 0)
             {
                 SelectedItem = BatchListItemSource[0];
             }
@@ -255,7 +264,7 @@ namespace ActivityScheduler
 
         private void ArrangeBatchListRunningStatus()
         {
-            foreach(var x in BatchListItemSource) 
+            foreach (var x in BatchListItemSource)
             {
                 string src = IsBatchRunning(x.BatchNumber) ? _app.PlayIconFullPath : _app.NoneIconFullPath;
                 x.Text = $"_{GetRandomNumberString()}";
@@ -271,7 +280,7 @@ namespace ActivityScheduler
 
         private void AddBatchTbLine(string text)
         {
-            InfoRunBatchText = text+ System.Environment.NewLine+InfoRunBatchText;
+            InfoRunBatchText = text + Environment.NewLine + InfoRunBatchText;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("InfoRunBatchText"));
         }
 
@@ -284,7 +293,7 @@ namespace ActivityScheduler
             if (m.MessageType.ToLower() == "runningbatchesinfo")
             {
                 _runningBatchesNumberList = m.RunningBatches.Batches;
-                
+
                 ArrangeBatchListRunningStatus();
 
                 if (m.RunningBatches.Batches.Count == 0)
@@ -295,7 +304,7 @@ namespace ActivityScheduler
                 else
                 {
                     AddBatchTbLine($"Batches running: {string.Join(",", _runningBatchesNumberList)}");
-                    _runningBatchList = _batchList.Where(x=> _runningBatchesNumberList.Contains(x.Number)).ToList();
+                    _runningBatchList = _batchList.Where(x => _runningBatchesNumberList.Contains(x.Number)).ToList();
                 }
                 RunningBatchesInfoUpdated(_runningBatchList);
             }
@@ -304,7 +313,7 @@ namespace ActivityScheduler
             {
                 if (!m.Result.Success)
                 {
-                    System.Windows.MessageBox.Show($"Unsuccessful operation: {m.Result.Message}");
+                    MessageBox.Show($"Unsuccessful operation: {m.Result.Message}");
                 }
             }
             Task.Delay(100);
