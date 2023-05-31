@@ -176,8 +176,6 @@ namespace ActivityScheduler
             BatchList.Dispatcher.Invoke(()=> { BatchList.Items.Refresh(); });
         }
 
-
-
         private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
         {
             this.Dispatcher.Invoke(() => {

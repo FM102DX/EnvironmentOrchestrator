@@ -7,17 +7,46 @@
         mc:Ignorable="d"
         Title="Edit Batch" Height="651" Width="1224"
         ResizeMode="NoResize" Loaded="Window_Loaded">
-    
+
     <Grid HorizontalAlignment="Center" Width="1224">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        
+
         <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="28,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="125,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="155" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        
-        <DataGrid HorizontalAlignment="Left" Name="ActivityGrid" Height="519" Margin="28,88,0,0" VerticalAlignment="Top" Width="772" SelectionMode="Single" IsReadOnly="True" CanUserAddRows="False" SelectionChanged="ActivityGrid_SelectionChanged"/>
-        
+        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="130,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="183" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+
+        <DataGrid 
+            
+            HorizontalAlignment="Left" 
+            Name="ActivityGrid" 
+            Height="519" 
+            Margin="28,88,0,0" 
+            VerticalAlignment="Top" 
+            Width="772" 
+            SelectionMode="Single" 
+            IsReadOnly="True" 
+            CanUserAddRows="False" 
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            ItemsSource="{Binding AcivityListItemSource, Mode=OneWay}"
+            AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ActivityId" Binding="{Binding Path=ActivityId}" IsReadOnly="True" MinWidth="70"/>
+                <DataGridTextColumn Header="ParentActivities" Binding="{Binding Path=ParentActivities}"  IsReadOnly="True" Width="100"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}"  IsReadOnly="True" Width="170"/>
+                <DataGridTextColumn Header="TransactionId" Binding="{Binding Path=TransactionId}"  IsReadOnly="True" Width="70"/>
+                <DataGridTextColumn Header="StartTime" Binding="{Binding Path=StartTime}"  IsReadOnly="True" Width="70"/>
+                <DataGridTextColumn Header="IsDomestic" Binding="{Binding Path=IsDomestic}"  IsReadOnly="True" Width="50"/>
+                <DataGridTextColumn Header="IsHub" Binding="{Binding Path=IsHub}"  IsReadOnly="True" Width="50"/>
+                <DataGridTextColumn Header="AlwaysSuccess" Binding="{Binding Path=AlwaysSuccess}"  IsReadOnly="True" Width="100"/>
+                
+                
+                
+                
+  
+            </DataGrid.Columns>
+        </DataGrid>
+            
         <Canvas Name ="ActivityEditCanvas" Margin="815,88,20,210" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
 
             <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="21" VerticalAlignment="Top" />
@@ -32,9 +61,9 @@
                         Canvas.Top="21"
                         VerticalAlignment="Top"  
                         TextChanged="ActivityIdTb_TextChanged"
-                        Text="{Binding CurrentActivity.ActivityId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        Text="{Binding SelectedItemDisplayed.ActivityId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-            
+
             <TextBox 
                         TextWrapping="Wrap" 
                         Name="ActivityNameTb" 
@@ -44,7 +73,7 @@
                         HorizontalAlignment="Left" 
                         VerticalAlignment="Center" 
                         Height="19"     
-                        Text="{Binding CurrentActivity.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        Text="{Binding SelectedItemDisplayed.Name, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
 
             <CheckBox 
                         Content="Is hub" 
@@ -54,7 +83,7 @@
                         Name="IsHub" 
                         Canvas.Left="101" 
                         Canvas.Top="77" 
-                        IsChecked ="{Binding CurrentActivity.IsHub, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        IsChecked ="{Binding SelectedItemDisplayed.IsHub, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
 
             <wpfx:MaskedTextBox 
@@ -67,10 +96,10 @@
                                 VerticalAlignment="Center" 
                                 x:Name="StartTimeTb" 
                                 LostFocus="StartTimeTb_LostFocus" 
-                                Text="{Binding CurrentActivity.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                Text="{Binding SelectedItemDisplayed.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-            
-            
+
+
             <CheckBox 
                         Content="Is domestic" 
                         HorizontalAlignment="Left" 
@@ -80,8 +109,8 @@
                         Name="IsDomestic" 
                         Canvas.Left="101" 
                         Canvas.Top="134" 
-                        IsChecked ="{Binding CurrentActivity.IsDomestic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            
+                        IsChecked ="{Binding SelectedItemDisplayed.IsDomestic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+
             <wpfx:MaskedTextBox 
                         Width="93" 
                         Height="19" 
@@ -91,7 +120,7 @@
                         HorizontalAlignment="Left" 
                         VerticalAlignment="Center" 
                         x:Name="TransactionIdTb" 
-                        Text="{Binding CurrentActivity.TransactionId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        Text="{Binding SelectedItemDisplayed.TransactionId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <CheckBox 
                         Content="Always success" 
@@ -101,7 +130,7 @@
                         Name="AlwaysSuccess" 
                         Canvas.Left="101" 
                         Canvas.Top="203"
-                        IsChecked ="{Binding CurrentActivity.AlwaysSuccess, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                        IsChecked ="{Binding SelectedItemDisplayed.AlwaysSuccess, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <TextBox 
                         TextWrapping="Wrap" 
@@ -113,10 +142,8 @@
                         VerticalAlignment="Center" 
                         Height="19" 
                         IsReadOnly="True"
-                        Text="{Binding CurrentActivity.ParentActivities, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-
-            <TextBlock HorizontalAlignment="Left" Name="BatchNumberLabel" Margin="28,24,0,0" TextWrapping="Wrap" Text="Number" VerticalAlignment="Top" />
-            <TextBlock HorizontalAlignment="Left" Name="BatchNameLabel" Margin="125,24,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" />
+                        Text="{Binding SelectedItemDisplayed.ParentActivities, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            
             <TextBlock TextWrapping="Wrap" Text="Name" Canvas.Left="10" Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="TransactionId" Canvas.Left="13" Canvas.Top="106" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="159" HorizontalAlignment="Center" VerticalAlignment="Top"/>
@@ -132,6 +159,8 @@
 
         </Canvas>
         <TextBlock HorizontalAlignment="Left" Margin="815,15,0,0" VerticalAlignment="Top" Width="285" Name="MsgLabel" Foreground="#FFF90202" Height="48"/>
+        <TextBlock TextWrapping="Wrap" Text="Batch number" Margin="28,23,1118,596" Name="BatchNumberLabel" />
+        <TextBlock TextWrapping="Wrap" Text="Batch name" Margin="130,23,1016,596" Name="BatchNameLabel"  />
 
 
     </Grid>

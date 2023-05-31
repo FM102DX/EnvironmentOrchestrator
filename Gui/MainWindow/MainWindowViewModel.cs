@@ -4,6 +4,7 @@ using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.Models.Communication;
 using ActivityScheduler.Data.Models.Settings;
+using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Shared.Pipes;
 using ActivityScheduler.Shared.Service;
 using System;
@@ -89,16 +90,12 @@ namespace ActivityScheduler.Gui.MainWindow
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly Timer _timer;
         private List<string> _runningBatchesNumberList = new List<string>();
-        public string MakitaTextBox2 => MakitaTextBox;
-        public string MakitaTextBox { get; set; } = "Initial text";
         public string InfoRunBatchText { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action ListSourceChanged;
         public ObservableCollection<BatchListBoxViewModel> BatchListItemSource { get; set; }
         public ICommand CreateBatchCmd { get; private set; }
         public ICommand TestCmd { get; private set; }
-        public ICommand TestCmd2 { get; private set; }
-        public ICommand TestCmd3 { get; private set; }
         public ICommand CreateGroupCmd { get; private set; }
         public ICommand DeleteBatchOrGroupCmd { get; private set; }
         public ICommand OpenSettingsFrmCmd { get; private set; }
@@ -181,7 +178,9 @@ namespace ActivityScheduler.Gui.MainWindow
             {
                 if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
                 {
-                    EditBatch editBatch = new EditBatch(_batchManager, _activityManager, CurrentBatch, _logger);
+                    
+                    EditBatch editBatch = new EditBatch(new EditWindowViewModel(_batchManager, _activityManager, CurrentBatch, _logger));
+                    //EditBatch editBatch = new EditBatch(_batchManager, _activityManager, CurrentBatch, _logger);
                     editBatch.Show();
                 }
             });

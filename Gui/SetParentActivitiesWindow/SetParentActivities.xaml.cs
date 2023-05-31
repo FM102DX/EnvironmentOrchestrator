@@ -50,7 +50,7 @@ namespace ActivityScheduler.Core
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            _parentFrm.BufferIn = "-1";
+           // _parentFrm.BufferIn = "-1";
             Close();
         }
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -137,7 +137,7 @@ namespace ActivityScheduler.Core
 
             //System.Windows.MessageBox.Show(x);
 
-            _parentFrm.BufferIn = string.Join(',', _itemsAct.Where(x => x.Selected == true).ToList().Select(x => x.ActivityId).ToList());
+           // _parentFrm.BufferIn = string.Join(',', _itemsAct.Where(x => x.Selected == true).ToList().Select(x => x.ActivityId).ToList());
 
             Close();
 

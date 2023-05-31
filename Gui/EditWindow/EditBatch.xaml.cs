@@ -1,6 +1,7 @@
 ﻿using ActivityScheduler.Data.Contracts;
 using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
+using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Gui.MainWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Service;
@@ -33,10 +34,13 @@ namespace ActivityScheduler.Core
     {
 
         private FormStateHolder _formStateHolder = new FormStateHolder();
+        private EditWindowViewModel _viewModel;
 
-        public EditBatch(MainWindowViewModel dataContext)
+        public EditBatch(EditWindowViewModel dataContext)
         {
             DataContext = dataContext;
+
+            _viewModel = (EditWindowViewModel)dataContext;
 
             _formStateHolder.CreateFormState("isgroup").AddAction(() => {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -47,7 +51,6 @@ namespace ActivityScheduler.Core
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
                 CreateActivity.Visibility = Visibility.Hidden;
                 DeleteActivityBtn.Visibility = Visibility.Hidden;
-
             }).Parent.CreateFormState("normal").AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -73,21 +76,7 @@ namespace ActivityScheduler.Core
         }
         private void BatchSave_Click(object sender, RoutedEventArgs e)
         {
-            //CommonOperationResult chkRez;
 
-            //_currentBatch.Number = BatchNumberTb.Text;
-            
-            //_currentBatch.Name = BatchNameTb.Text;
-
-            //var btcAddRez = _batchManager.ModifyBatch(_currentBatch).Result;
-            
-            //if (!btcAddRez.Success)
-            //{
-            //    System.Windows.Forms.MessageBox.Show(btcAddRez.Message);
-            //    return;
-            //}
-            
-            //Close();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -118,10 +107,7 @@ namespace ActivityScheduler.Core
             }
         }
 
-        private void LoadActivities()
-        {
-           // _activitiesList = _activityManager.GetAll(_currentBatch.Id).Result.ToList();
-        }
+
 
         private void CreateActivity_Click(object sender, RoutedEventArgs e)
         {
@@ -156,18 +142,6 @@ namespace ActivityScheduler.Core
             //_currentActivity = _activitiesList.Where(x => x.Id == item.Id).FirstOrDefault();
 
             //SetActivityToFields(_currentActivity);
-        }
-
-        private void SetActivityToFields(Activity activity)
-        {
-            ActivityIdTb.Text = activity.ActivityId.ToString();
-            ActivityNameTb.Text = activity.Name;
-            IsHub.IsChecked = activity.IsHub;
-            TransactionIdTb.Text=activity.TransactionId.ToString();
-            IsDomestic.IsChecked= activity.IsDomestic;
-            StartTimeTb.Text=activity.StartTime.ToString();
-            AlwaysSuccess.IsChecked = activity.AlwaysSuccess;
-            ParentActivitiesTb.Text = activity.ParentActivities;
         }
 
         //private Activity GetActivityFromFields()
@@ -207,22 +181,6 @@ namespace ActivityScheduler.Core
             //SaveCurrentActivity();
         }
 
-        private void SaveCurrentActivity()
-        {
-            //MsgLabel.Text = "";
-            //Activity activity = GetActivityFromFields();
-            //var rez = _activityManager.ModifyActivity(activity).Result;
-            //if (!rez.Success)
-            //{
-            //    //focus on field
-            //    if (rez.StoredAction != null) rez.StoredAction.Invoke();
-
-            //    //Task.Run(() => ShowFormErrorMessage(rez.Message));
-            //    MsgLabel.Text = rez.Message;
-            //    return;
-            //}
-            //LoadActivityGrid();
-        }
         private void ShowFormErrorMessage(string text)
         {
             MsgLabel.Text = text;

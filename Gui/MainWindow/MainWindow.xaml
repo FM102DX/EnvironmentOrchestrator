@@ -24,7 +24,7 @@
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top"    Width="99"      Name="NewGroup"             Command="{Binding CreateGroupCmd}" />
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top"    Width="99"      Name="Settings"             Command="{Binding OpenSettingsFrmCmd}"/>
         <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top"    Width="99"      Name="RunBatch"             Command="{Binding RunBatchCmd}"/>
-        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top"    Width="99"      Name="EditBatch"            Command="{Binding EditBatchCmd}" />
+        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top"    Width="99"      Name="EditBatch"            Command="{Binding EditBatchCmd}"/>
         <Button Content="Stop batch" HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top"    Width="99"      Name="StopBatch"            Command="{Binding StopBatchCmd}" />
 
         <ListBox 
