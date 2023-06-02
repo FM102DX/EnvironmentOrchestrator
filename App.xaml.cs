@@ -100,7 +100,9 @@ namespace ActivityScheduler
                   .CreateLogger();
 
             Process[] pname = Process.GetProcessesByName("ActivityScheduler");
+
             _logger.Information($"Intances of ActivityScheduler.exe {pname.Length}");
+
             if (pname.Length > 1)
             {
                 System.Windows.MessageBox.Show("Only one instance of application can be running");

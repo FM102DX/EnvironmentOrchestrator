@@ -181,12 +181,7 @@ namespace ActivityScheduler.Core
             //SaveCurrentActivity();
         }
 
-        private void ShowFormErrorMessage(string text)
-        {
-            MsgLabel.Text = text;
-            Thread.Sleep(3000);
-            MsgLabel.Text ="";
-        }
+
 
         private void ActivityIdTb_TextChanged(object sender, TextChangedEventArgs e)
         {

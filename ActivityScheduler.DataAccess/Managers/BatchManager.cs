@@ -140,6 +140,14 @@ namespace ActivityScheduler.Data.Managers
         {
             try
             {
+
+                var remRez= _activityManager.RemoveAllBatchActivities(id);
+
+                if (!remRez.Result.Success)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"Cannot remove batch because cant remove its activities"));
+                }
+
                 //cant remove batch if it contains activities
                 var actv = _activityManager.GetAll(id).Result;
 

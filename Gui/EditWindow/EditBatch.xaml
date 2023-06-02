@@ -148,7 +148,7 @@
             <TextBlock TextWrapping="Wrap" Text="TransactionId" Canvas.Left="13" Canvas.Top="106" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="159" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="Parent activities" Canvas.Left="11" Canvas.Top="233" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="301" Click="SaveActivityBtn_Click"  />
+            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="301" Command="{Binding SaveActivityCmd}" />
             <Button Content=">>" Canvas.Left="328" Canvas.Top="231" Name="SetParentActivitiesBtn" Click="SetParentActivitiesBtn_Click"/>
             <Button Content="Delete activity" Name="DeleteActivityBtn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Canvas.Left="280" Canvas.Top="301" Background="#FFF90202" Margin="0,0,0,0" Click="DeleteActivityBtn_Click"  />
             <Button Content="Save batch" Name="BatchSave" HorizontalAlignment="Left" Margin="1105,13,0,0" VerticalAlignment="Top" Width="99" Click="BatchSave_Click"  />

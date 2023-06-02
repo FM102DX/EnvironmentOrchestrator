@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ActivityScheduler.Gui.EditWindow
@@ -67,15 +69,17 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 _selectedItem = value;
                 
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItemDisplayed"));
-
-                SelectedItemDisplayed = _selectedItem.Clone();
+                
                 
                 if (_selectedItem == null)
                 {
                     //SelectionModeVar = SelectionMode.None;
                     return;
                 }
+
+                SelectedItemDisplayed = _selectedItem.Clone();
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItemDisplayed"));
 
                 UpdateSelectionMode();
             }
@@ -113,7 +117,24 @@ namespace ActivityScheduler.Gui.EditWindow
 
             SaveActivityCmd = new ActionCommand(() =>
             {
+                if (SelectedItemDisplayed == null) { return; }
 
+                var rez = _activityManager.ModifyActivity(SelectedItemDisplayed).Result;
+
+                if (!rez.Success)
+                {
+                    // focus on field
+                    //if (rez.StoredAction != null) rez.StoredAction.Invoke();
+
+                     ShowFormErrorMessage(rez.Message);
+                     //MsgLabel.Text = rez.Message;
+                    return;
+                }
+
+                LoadActivities();
+
+                ShowFormSuccessMessage("Activity saved successfully");
+                
             });
             SaveBatchCmd = new ActionCommand(() =>
             {
@@ -137,9 +158,24 @@ namespace ActivityScheduler.Gui.EditWindow
             LoadActivities();
         }
 
+        private void ShowFormErrorMessage(string text)
+        {
+            MessageBox.Show(text,"Operation error", MessageBoxButton.OK , MessageBoxImage.Error);
+        }
+
+        private void ShowFormSuccessMessage(string text)
+        {
+            MessageBox.Show(text, "Operation successful", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void ShowFormInfoMessage(string text)
+        {
+            MessageBox.Show(text, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+
         private void LoadActivities()
         {
-            _activitiesList = _activityManager.GetAll(CurrentBatch.Id).Result.ToList();
+            AcivityListItemSource = _activityManager.GetAll(CurrentBatch.Id).Result.ToList();
         }
 
         private void UpdateSelectionMode()
@@ -167,8 +203,6 @@ namespace ActivityScheduler.Gui.EditWindow
             //    SelectionModeChanged(SelectionModeVar);
             //}
         }
-
-        
 
         public enum SelectionMode
         {
