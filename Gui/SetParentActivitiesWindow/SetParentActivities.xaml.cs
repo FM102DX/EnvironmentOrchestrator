@@ -1,6 +1,7 @@
 ﻿using ActivityScheduler.Data.Contracts;
 using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
+using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Service;
 using Newtonsoft.Json.Bson;
@@ -25,9 +26,7 @@ using static System.Windows.Forms.DataFormats;
 
 namespace ActivityScheduler.Core
 {
-    /// <summary>
-    /// Interaction logic for NewBatch.xaml
-    /// </summary>
+    
     public partial class SetParentActivities : Window
     {
         private Serilog.ILogger _logger;
@@ -36,16 +35,16 @@ namespace ActivityScheduler.Core
         private Batch _currentBatch;
         private Activity _currentActivity;
         private List<Activity> _activitiesList = new List<Activity>();
-        private EditBatch _parentFrm;
         private List<ParentActivitySelectionViewModel> _itemsAct =new List<ParentActivitySelectionViewModel>();
+        private EditWindowViewModel _editWindowViewModel;
 
-        public SetParentActivities(EditBatch parentFrm, ActivityManager activityManager, Batch currentBatch,  Activity currentActivity, Serilog.ILogger logger)
+        public SetParentActivities(ActivityManager activityManager, Batch currentBatch,  Activity currentActivity, Serilog.ILogger logger, EditWindowViewModel editWindowViewModel)
         {
             _logger = logger;
             _currentBatch = currentBatch;
-            _parentFrm = parentFrm;
             _activityManager = activityManager;
             _currentActivity= currentActivity;
+            _editWindowViewModel = editWindowViewModel;
             InitializeComponent();
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
@@ -82,9 +81,6 @@ namespace ActivityScheduler.Core
                     y.Selected = true;
                 }
             }
-           
-
-
             ActivityGrid.ItemsSource = _itemsAct;
 
             (new[] { 0 }).ToList().ForEach(x => { ActivityGrid.Columns[x].Visibility = Visibility.Hidden; }); //hide columns
@@ -108,39 +104,15 @@ namespace ActivityScheduler.Core
             _activitiesList = _activityManager.GetAll(_currentBatch.Id).Result.ToList();
         }
 
-        private void CreateActivity_Click(object sender, RoutedEventArgs e)
-        {
-            //add new activity to batch and re-read it into grid 
-            //get all activities for this batch
-
-            var activities = _activityManager.GetAll(_currentBatch.Id).Result.ToList();
-            int newNumber=100;
-
-            if (activities.Count>0)
-            {
-                newNumber = activities.Max(x => x.ActivityId)+100;
-            }
-
-            Activity newActivity = new Activity();
-            newActivity.ActivityId = newNumber;
-            newActivity.BatchId = _currentBatch.Id;
-            newActivity.TransactionId = "000000";
-            newActivity.StartTime=TimeSpan.FromSeconds(0);
-            newActivity.Name = $"NewActivity-{newNumber}";
-            _activityManager.AddNewActivity(newActivity);
-            LoadActivityGrid();
-        }
-
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            //string x = string.Join(',',_itemsAct.Where(x=>x.Selected==true).ToList().Select(x=>x.ActivityId).ToList());
+            string x = string.Join(',',_itemsAct.Where(x=>x.Selected==true).ToList().Select(x=>x.ActivityId).ToList());
 
-            //System.Windows.MessageBox.Show(x);
+            //            System.Windows.MessageBox.Show(x);
 
-           // _parentFrm.BufferIn = string.Join(',', _itemsAct.Where(x => x.Selected == true).ToList().Select(x => x.ActivityId).ToList());
+            _editWindowViewModel.SetParentActivities(x);
 
             Close();
-
         }
     }
 }

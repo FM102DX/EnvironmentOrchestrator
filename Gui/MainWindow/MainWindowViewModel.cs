@@ -178,8 +178,7 @@ namespace ActivityScheduler.Gui.MainWindow
             {
                 if (SelectionModeVar != SelectionMode.None && CurrentBatch != null)
                 {
-                    
-                    EditBatch editBatch = new EditBatch(new EditWindowViewModel(_batchManager, _activityManager, CurrentBatch, _logger));
+                    EditBatch editBatch = new EditBatch(new EditWindowViewModel(_batchManager, _activityManager, CurrentBatch, _logger, this));
                     //EditBatch editBatch = new EditBatch(_batchManager, _activityManager, CurrentBatch, _logger);
                     editBatch.Show();
                 }

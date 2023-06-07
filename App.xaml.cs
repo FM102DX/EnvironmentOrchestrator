@@ -226,8 +226,17 @@ namespace ActivityScheduler
 
             _timer.Start();
 
-            var dfm = _serviceProvider.GetService<DataFillManager>();
-            dfm.FillTheModel();
+            //fill test data
+            var settingsManager = _serviceProvider.GetService<SettingsManager>();
+            if (settingsManager !=null)
+            {
+                var settings = settingsManager.GetSettings();
+                if (settings.FillTestDataOnLaunch)
+                {
+                    var testDataFillManager = _serviceProvider.GetService<DataFillManager>();
+                    testDataFillManager?.FillTheModel();
+                }
+            }
 
             ShowMainWindow();
             _logger.Information($"Point 9");

@@ -40,11 +40,11 @@ namespace ActivityScheduler
     {
         public MainWindowViewModel.SelectionMode SelectionModeVar { get; set; }
 
-        private FormStateHolder formStateHolder = new FormStateHolder();
+        private FormStateHolder _formStateHolder = new FormStateHolder();
 
         private MainWindowViewModel.SelectionMode _selectionMode;
 
-        private MainWindowViewModel viewModel;
+        private MainWindowViewModel _viewModel;
         private MainWindowViewModel.SelectionMode SelectionMode
         { 
             get 
@@ -61,15 +61,15 @@ namespace ActivityScheduler
         {
             DataContext = dataContext;
             
-            viewModel = (MainWindowViewModel)DataContext;
+            _viewModel = (MainWindowViewModel)DataContext;
 
-            viewModel.SelectionModeChanged += ViewModel_SelectionModeChanged;
+            _viewModel.SelectionModeChanged += ViewModel_SelectionModeChanged;
 
-            viewModel.ListSourceChanged += ViewModel_ListSourceChanged;
+            _viewModel.ListSourceChanged += ViewModel_ListSourceChanged;
 
-            viewModel.RunningBatchesInfoUpdated += ViewModel_RunningBatchesInfoUpdated;
+            _viewModel.RunningBatchesInfoUpdated += ViewModel_RunningBatchesInfoUpdated;
 
-            formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() => {
+            _formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() => {
                 NameTxt.Visibility      = Visibility.Visible;
                 NumberTxt.Visibility    = Visibility.Visible;
                 BatchName.Visibility    = Visibility.Visible;
@@ -179,7 +179,7 @@ namespace ActivityScheduler
         private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
         {
             this.Dispatcher.Invoke(() => {
-                formStateHolder.SetFormState(selectionMode.ToString());
+                _formStateHolder.SetFormState(selectionMode.ToString());
             });
         }
 
@@ -191,8 +191,8 @@ namespace ActivityScheduler
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if ((viewModel != null) && viewModel.LoadBatchListCmd.CanExecute(null))
-                viewModel.LoadBatchListCmd.Execute(null);
+            if ((_viewModel != null) && _viewModel.LoadBatchListCmd.CanExecute(null))
+                _viewModel.LoadBatchListCmd.Execute(null);
             BatchList.Focus();
         }
 

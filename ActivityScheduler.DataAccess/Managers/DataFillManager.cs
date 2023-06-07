@@ -1,4 +1,5 @@
 ﻿using ActivityScheduler.Data.Models;
+using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +21,13 @@ namespace ActivityScheduler.Data.Managers
 
         public void FillTheModel()
         {
+            CommonOperationResult rez;
             var remRez=_batchManager.RemoveAllBatches();
 
             Batch batch1 = new Batch();
             batch1.Number = "100101";
             batch1.Name = "Env.checkin";
-            _batchManager.AddNewBatch(batch1);
+            rez= _batchManager.AddNewBatch(batch1).Result;
 
             Activity actv1 = new Activity()
             {
@@ -49,8 +51,7 @@ namespace ActivityScheduler.Data.Managers
             Batch batch2 = new Batch();
             batch2.Number = "200101";
             batch2.Name = "15.min.standard.test";
-            _batchManager.AddNewBatch(batch2);
-
+            rez = _batchManager.AddNewBatch(batch2).Result;
 
             Activity actv3 = new Activity()
             {
@@ -62,6 +63,7 @@ namespace ActivityScheduler.Data.Managers
 
             Activity actv4 = new Activity()
             {
+                BatchId = batch2.Id,
                 ActivityId = 200,
                 Name = "Start.test",
                 TransactionId = "780102"

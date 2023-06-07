@@ -69,7 +69,9 @@ namespace ActivityScheduler.Data.DataAccess
             {
                 _context.Set<T>().Add(t);
                 _context.SaveChanges();
-                return Task.FromResult(CommonOperationResult.SayOk());
+                var rez = CommonOperationResult.SayOk();
+                rez.ReturningGuid = t.Id;
+                return Task.FromResult(rez);
             }
             catch (Exception ex)
             {

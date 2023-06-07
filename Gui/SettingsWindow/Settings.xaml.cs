@@ -35,7 +35,7 @@ namespace ActivityScheduler.Core.Settings
 
             settings.Setting01 = Setting1Tb.Text;
 
-            if ((bool)Setting2Chbx.IsChecked) { settings.Setting02 = true; } else { settings.Setting02 = false; }
+            if ((bool)FillTestDataOnLaunch.IsChecked) { settings.FillTestDataOnLaunch = true; } else { settings.FillTestDataOnLaunch = false; }
             
             _settingsManager.SaveSettings(settings);
 
@@ -52,8 +52,8 @@ namespace ActivityScheduler.Core.Settings
             var settings = _settingsManager.GetSettings();
 
             Setting1Tb.Text = settings.Setting01;
-            
-            Setting2Chbx.IsChecked = settings.Setting02;
+
+            FillTestDataOnLaunch.IsChecked = settings.FillTestDataOnLaunch;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

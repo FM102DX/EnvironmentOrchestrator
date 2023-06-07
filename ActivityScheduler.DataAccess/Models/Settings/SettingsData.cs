@@ -10,7 +10,7 @@ namespace ActivityScheduler.Data.Models.Settings
     {
         public string Setting01 { get; set; }
 
-        public bool Setting02 { get; set; }
+        public bool FillTestDataOnLaunch { get; set; }
 
 
     }

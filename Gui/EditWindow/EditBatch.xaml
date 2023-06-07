@@ -6,15 +6,60 @@
         xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Edit Batch" Height="651" Width="1224"
-        ResizeMode="NoResize" Loaded="Window_Loaded">
+        ResizeMode="NoResize" >
+
+    <Window.Resources>
+
+        <Style x:Key="DataGridCellStyle1" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="LightGreen"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static DataGrid.FocusBorderBrushKey}}"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="true"/>
+                        <Condition Property="Selector.IsSelectionActive" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" Value="LightGreen"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                </MultiTrigger>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
 
     <Grid HorizontalAlignment="Center" Width="1224">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="211*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="36*"/>
+            <ColumnDefinition Width="92*"/>
+            <ColumnDefinition Width="881*"/>
         </Grid.ColumnDefinitions>
 
         <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="28,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="78" Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="130,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="183" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="131,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.ColumnSpan="4"/>
 
         <DataGrid 
             
@@ -27,9 +72,12 @@
             SelectionMode="Single" 
             IsReadOnly="True" 
             CanUserAddRows="False" 
-            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             ItemsSource="{Binding AcivityListItemSource, Mode=OneWay}"
-            AutoGenerateColumns="False">
+            AutoGenerateColumns="False"
+            SelectionUnit="FullRow"
+            
+            CellStyle="{DynamicResource DataGridCellStyle1}" PreviewMouseDown="ActivityGrid_PreviewMouseDown" Grid.ColumnSpan="5">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ActivityId" Binding="{Binding Path=ActivityId}" IsReadOnly="True" MinWidth="70"/>
                 <DataGridTextColumn Header="ParentActivities" Binding="{Binding Path=ParentActivities}"  IsReadOnly="True" Width="100"/>
@@ -39,50 +87,45 @@
                 <DataGridTextColumn Header="IsDomestic" Binding="{Binding Path=IsDomestic}"  IsReadOnly="True" Width="50"/>
                 <DataGridTextColumn Header="IsHub" Binding="{Binding Path=IsHub}"  IsReadOnly="True" Width="50"/>
                 <DataGridTextColumn Header="AlwaysSuccess" Binding="{Binding Path=AlwaysSuccess}"  IsReadOnly="True" Width="100"/>
-                
-                
-                
-                
-  
             </DataGrid.Columns>
         </DataGrid>
-            
-        <Canvas Name ="ActivityEditCanvas" Margin="815,88,20,210" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
 
-            <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Left" Canvas.Left="10" Canvas.Top="21" VerticalAlignment="Top" />
-            <wpfx:MaskedTextBox 
+        <Canvas Name ="ActivityEditCanvas" Margin="472,123,20,28" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}" Grid.Column="4">
+            <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Center" Canvas.Left="10" Canvas.Top="48" VerticalAlignment="Top" />
+
+
+            <TextBox 
                         TextWrapping="Wrap" 
-                        x:Name="ActivityIdTb" 
-                        Mask="000"  
-                        Height="22"
-                        Width="57" 
-                        HorizontalAlignment="Center" 
-                        Canvas.Left="101" 
-                        Canvas.Top="21"
-                        VerticalAlignment="Top"  
-                        TextChanged="ActivityIdTb_TextChanged"
+                        Name="ActivityIdTb" 
+                        Width="92" 
+                        Canvas.Left="102" 
+                        Canvas.Top="45" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" 
+                        Height="19"    
+                        MaxLength="4"
+                        MaxLines="1"
                         Text="{Binding SelectedItemDisplayed.ActivityId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-
 
             <TextBox 
                         TextWrapping="Wrap" 
                         Name="ActivityNameTb" 
                         Width="256" 
-                        Canvas.Left="101" 
-                        Canvas.Top="48" 
+                        Canvas.Left="102" 
+                        Canvas.Top="73" 
                         HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
+                        VerticalAlignment="Top" 
                         Height="19"     
-                        Text="{Binding SelectedItemDisplayed.Name, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                        Text="{Binding SelectedItemDisplayed.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <CheckBox 
                         Content="Is hub" 
                         HorizontalAlignment="Center" 
-                        VerticalAlignment="Center" 
+                        VerticalAlignment="Top" 
                         Width="89" 
                         Name="IsHub" 
                         Canvas.Left="101" 
-                        Canvas.Top="77" 
+                        Canvas.Top="104" 
                         IsChecked ="{Binding SelectedItemDisplayed.IsHub, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
 
@@ -91,24 +134,22 @@
                                 Height="18" 
                                 Mask="00:00:00" 
                                 Canvas.Left="102" 
-                                Canvas.Top="157" 
-                                HorizontalAlignment="Left" 
-                                VerticalAlignment="Center" 
+                                Canvas.Top="184" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Top" 
                                 x:Name="StartTimeTb" 
-                                LostFocus="StartTimeTb_LostFocus" 
                                 Text="{Binding SelectedItemDisplayed.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
 
 
             <CheckBox 
                         Content="Is domestic" 
-                        HorizontalAlignment="Left" 
-                        Margin="0,0,0,0" 
+                        HorizontalAlignment="Center" 
                         VerticalAlignment="Top" 
                         Width="89" 
                         Name="IsDomestic" 
                         Canvas.Left="101" 
-                        Canvas.Top="134" 
+                        Canvas.Top="161" 
                         IsChecked ="{Binding SelectedItemDisplayed.IsDomestic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <wpfx:MaskedTextBox 
@@ -116,20 +157,20 @@
                         Height="19" 
                         Mask="000000" 
                         Canvas.Left="101" 
-                        Canvas.Top="102" 
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
+                        Canvas.Top="129" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Top" 
                         x:Name="TransactionIdTb" 
                         Text="{Binding SelectedItemDisplayed.TransactionId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <CheckBox 
                         Content="Always success" 
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Top" 
                         Width="120" 
                         Name="AlwaysSuccess" 
                         Canvas.Left="101" 
-                        Canvas.Top="203"
+                        Canvas.Top="230"
                         IsChecked ="{Binding SelectedItemDisplayed.AlwaysSuccess, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <TextBox 
@@ -137,31 +178,28 @@
                         Name="ParentActivitiesTb" 
                         Width="221" 
                         Canvas.Left="102" 
-                        Canvas.Top="231" 
-                        HorizontalAlignment="Left" 
-                        VerticalAlignment="Center" 
+                        Canvas.Top="258" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Top" 
                         Height="19" 
                         IsReadOnly="True"
                         Text="{Binding SelectedItemDisplayed.ParentActivities, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            
-            <TextBlock TextWrapping="Wrap" Text="Name" Canvas.Left="10" Canvas.Top="48" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <TextBlock TextWrapping="Wrap" Text="TransactionId" Canvas.Left="13" Canvas.Top="106" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="159" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <TextBlock TextWrapping="Wrap" Text="Parent activities" Canvas.Left="11" Canvas.Top="233" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="301" Command="{Binding SaveActivityCmd}" />
-            <Button Content=">>" Canvas.Left="328" Canvas.Top="231" Name="SetParentActivitiesBtn" Click="SetParentActivitiesBtn_Click"/>
-            <Button Content="Delete activity" Name="DeleteActivityBtn" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Canvas.Left="280" Canvas.Top="301" Background="#FFF90202" Margin="0,0,0,0" Click="DeleteActivityBtn_Click"  />
-            <Button Content="Save batch" Name="BatchSave" HorizontalAlignment="Left" Margin="1105,13,0,0" VerticalAlignment="Top" Width="99" Click="BatchSave_Click"  />
-            <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Left" Margin="701,45,0,0" VerticalAlignment="Top" Width="99" Click="CreateActivity_Click"  />
-            <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="1105,43,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
 
-
+            <TextBlock TextWrapping="Wrap" Text="Name" Canvas.Left="10" Canvas.Top="75" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock TextWrapping="Wrap" Text="TransactionId" Canvas.Left="13" Canvas.Top="133" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="186" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <TextBlock TextWrapping="Wrap" Text="Parent activities" Canvas.Left="11" Canvas.Top="260" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="328" Command="{Binding SaveActivityCmd}" />
+            <Button Content=">>" Canvas.Left="328" Canvas.Top="258" Name="SetParentActivitiesBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding SelectParentActivitiesCmd}"   />
+            <Button Content="Delete activity" Name="DeleteActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Canvas.Left="280" Canvas.Top="328" Background="#FFF90202" Command="{Binding DeleteActivityCmd}"   />
+            <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Center" VerticalAlignment="Center" Width="99" Canvas.Left="289" Canvas.Top="-38" Command="{Binding CreateActivityCmd}" />
 
         </Canvas>
-        <TextBlock HorizontalAlignment="Left" Margin="815,15,0,0" VerticalAlignment="Top" Width="285" Name="MsgLabel" Foreground="#FFF90202" Height="48"/>
-        <TextBlock TextWrapping="Wrap" Text="Batch number" Margin="28,23,1118,596" Name="BatchNumberLabel" />
-        <TextBlock TextWrapping="Wrap" Text="Batch name" Margin="130,23,1016,596" Name="BatchNameLabel"  />
-
+        <TextBlock HorizontalAlignment="Left" Margin="33,15,0,0" VerticalAlignment="Top" Width="285" Name="MsgLabel" Foreground="#FFF90202" Height="48" Grid.Column="4"/>
+        <TextBlock TextWrapping="Wrap" Text="Batch number" Margin="28,23,105,596" Name="BatchNumberLabel" />
+        <TextBlock TextWrapping="Wrap" Text="Batch name" Margin="130,23,3,596" Name="BatchNameLabel"  />
+        <Button Content="Save batch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Margin="358,34,0,0" Command="{Binding SaveBatchCmd}" Grid.Column="4" />
+        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="358,63,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" Grid.Column="4" />
 
     </Grid>
 
