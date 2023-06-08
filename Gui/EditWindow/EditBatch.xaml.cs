@@ -71,10 +71,20 @@ namespace ActivityScheduler.Core
                 DeleteActivityBtn.Visibility = Visibility.Visible;
 
             });
+
             _viewModel.SelectionModeChanged += _viewModel_SelectionModeChanged;
+            this.PreviewKeyDown += new KeyEventHandler(HandleEsc);
             _viewModel.NeedToCloseForm += () => { Close(); };
 
             InitializeComponent();
+        }
+        private void HandleEsc(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape) 
+            {
+                if(_viewModel.CancelRecordEditCmd.CanExecute(this))
+                        _viewModel.CancelRecordEditCmd.Execute(this);
+            }
         }
 
         private void _viewModel_SelectionModeChanged(EditWindowViewModel.SelectionMode selectionMode)
@@ -89,11 +99,17 @@ namespace ActivityScheduler.Core
 
         private void ActivityGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-           
-            // System.Windows.Forms.MessageBox.Show("this is PreviewMouseDown");
             if (_viewModel.NeedToStopItemSelectionChange())
             {
                 e.Handled = true;
+            }
+        }
+
+        private void EditBatchFrm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_viewModel.NeedToStopFormClosing())
+            {
+                e.Cancel = true;
             }
         }
     }

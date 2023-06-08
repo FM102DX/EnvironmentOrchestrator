@@ -32,7 +32,7 @@ namespace ActivityScheduler.Data.Models
         {
             if (string.IsNullOrEmpty(ParentActivities)) { return new List<int>(); }
             
-            var x = ParentActivities.Split(',').Cast<int>().ToList();
+            var x = ParentActivities.Split(',').ToList().Select(x=>Convert.ToInt32(x)).ToList();
             
             return x;
         }

@@ -33,7 +33,7 @@ namespace ActivityScheduler.Gui.EditWindow
 
         public ICommand DeleteActivityCmd { get; private set; }
         
-        public ICommand RestoreSelectionOnGotFocusCmd { get; private set; }
+        public ICommand CancelRecordEditCmd { get; private set; }
 
         public ICommand SelectParentActivitiesCmd { get; private set; }
 
@@ -186,6 +186,14 @@ namespace ActivityScheduler.Gui.EditWindow
                 if (NeedToCloseForm !=null) NeedToCloseForm();
             });
 
+            CancelRecordEditCmd = new ActionCommand(() =>
+            {
+                if (SelectedItem !=null)
+                {
+                    SelectedItemDisplayed = SelectedItem.Clone();
+                }
+            });
+
             SelectParentActivitiesCmd = new ActionCommand(() =>
             {
                 SetParentActivities act = new SetParentActivities(_activityManager, _currentBatch, SelectedItem, _logger, this);
@@ -258,6 +266,48 @@ namespace ActivityScheduler.Gui.EditWindow
                 if (mbxRez == MessageBoxResult.No)
                 {
                     if (SelectedItem!=null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
+                    return false;
+                }
+
+                if (mbxRez == MessageBoxResult.Cancel)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        public bool NeedToStopFormClosing()
+        {
+            if (IsModified)
+            {
+                var mbxRez = MessageBox.Show("Save changes?", "Question", MessageBoxButton.YesNoCancel);
+
+                if (mbxRez == MessageBoxResult.Yes)
+                {
+                    if (SaveActivity())
+                    {
+                        //saved successfully
+                        return false;
+                    }
+                    else
+                    {
+                        if (SelectedItemDisplayed != null)
+                        {
+                            LoadActivities(RecordSelectionMode.SelectSpecifiedId, SelectedItemDisplayed.Id);
+                        }
+                        else
+                        {
+                            LoadActivities();
+                        }
+                        return true;
+                    }
+                }
+
+                if (mbxRez == MessageBoxResult.No)
+                {
+                    if (SelectedItem != null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
                     return false;
                 }
 
