@@ -1,0 +1,71 @@
+﻿<Window x:Class="ActivityScheduler.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ActivityScheduler"
+        Title="MainWindow" Height="515" Width="1028"
+        ResizeMode="NoResize" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
+            <Style.Setters>
+                <Setter Property="Control.FontWeight" Value="Normal" />
+            </Style.Setters>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsGroup}" Value="True">
+                    <Setter Property="Control.FontWeight" Value="Bold"/>
+                    <Setter Property="Control.Margin" Value="0,10,0,0"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top"    Width="99"      Name="NewBatch"             Command="{Binding CreateBatchCmd}"  />
+        <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top"    Width="99"      Name="NewGroup"             Command="{Binding CreateGroupCmd}" />
+        <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top"    Width="99"      Name="Settings"             Command="{Binding OpenSettingsFrmCmd}"/>
+        <Button Content="Run batch"  HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top"    Width="99"      Name="RunBatch"             Command="{Binding RunBatchCmd}"/>
+        <Button Content="Edit batch" HorizontalAlignment="Left" Margin="908,150,0,0" VerticalAlignment="Top"    Width="99"      Name="EditBatch"            Command="{Binding EditBatchCmd}"/>
+        <Button Content="Stop batch" HorizontalAlignment="Left" Margin="908,203,0,0" VerticalAlignment="Top"    Width="99"      Name="StopBatch"            Command="{Binding StopBatchCmd}" />
+
+        <ListBox 
+            Name="BatchList" 
+            HorizontalAlignment="Left" 
+            Height="382" 
+            Margin="29,73,0,0" 
+            VerticalAlignment="Top" 
+            Width="229" 
+            ItemContainerStyle="{StaticResource ListItemStyle}" 
+            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+            ItemsSource="{Binding BatchListItemSource, Mode=OneWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <TextBlock Text="{Binding Path=BatchNumber}" Margin="0,0,0,0" Name="n1"  />
+                        <TextBlock Text="--" Name="n2" />
+                        <TextBlock Text="{Binding Path=Text}" Margin="0,0,0,0" Name="n3"/>
+                        <Image Source="{Binding Path=ImageSource}" Margin="3,3,0,0" Width="15" Height="15"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TabControl HorizontalAlignment="Left" Height="382" Margin="273,73,0,0" VerticalAlignment="Top" Width="603" Name="Tabs">
+            <TabItem Header="Main" Name="Main">
+                <Grid Background="#FFE5E5E5" >
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchNumber"    Margin="28,45,0,0"  TextWrapping="Wrap"     Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" VerticalAlignment="Top" Width="78"/>
+                    <TextBlock HorizontalAlignment="Left" Name="NumberTxt"      Margin="28,24,0,0"  TextWrapping="Wrap"     Text="Number" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" x:Name="BatchName"      Margin="125,45,0,0" TextWrapping="Wrap"     Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" VerticalAlignment="Top" Width="186"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="125,24,0,0"   TextWrapping="Wrap"                         Text="Name"         Name="NameTxt"      VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Info" Name="Info">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Width="569" Name="InfoRunBatchTextTb" Text="{Binding InfoRunBatchText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Height="334" VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Content="Delete batch" HorizontalAlignment="Left" Margin="908,176,0,0" VerticalAlignment="Top" Width="99" Name="DeleteBatch" Background="#FFF34705" Foreground="Black" Command="{Binding DeleteBatchOrGroupCmd}"/>
+        <TextBlock Name="InfoTb" HorizontalAlignment="Left" Margin="273,22,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="603" Height="38"/>
+        <Button Content="Test" HorizontalAlignment="Left" Margin="908,245,0,0" VerticalAlignment="Top" Width="99" Background="Aqua" Command="{Binding TestCmd}"/>
+    </Grid>
+</Window>

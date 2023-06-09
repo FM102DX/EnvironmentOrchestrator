@@ -8,10 +8,20 @@ namespace ActivityScheduler.Shared.Pipes
 {
     public class CommunicationMessageBase
     {
-        public Guid Id { get; set; } = new Guid();
+        public Guid Id { get; set; }
 
         public string? Message { get; set; }
 
         public CommonOperationResult? Result { get; set; }
+
+        public string? Command { get; set; }
+
+        public string MessageType { get; set; }
+
+        public CommunicationMessageBase()
+        {
+            Id= new Guid();
+            MessageType = "info";
+        }
     }
 }

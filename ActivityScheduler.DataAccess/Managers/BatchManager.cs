@@ -51,10 +51,18 @@ namespace ActivityScheduler.Data.Managers
                     })
                     .AddCheck(new List<string>() { "Insert", "Update" }, "Name", (Batch batch) =>
                     {
-                        if (_batches.Count == 0) { return CommonOperationResult.SayOk(); }
-                        if (batch.Name.ToLower() == "new.group") { return CommonOperationResult.SayOk();}
+                        if (batch.Name.ToLower() == "new.group" && batch.IsGroup) 
+                        { 
+                            return CommonOperationResult.SayOk();
+                        }
+                        
+                        if (batch.Name.ToLower() == "new.batch" && (!batch.IsGroup))
+                        {
+                            return CommonOperationResult.SayOk();
+                        }
 
                         var rez = Validation.CheckIfTransactionOrBatchNameIsCorrect(batch.Name);
+                        
                         if (!rez.Success) { return rez; }
 
                         var nameCount = _batches.Where(x => x.Name == batch.Name && x.Id != batch.Id).ToList().Count;
@@ -68,7 +76,10 @@ namespace ActivityScheduler.Data.Managers
                     })
                     .AddCheck(new List<string>() { "Insert" }, "Number", (Batch batch) =>
                     {
-                        if (batch.Number == "000000") {return CommonOperationResult.SayOk(); }
+                        if (batch.Number == "000000") 
+                        {
+                            return CommonOperationResult.SayOk(); 
+                        }
 
                         var rez = Validation.CheckIf6DigitTrasactionNumberIsCorrect(batch.Number);
                         if (!rez.Success) { return rez; }
@@ -129,6 +140,14 @@ namespace ActivityScheduler.Data.Managers
         {
             try
             {
+
+                var remRez= _activityManager.RemoveAllBatchActivities(id);
+
+                if (!remRez.Result.Success)
+                {
+                    return Task.FromResult(CommonOperationResult.SayFail($"Cannot remove batch because cant remove its activities"));
+                }
+
                 //cant remove batch if it contains activities
                 var actv = _activityManager.GetAll(id).Result;
 

@@ -1,3 +1,7 @@
+## 1.3.0
+- #20: As Admin I want to run batches for execution in order to perform some work on environment
+- #21: Admin wants to see error message in case of unsuccessful batch start
+
 ## 1.2.0
 - #17: As admin, i want to create batches and fill them with activities in order to run them
 - #18: Implement operation -- create batch
@@ -10,5 +14,4 @@
 - #16: Organize communication between worker service and WPF app via named pipes (task)
 
 ## 1.0.0
-
 - #10: Create WPF app basis with logger and settings on EF-SQLITE

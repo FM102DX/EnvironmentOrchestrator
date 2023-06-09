@@ -32,18 +32,9 @@ namespace ActivityScheduler.Data.Models
         {
             if (string.IsNullOrEmpty(ParentActivities)) { return new List<int>(); }
             
-            var x = ParentActivities.Split(',').ToList();
-
-            List<int> y;
-
-            try
-            {
-                y = x.Select(i => Convert.ToInt32(i)).ToList();
-            }
+            var x = ParentActivities.Split(',').ToList().Select(x=>Convert.ToInt32(x)).ToList();
             
-            catch { return new List<int>(); }
-            
-            return y;
+            return x;
         }
 
         public ActivityParentRuleEnum ActivityParentRule { get; set; }
@@ -63,10 +54,12 @@ namespace ActivityScheduler.Data.Models
             rez.ParentActivities = ParentActivities;
             return rez;
         }
+
         public override Activity Clone()
         {
             Activity acv = new Activity();
             acv.Id = Id;
+            acv.BatchId = BatchId;
             acv.Name = Name;
             acv.ActivityId = ActivityId;
             acv.AlwaysSuccess = AlwaysSuccess;
@@ -78,5 +71,6 @@ namespace ActivityScheduler.Data.Models
             acv.ParentActivities = ParentActivities;
             return acv;
         }
+
     }
 }

@@ -7,132 +7,169 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using ActivityScheduler.Data.Contracts;
+using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Data.Managers;
+using ActivityScheduler.Data.Models;
+using ActivityScheduler.Data.Models.Communication;
+using ActivityScheduler.Data.Models.Settings;
+using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace ActivityScheduler.WorkerService.TopShelf
 {
     public class Worker
     {
         private readonly System.Timers.Timer _timer;
-        private readonly System.Timers.Timer _timer2;
+        private readonly System.Timers.Timer _checkMailTimer;
         private Serilog.ILogger _logger;
         private ActivitySchedulerWorkerApp _app;
         private CancelToken _token;
         private ClientCommunicationObjectT<AppToWorkerMessage> _pipeClient;
         private ServerCommunicationObjectT<WorkerToAppMessage> _pipeServer;
+        private BatchRunner _batchRunner;
+        private BatchManager _batchManager;
+        private ActivityManager _activityManager;
+        private ServiceProvider _serviceProvider;
         public Worker(Serilog.ILogger logger, ActivitySchedulerWorkerApp app)
         {
+
             _logger = logger;
             _logger.Information("Workes service business logic class constructor");
 
             //timer 1
-            _timer = new System.Timers.Timer(1000) { AutoReset = true };
+            _timer = new System.Timers.Timer(500) { AutoReset = true };
             _timer.Elapsed += SendPipeMessage;
 
-            //timer 2
-            _timer2 = new System.Timers.Timer(1000) { AutoReset = true };
-            //_timer2.Elapsed += ExecuteEvent2;
-            _app= app;
+            //_checkMailTimer 2
+            _checkMailTimer = new System.Timers.Timer(500) { AutoReset = true };
+            _checkMailTimer.Elapsed += CheckMail;
+            _app = app;
 
-            _logger.Information("Workes service business logic class constructor--passed ok");
-
-
-            _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
+            _pipeClient = new ClientCommunicationObjectT<AppToWorkerMessage>("app2service", _logger);
             Task task = Task.Run(() => _pipeClient.Run());
 
-            _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("service2app", _logger);
             Task task2 = Task.Run(() => _pipeServer.Run());
 
+            _logger.Information("Worker service constructor passed");
+
+            ServiceCollection services = new ServiceCollection();
+
+            ConfigureServices(services);
+            
+            _serviceProvider = services.BuildServiceProvider();
+
+            _logger.Information("Worker service ConfigureServices passed");
         }
 
-        private void ExecuteEvent2(object? sender, ElapsedEventArgs e)
+        private void ConfigureServices(ServiceCollection services)
         {
-            //_logger.Information("This is topshelf worker teak");
+            _logger.Information("entered ConfigureServices");
+
+            services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
+
+            EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
+            _logger.Information("P1");
+            sqLiteDbContext.Database.EnsureCreated();
+            _logger.Information("P2");
+            
+            try
+            {
+                services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Data.Models.Activity>), (x) => new EfAsyncRepository<Data.Models.Activity>(sqLiteDbContext));
+                services.AddSingleton(typeof(IAsyncRepositoryT<Batch>), (x) => new EfAsyncRepository<Batch>(sqLiteDbContext));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
+            }
+
+            _logger.Information($"Point 2");
+            _logger.Information("P3");
+            services.AddSingleton<SettingsManager>();
+            services.AddSingleton<ActivityManager>();
+            services.AddSingleton<BatchManager>();
+            services.AddSingleton<BatchRunner>();
+            
+            _logger.Information("P4");
+        }
+        private void CheckMail(object? sender, ElapsedEventArgs e)
+        {
+            _logger.Information($"listening to incoming stack");
+            Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
+            var batchRunner = _serviceProvider.GetService<BatchRunner>();
+
+            if (m == null) 
+            { 
+                _logger.Information($"got null");
+                return; 
+            }
+
+            _logger.Information($"Got message, MessageType={m.MessageType} Command={m.Command.ToLower()}");
+
+            if(m.MessageType.ToLower()=="Command".ToLower())
+            {
+                if (m.Command.ToLower() == "startbatch")
+                {
+                    _logger.Information($"got message of startbatch type");
+                    Task.Run(()=> {
+                        var rez=batchRunner.RunBatch(m.TransactionId);
+                        var msgObject = new WorkerToAppMessage()
+                        {
+                            MessageType = "CommandExecutionResult".ToLower(),
+                            Result=rez
+                        };
+                        _pipeServer.SendObject(msgObject);
+                    });
+                }
+                if (m.Command.ToLower() == "stopbatch")
+                {
+                    _logger.Information($"got message of stopbatch type");
+                    Task.Run(() => {
+                        var rez = batchRunner.StopBatch(m.TransactionId);
+                        var msgObject = new WorkerToAppMessage()
+                        {
+                            MessageType = "CommandExecutionResult".ToLower(),
+                            Result = rez
+                        };
+                        _pipeServer.SendObject(msgObject);
+                    });
+                }
+
+            }
+            Task.Delay(100);
         }
 
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
-            int x = random.Next(0, 1000);
-            string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
-
+            var btcr = _serviceProvider.GetService<BatchRunner>();
+            //int x = random.Next(0, 1000);
+            //string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
+            
             var msgObject = new WorkerToAppMessage()
             {
-                Message = msg,
-                Result = Shared.CommonOperationResult.SayOk(msg)
+                MessageType = "runningbatchesInfo",
+                RunningBatches = btcr.GetRunningBatchesInfo()
             };
-
             _pipeServer.SendObject(msgObject);
-            _logger.Information(msg);
-        }
-
-        private void CheckMainAppRunning(CancelToken token)
-        {
-            do
-            {
-                Process[] pname = Process.GetProcessesByName(_app.MainAppProcessName);
-                _logger.Information($"Doing main loop, pname.Length={pname.Length}");
-                if (pname.Length == 0)
-                {
-                    //main app not running, need to start
-                    _logger.Information("Main app not running, need to start");
-                    try
-                    {
-                        System.Security.SecureString ssPwd = new System.Security.SecureString();
-                        System.Diagnostics.Process process = new System.Diagnostics.Process();
-                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                        startInfo.UseShellExecute = false;
-                        startInfo.CreateNoWindow = false;
-                        //startInfo.FileName = _app.MainAppDirectory;
-                        startInfo.FileName = "cmd.exe";
-                        startInfo.Arguments = $"/C {_app.MainAppDirectory}";
-
-                        //startInfo.FileName = "C:\\Develop\\Bats\\runwpf.bat";
-                        //_logger.Information("...configured data");
-                        
-                        startInfo.UserName = "Admin";
-                        string password = "123";
-                        for (int x = 0; x < password.Length; x++)
-                        {
-                            ssPwd.AppendChar(password[x]);
-                        }
-                        password = "";
-                        startInfo.Password = ssPwd;
-                        _logger.Information("...configured creds");
-                        
-                        process.StartInfo = startInfo;
-                        bool rez=process.Start();
-                        _logger.Error($"process.Start={rez}");
-                        Thread.Sleep(5000);
-                        pname = Process.GetProcessesByName(_app.MainAppProcessName);
-                        if (pname.Length == 0)
-                        {
-                            _logger.Error("Failed to start main app");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error($"Failed to start main app with exception = {ex.Message}, innerexception = {ex.InnerException}");
-                    }
-                }
-                Thread.Sleep(1000);
-            }
-            while (!token.Cancelled);
         }
 
         public void Stop()
         {
-            _timer2.Stop();
+            
             _timer.Stop();
-            //_token.Cancel();
+            _checkMailTimer.Stop();
         }
         public void Start()
         {
-            _timer2.Start();
+            
             _timer.Start();
-            //_token = new CancelToken();
-            //CheckMainAppRunning(_token);
+            _checkMailTimer.Start();
         }
 
         private class CancelToken

@@ -35,11 +35,11 @@ namespace ActivityScheduler.Shared.Validation
             source = StrRemoveArrSymbols(source, @"\|/^");
             // regex = new Regex("[^a-zA-Zа-яА-Я0-9() +-_:;!?@#.*]", RegexOptions.IgnoreCase);
             //source = regex.Replace(source, "");
-            regex = new Regex("[^a-zA-Z0-9.]", RegexOptions.IgnoreCase);
+            regex = new Regex("[^a-zA-Z0-9- .]", RegexOptions.IgnoreCase);
             var m = regex.Matches(source);
             if (m.Count > 0)
             {
-                return CommonOperationResult.SayFail("Only names like 'This.is.name' can be transaction, batch and activity names");
+                return CommonOperationResult.SayFail("Please enter name like 'This is-name.'");
             }
             if (source.Length<6) 
             {
@@ -61,9 +61,9 @@ namespace ActivityScheduler.Shared.Validation
             {
                 return CommonOperationResult.SayFail("Only digits allowed in transaction, batch and activity numbers");
             }
-            if (source.Length >3)
+            if (source.Length >4)
             {
-                return CommonOperationResult.SayFail("Activity Id should be not more than 3 digits length, e.g. 10, 100, 120, ... 900, 950");
+                return CommonOperationResult.SayFail("Activity Id should be not more than 4 digits length, e.g. 10, 100, 120, ... 900, 950");
             }
             return CommonOperationResult.SayOk();
         }

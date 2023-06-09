@@ -4,6 +4,9 @@ using ActivityScheduler.Data.Contracts;
 using ActivityScheduler.Data.DataAccess;
 using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
+using ActivityScheduler.Data.Models.Communication;
+using ActivityScheduler.Data.Models.Settings;
+using ActivityScheduler.Gui.MainWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Pipes;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,7 +100,9 @@ namespace ActivityScheduler
                   .CreateLogger();
 
             Process[] pname = Process.GetProcessesByName("ActivityScheduler");
+
             _logger.Information($"Intances of ActivityScheduler.exe {pname.Length}");
+
             if (pname.Length > 1)
             {
                 System.Windows.MessageBox.Show("Only one instance of application can be running");
@@ -147,11 +152,13 @@ namespace ActivityScheduler
             services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
             services.AddSingleton<DataFillManager>();
+            services.AddSingleton(typeof(ServerCommunicationObjectT<AppToWorkerMessage>), new ServerCommunicationObjectT<AppToWorkerMessage>("app2service", _logger));
+            services.AddSingleton(typeof(ClientCommunicationObjectT<WorkerToAppMessage>), new ClientCommunicationObjectT<WorkerToAppMessage>("service2app", _logger));
+            services.AddSingleton<MainWindowViewModel>();
 
         }
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            
             var app = _serviceProvider.GetService<ActivitySchedulerApp>();
 
             string iconFileFullPath = Path.Combine(app.IconsDirectory, "app.ico");
@@ -211,16 +218,25 @@ namespace ActivityScheduler
 
             _logger.Information($"Point 8");
 
-            _pipeClient = new ClientCommunicationObjectT<WorkerToAppMessage>("Pipe01", _logger);
+            _pipeClient = _serviceProvider.GetService<ClientCommunicationObjectT<WorkerToAppMessage>>();
             Task task = Task.Run(() => _pipeClient.Run());
 
-            _pipeServer = new ServerCommunicationObjectT<AppToWorkerMessage>("Pipe02", _logger);
+            _pipeServer = _serviceProvider.GetService<ServerCommunicationObjectT<AppToWorkerMessage>>();
             Task task2 = Task.Run(() => _pipeServer.Run());
 
             _timer.Start();
 
-            var dfm = _serviceProvider.GetService<DataFillManager>();
-            dfm.FillTheModel();
+            //fill test data
+            var settingsManager = _serviceProvider.GetService<SettingsManager>();
+            if (settingsManager !=null)
+            {
+                var settings = settingsManager.GetSettings();
+                if (settings.FillTestDataOnLaunch)
+                {
+                    var testDataFillManager = _serviceProvider.GetService<DataFillManager>();
+                    testDataFillManager?.FillTheModel();
+                }
+            }
 
             ShowMainWindow();
             _logger.Information($"Point 9");
@@ -270,7 +286,7 @@ namespace ActivityScheduler
 
         private void SetMainWindow()
         {
-            mainWindow = new MainWindow(_serviceProvider.GetService<SettingsManager>(), _app, _workerMgr, _batchManager, _activityManager, _logger);
+            mainWindow = new MainWindow(_serviceProvider.GetService<MainWindowViewModel>());
         }
 
         public void HideMainWindow()

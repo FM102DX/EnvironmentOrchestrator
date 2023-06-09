@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using ActivityScheduler.Shared.Pipes;
 using Newtonsoft.Json;
 
-namespace ActivityScheduler.Shared.Pipes
+namespace ActivityScheduler.Data.Models.Communication
 {
     public class AppToWorkerMessage: CommunicationMessageBase, ISelfSerializableObject, ISelfDeSerializableObject<AppToWorkerMessage>
     {
-        public AppToWorkerMessage() 
+        public AppToWorkerMessage() :base()
         { 
 
         }
@@ -25,5 +25,7 @@ namespace ActivityScheduler.Shared.Pipes
         {
             return JsonConvert.SerializeObject(this);
         }
+        public string? TransactionId { get; set; }
+        public DateTime? StartTime { get; set; }
     }
 }

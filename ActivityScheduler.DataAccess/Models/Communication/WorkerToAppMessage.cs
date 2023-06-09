@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ActivityScheduler.Shared;
+using ActivityScheduler.Shared.Pipes;
 using Newtonsoft.Json;
 
-namespace ActivityScheduler.Shared.Pipes
+namespace ActivityScheduler.Data.Models.Communication
 {
     public class WorkerToAppMessage : CommunicationMessageBase, ISelfSerializableObject, ISelfDeSerializableObject<WorkerToAppMessage>
     {
 
 
-        public WorkerToAppMessage() 
+        public WorkerToAppMessage() : base()
         { 
 
         }
@@ -26,5 +28,7 @@ namespace ActivityScheduler.Shared.Pipes
         {
             return JsonConvert.SerializeObject(this);
         }
+        public RunningBatchesInfo RunningBatches { get; set; }
+
     }
 }

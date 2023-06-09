@@ -7,27 +7,27 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Core\Settings\Settings.xaml.cs">
+    <Compile Update="Gui\SettingsWindow\Settings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Core\TrayContextMenu.xaml.cs">
+    <Compile Update="Gui\TrayContextMenu.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Core\SetParentActivities.xaml">
+    <Page Update="Gui\SetParentActivitiesWindow\SetParentActivities.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Core\EditBatch.xaml">
+    <Page Update="Gui\EditWindow\EditBatch.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Core\Settings\Settings.xaml">
+    <Page Update="Gui\SettingsWindow\Settings.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Core\TrayContextMenu.xaml">
+    <Page Update="Gui\TrayContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="MainWindow.xaml">
+    <Page Update="Gui\MainWindow\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

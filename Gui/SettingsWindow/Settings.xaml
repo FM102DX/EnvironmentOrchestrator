@@ -15,10 +15,10 @@
         <TabControl HorizontalAlignment="Left" Height="261" Margin="36,43,0,0" VerticalAlignment="Top" Width="587">
             <TabItem Header="Common">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox HorizontalAlignment="Left" Margin="9,36,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="295" x:Name="Setting1Tb"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="9,17,0,0" TextWrapping="Wrap" Text="Setting 1" VerticalAlignment="Top"/>
-                    <CheckBox Content="" HorizontalAlignment="Left" Margin="9,108,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.197"  x:Name="Setting2Chbx"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="9,92,0,0" TextWrapping="Wrap" Text="Setting 2" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="13,93,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="295" x:Name="Setting1Tb"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="14,74,0,0" TextWrapping="Wrap" Text="Setting 1" VerticalAlignment="Top"/>
+                    <CheckBox Content="" HorizontalAlignment="Left" Margin="14,38,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.197"  x:Name="FillTestDataOnLaunch"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="14,18,0,0" TextWrapping="Wrap" Text="Fill test data on launch" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Worker service">

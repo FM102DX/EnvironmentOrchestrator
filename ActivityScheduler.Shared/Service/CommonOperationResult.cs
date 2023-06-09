@@ -28,6 +28,8 @@ namespace ActivityScheduler.Shared
         public static CommonOperationResult SayFail(string _msg = "") { return GetInstance(false, _msg, null); }
         public static CommonOperationResult SayOk(string _msg = "") { return GetInstance(true, _msg, null); }
         public static CommonOperationResult SayItsNull(string _msg = "") { return GetInstance(true, _msg, null); }
-        public string ShrotString() => $"Success: {Success} message: {Message}";
+        public string AsShrotString() => $"Operation resilt: success={Success} message={Message}";
+
+        public Guid ReturningGuid { get; set; }
     }
 }

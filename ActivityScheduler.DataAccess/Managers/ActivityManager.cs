@@ -67,9 +67,18 @@ namespace ActivityScheduler.Data.Managers
 
 
             })
+            .AddCheck(new List<string>() { "Update", "Insert" }, "ActivityId", (Activity activity) => {
+
+                            if (activity.ActivityId > 9999 || activity.ActivityId<1)
+                {
+                                return CommonOperationResult.SayFail($"ActivityId is a number between 1 and 9999");
+                            }
+
+                            return CommonOperationResult.SayOk();
+            })
             .AddCheck(new List<string>() { "Update", "Insert" }, "Name", (Activity activity) => {
 
-                var rez = Validation.CheckIfTransactionOrBatchNameIsCorrect(activity.Name);
+            var rez = Validation.CheckIfTransactionOrBatchNameIsCorrect(activity.Name);
                 if (!rez.Success) { return rez; }
 
                 //ActivityName should be unique
@@ -82,10 +91,8 @@ namespace ActivityScheduler.Data.Managers
                 return CommonOperationResult.SayOk();
             })
             .AddCheck(new List<string>() { "Update", "Insert" }, "TransactionId", (Activity activity) => {
-
                 var rez = Validation.CheckIf6DigitTrasactionNumberIsCorrect(activity.TransactionId);
                 if (!rez.Success) { return rez; }
-
                 return CommonOperationResult.SayOk();
             })
             .AddCheck(new List<string>() { "Update", "Insert" }, "Starttime", (Activity activity) => {
@@ -163,6 +170,36 @@ namespace ActivityScheduler.Data.Managers
 
 
             return delRez;
+        }
+
+        public bool Similar(Activity? activityOriginal, Activity? activityCompare)
+        {
+
+            if (activityOriginal == null && activityCompare == null)
+            {
+                return true;
+            }
+
+            if (activityOriginal == null || activityCompare==null) 
+            { 
+                return false; 
+            }
+
+            bool rez =  activityOriginal.Id == activityCompare.Id &&
+                        activityOriginal.BatchId == activityCompare.BatchId &&
+                        activityOriginal.Name == activityCompare.Name &&
+                        activityOriginal.ActivityId == activityCompare.ActivityId &&
+                        activityOriginal.AlwaysSuccess == activityCompare.AlwaysSuccess &&
+                        activityOriginal.StartTime == activityCompare.StartTime &&
+                        activityOriginal.TransactionId == activityCompare.TransactionId &&
+                        activityOriginal.IsDomestic == activityCompare.IsDomestic &&
+                        activityOriginal.IsHub == activityCompare.IsHub &&
+                        activityOriginal.ChildDelay == activityCompare.ChildDelay &&
+                        activityOriginal.ParentActivities == activityCompare.ParentActivities &&
+                        activityOriginal.ActivityParentRule == activityCompare.ActivityParentRule;
+
+            return rez;
+
         }
     }
 }
