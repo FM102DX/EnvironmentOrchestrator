@@ -148,6 +148,7 @@ namespace ActivityScheduler.Data.Managers
             Activity acv = new Activity();
             acv.Id = sca.Id;
             acv.Name = sca.Name;
+            acv.BatchId = sca.BatchId;
             acv.ActivityId = sca.ActivityId;
             acv.AlwaysSuccess = sca.AlwaysSuccess;
             acv.StartTime = sca.StartTime;
@@ -155,6 +156,9 @@ namespace ActivityScheduler.Data.Managers
             acv.IsDomestic = sca.IsDomestic;
             acv.IsHub = sca.IsHub;
             acv.ChildDelay = sca.ChildDelay;
+            acv.ParentActivities = sca.ParentActivities;
+            acv.ActivityParentRule = sca.ActivityParentRule;
+            acv.ScriptPath = sca.ScriptPath;
             return acv;
         }
 
@@ -174,7 +178,6 @@ namespace ActivityScheduler.Data.Managers
 
         public bool Similar(Activity? activityOriginal, Activity? activityCompare)
         {
-
             if (activityOriginal == null && activityCompare == null)
             {
                 return true;
@@ -196,7 +199,8 @@ namespace ActivityScheduler.Data.Managers
                         activityOriginal.IsHub == activityCompare.IsHub &&
                         activityOriginal.ChildDelay == activityCompare.ChildDelay &&
                         activityOriginal.ParentActivities == activityCompare.ParentActivities &&
-                        activityOriginal.ActivityParentRule == activityCompare.ActivityParentRule;
+                        activityOriginal.ActivityParentRule == activityCompare.ActivityParentRule &&
+                        activityOriginal.ScriptPath == activityCompare.ScriptPath;
 
             return rez;
 

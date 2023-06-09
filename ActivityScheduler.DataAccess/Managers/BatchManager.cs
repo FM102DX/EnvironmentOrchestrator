@@ -25,6 +25,7 @@ namespace ActivityScheduler.Data.Managers
 
         //TODO make this more accurate
         public CheckExecutor<Batch> _checker = new CheckExecutor<Batch>();
+
         private List<Batch> _batches= new List<Batch>();
 
         public BatchManager(IAsyncRepositoryT<Batch> repo, ActivityManager activityManager)
@@ -206,7 +207,7 @@ namespace ActivityScheduler.Data.Managers
             newBatch.Duration = sourceBatch.Duration;
             newBatch.Number = sourceBatch.Number;
             newBatch.IsGroup = sourceBatch.IsGroup;
-
+            newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
             return newBatch;
         }
     }
