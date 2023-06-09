@@ -1,5 +1,6 @@
 ﻿using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Shared.Service;
+using System;
 using System.Windows;
 using System.Windows.Input;
 
@@ -8,7 +9,7 @@ namespace ActivityScheduler.Core
     public partial class EditBatch : Window
     {
         private FormStateHolder _formStateHolder = new FormStateHolder();
-        
+
         private EditWindowViewModel _viewModel;
 
         public EditBatch(EditWindowViewModel dataContext)
@@ -17,7 +18,8 @@ namespace ActivityScheduler.Core
 
             _viewModel = (EditWindowViewModel)dataContext;
 
-            _formStateHolder.CreateFormState(EditWindowViewModel.SelectionMode.GroupMode.ToString()).AddAction(() => {
+            _formStateHolder.CreateFormState(EditWindowViewModel.SelectionMode.GroupMode.ToString()).AddAction(() =>
+            {
                 BatchNumberLabel.Visibility = Visibility.Visible;
                 BatchNumberTb.Visibility = Visibility.Visible;
                 BatchNameLabel.Visibility = Visibility.Visible;
@@ -57,10 +59,10 @@ namespace ActivityScheduler.Core
         }
         private void HandleEsc(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape) 
+            if (e.Key == Key.Escape)
             {
-                if(_viewModel.CancelRecordEditCmd.CanExecute(this))
-                            _viewModel.CancelRecordEditCmd.Execute(this);
+                if (_viewModel.CancelRecordEditCmd.CanExecute(this))
+                    _viewModel.CancelRecordEditCmd.Execute(this);
             }
         }
 
@@ -88,6 +90,45 @@ namespace ActivityScheduler.Core
             {
                 e.Cancel = true;
             }
+        }
+
+        private void SelectFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SelectFile_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Set filter for file extension and default file extension
+            dlg.DefaultExt = ".ps1";
+            dlg.Filter = "PowershellScript (.ps1)|*.ps1";
+
+            //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+            // Display OpenFileDialog by calling ShowDialog method
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox
+            if (result == true)
+            {
+                // Open document
+                string filename = dlg.FileName;
+                SelectScriptPathTb.Text = filename;
+            }
+        }
+
+        private void ParentActivitiesReset_Click(object sender, RoutedEventArgs e)
+        {
+            ParentActivitiesTb.Text = string.Empty;
+        }
+
+        private void SelectFileReset_Click(object sender, RoutedEventArgs e)
+        {
+            SelectScriptPathTb.Text = string.Empty;
         }
     }
 }

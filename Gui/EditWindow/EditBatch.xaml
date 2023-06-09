@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Edit Batch" Height="651" Width="1224"
+        Title="Edit Batch" Height="651" Width="1305"
         ResizeMode="NoResize" Closing="EditBatchFrm_Closing" >
 
     <Window.Resources>
@@ -49,21 +49,21 @@
 
     </Window.Resources>
 
-    <Grid HorizontalAlignment="Center" Width="1224">
+    <Grid HorizontalAlignment="Center" Width="1306">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="28,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="171,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+        <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="15,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="143,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
         <DataGrid 
             HorizontalAlignment="Left"
             Name="ActivityGrid" 
             Height="519" 
-            Margin="28,88,0,0" 
+            Margin="15,88,0,0" 
             VerticalAlignment="Top" 
-            Width="772" 
+            Width="757" 
             SelectionMode="Single" 
             IsReadOnly="True" 
             CanUserAddRows="False" 
@@ -72,7 +72,7 @@
             AutoGenerateColumns="False"
             SelectionUnit="FullRow"
             CellStyle="{DynamicResource DataGridCellStyle1}" PreviewMouseDown="ActivityGrid_PreviewMouseDown">
-            
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ActivityId" Binding="{Binding Path=ActivityId}" IsReadOnly="True" MinWidth="70"/>
                 <DataGridTextColumn Header="ParentActivities" Binding="{Binding Path=ParentActivities}"  IsReadOnly="True" Width="100"/>
@@ -108,11 +108,11 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                
+
             </DataGrid.Columns>
         </DataGrid>
 
-        <Canvas Name ="ActivityEditCanvas" Margin="815,123,20,28" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
+        <Canvas Name ="ActivityEditCanvas" Margin="794,123,20,28" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
             <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Center" Canvas.Left="10" Canvas.Top="48" VerticalAlignment="Top" />
 
 
@@ -196,31 +196,46 @@
                         IsChecked ="{Binding SelectedItemDisplayed.AlwaysSuccess, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <TextBox 
+                        Name="ParentActivitiesTb"
                         TextWrapping="Wrap" 
-                        Name="ParentActivitiesTb" 
                         Width="221" 
                         Canvas.Left="102" 
                         Canvas.Top="258" 
                         HorizontalAlignment="Center" 
-                        VerticalAlignment="Top" 
-                        Height="19" 
+                        VerticalAlignment="Center" 
+                        Height="22" 
                         IsReadOnly="True"
                         Text="{Binding SelectedItemDisplayed.ParentActivities, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+
+            <TextBox 
+                        TextWrapping="Wrap" 
+                        x:Name="SelectScriptPathTb"
+                        Width="221" 
+                        Canvas.Left="102" 
+                        Canvas.Top="289" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Top" 
+                        Height="64" 
+                        IsReadOnly="True"
+                        Text="{Binding SelectedItemDisplayed.ScriptPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
             <TextBlock TextWrapping="Wrap" Text="Name" Canvas.Left="10" Canvas.Top="75" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="TransactionId" Canvas.Left="13" Canvas.Top="133" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="Start time" Canvas.Left="11" Canvas.Top="186" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             <TextBlock TextWrapping="Wrap" Text="Parent activities" Canvas.Left="11" Canvas.Top="260" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="328" Command="{Binding SaveActivityCmd}" />
-            <Button Content=">>" Canvas.Left="328" Canvas.Top="258" Name="SetParentActivitiesBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding SelectParentActivitiesCmd}"   />
-            <Button Content="Delete activity" Name="DeleteActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Canvas.Left="280" Canvas.Top="328" Background="#FFF90202" Command="{Binding DeleteActivityCmd}"   />
-            <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Center" VerticalAlignment="Center" Width="99" Canvas.Left="289" Canvas.Top="-38" Command="{Binding CreateActivityCmd}" />
-
+            <TextBlock TextWrapping="Wrap" Text="Script path" Canvas.Left="13" Canvas.Top="292" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16" Width="84"/>
+            <Button Content="Save Activity" Name="SaveActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="82"  Grid.Column="2" Grid.ColumnSpan="2" Canvas.Left="13" Canvas.Top="380" Command="{Binding SaveActivityCmd}" />
+            <Button Content=">>" Canvas.Left="328" Canvas.Top="258" Name="SetParentActivitiesBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding SelectParentActivitiesCmd}" Width="30" Height="22"   />
+            <Button Content="Delete activity" Name="DeleteActivityBtn" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Canvas.Left="328" Canvas.Top="380" Background="#FFF90202" Command="{Binding DeleteActivityCmd}"   />
+            <Button Content="Create Activity" Name="CreateActivity" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Canvas.Left="391" Canvas.Top="-37" Command="{Binding CreateActivityCmd}" Height="22" />
+            <Button Content="Select file" Name="SelectFile" Canvas.Left="328" Canvas.Top="289" HorizontalAlignment="Center" VerticalAlignment="Top" Height="21" Width="99" Click="SelectFile_Click"  />
+            <Button Content="X" Name="SelectFileReset" Canvas.Left="431" Canvas.Top="289" HorizontalAlignment="Center" VerticalAlignment="Top" Height="21" Width="25" Click="SelectFileReset_Click" />
+            <Button Content="X" Name="ParentActivitiesReset" Canvas.Left="362" Canvas.Top="258" HorizontalAlignment="Center" VerticalAlignment="Center" Height="22" Width="25" Click="ParentActivitiesReset_Click" />
         </Canvas>
-        <TextBlock TextWrapping="Wrap" Text="Batch number"  Name="BatchNumberLabel" FontWeight="Bold" Margin="28,24,1096,591" Height="20" Width="100" />
-        <TextBlock TextWrapping="Wrap" Text="Batch name"  Name="BatchNameLabel"  FontWeight="Bold" Margin="172,25,952,590" Height="20" Width="100"  />
-        <Button Content="Save batch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Margin="701,34,0,0" Command="{Binding SaveBatchCmd}" />
-        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="701,63,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
+        <TextBlock TextWrapping="Wrap" Text="Batch number"  Name="BatchNumberLabel" FontWeight="Bold" Margin="15,24,1191,591" Height="20" Width="100" />
+        <TextBlock TextWrapping="Wrap" Text="Batch name"  Name="BatchNameLabel"  FontWeight="Bold" Margin="143,25,1063,590" Height="20" Width="100"  />
+        <Button Content="Save batch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Margin="673,34,0,0" Command="{Binding SaveBatchCmd}" />
+        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="673,63,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
 
     </Grid>
 

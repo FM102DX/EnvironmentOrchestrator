@@ -11,8 +11,8 @@ namespace ActivityScheduler.Data.Models
     public  class Activity: BaseEntity
     {
         public Guid BatchId { get; set; }
-        public string Name { get; set; }
 
+        public string Name { get; set; }
 
         public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets
         
@@ -21,12 +21,16 @@ namespace ActivityScheduler.Data.Models
         public String TransactionId { get; set; } //number of transaction in this script / foreign script
 
         public bool IsDomestic { get; set; } //wether domestic transaction should be called
+        
         public bool IsHub { get; set; } //wether this transaction is a hub (hubs do nothing but become successful to start child activities)
 
         public TimeSpan ChildDelay { get; set; } // starttime that's passed to another script as parameter, is for ChildDelay more than fact starttime
 
         public bool AlwaysSuccess { get; set; }
+        
         public string? ParentActivities { get; set; }
+        
+        public string? ScriptPath { get; set; }
 
         public List<int> GetParentActionIds()
         {
@@ -69,6 +73,8 @@ namespace ActivityScheduler.Data.Models
             acv.IsHub= IsHub;
             acv.ChildDelay = ChildDelay;
             acv.ParentActivities = ParentActivities;
+            acv.ActivityParentRule= ActivityParentRule;
+            acv.ScriptPath = ScriptPath;
             return acv;
         }
 

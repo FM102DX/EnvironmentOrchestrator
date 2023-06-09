@@ -1,6 +1,8 @@
+
 ## 1.3.0
 - #20: As Admin I want to run batches for execution in order to perform some work on environment
 - #21: Admin wants to see error message in case of unsuccessful batch start
+- #23: Add DefaultScriptPath param to Batch object and ScriptPath param Activity object
 
 ## 1.2.0
 - #17: As admin, i want to create batches and fill them with activities in order to run them
