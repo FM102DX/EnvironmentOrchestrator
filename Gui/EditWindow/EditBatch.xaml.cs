@@ -1,29 +1,7 @@
-﻿using ActivityScheduler.Data.Contracts;
-using ActivityScheduler.Data.Managers;
-using ActivityScheduler.Data.Models;
-using ActivityScheduler.Gui.EditWindow;
-using ActivityScheduler.Gui.MainWindow;
-using ActivityScheduler.Shared;
+﻿using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Shared.Service;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Xceed.Wpf.Toolkit;
-using static System.Windows.Forms.DataFormats;
 
 namespace ActivityScheduler.Core
 {
@@ -69,7 +47,6 @@ namespace ActivityScheduler.Core
                 ActivityEditCanvas.Visibility = Visibility.Visible;
                 CreateActivity.Visibility = Visibility.Visible;
                 DeleteActivityBtn.Visibility = Visibility.Visible;
-
             });
 
             _viewModel.SelectionModeChanged += _viewModel_SelectionModeChanged;
@@ -83,7 +60,7 @@ namespace ActivityScheduler.Core
             if (e.Key == Key.Escape) 
             {
                 if(_viewModel.CancelRecordEditCmd.CanExecute(this))
-                        _viewModel.CancelRecordEditCmd.Execute(this);
+                            _viewModel.CancelRecordEditCmd.Execute(this);
             }
         }
 
