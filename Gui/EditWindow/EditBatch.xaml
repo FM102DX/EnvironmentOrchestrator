@@ -50,18 +50,47 @@
     </Window.Resources>
 
     <Grid HorizontalAlignment="Center" Width="1306">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+        <Canvas Margin="15,10,534,522">
+            <TextBlock TextWrapping="Wrap" Text="Batch number"  Name="BatchNumberLabel" FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="7" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <TextBlock TextWrapping="Wrap" Text="Batch name"  Name="BatchNameLabel"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="31" HorizontalAlignment="Center" VerticalAlignment="Top"  />
+            <TextBlock TextWrapping="Wrap"  Text="Script path"  Name="BatchScriptPath"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="54" HorizontalAlignment="Center" VerticalAlignment="Top"  />
+            <Button Content="Save batch" x:Name="SaveBatch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Command="{Binding SaveBatchCmd}" Canvas.Left="648" Canvas.Top="9" />
+            <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Click="Cancel_Click" Canvas.Left="648" Canvas.Top="38" />
+            <TextBox HorizontalAlignment="Center" Name="BatchNumberTb" TextWrapping="Wrap" VerticalAlignment="Top" Width="90"  Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Canvas.Left="117" Canvas.Top="8"/>
+            <TextBox HorizontalAlignment="Center" Name="BatchNameTb" TextWrapping="Wrap" VerticalAlignment="Top" Width="323" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Canvas.Left="117" Canvas.Top="32"/>
 
-        <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" Margin="15,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="90" Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-        <TextBox HorizontalAlignment="Left" Name="BatchNameTb" Margin="143,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            <TextBox    TextWrapping="Wrap" 
+                        x:Name="SelectScriptPathForBatchTb"
+                        Width="324" 
+                        Canvas.Left="117" 
+                        Canvas.Top="56" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Height="37" 
+                        IsReadOnly="True"
+                        Text="{Binding CurrentBatch.DefaultScriptPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            
+            <Button Content="Select file" Name="SelectScriptFileForBatch" Canvas.Left="445" Canvas.Top="56" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="91" RenderTransformOrigin="0.5,0.5" Click="SelectScriptFileForBatch_Click"   >
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Button.RenderTransform>
+            </Button>
+
+            <Button Content="X" Name="SelectScriptrFileForBatchReset" Canvas.Left="538" Canvas.Top="56" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="21" Click="SelectScriptrFileForBatchReset_Click" />
+
+        </Canvas>
+
 
         <DataGrid 
             HorizontalAlignment="Left"
             Name="ActivityGrid" 
-            Height="519" 
-            Margin="15,88,0,0" 
+            Height="484" 
+            Margin="15,123,0,0" 
             VerticalAlignment="Top" 
             Width="757" 
             SelectionMode="Single" 
@@ -232,10 +261,7 @@
             <Button Content="X" Name="SelectFileReset" Canvas.Left="431" Canvas.Top="289" HorizontalAlignment="Center" VerticalAlignment="Top" Height="21" Width="25" Click="SelectFileReset_Click" />
             <Button Content="X" Name="ParentActivitiesReset" Canvas.Left="362" Canvas.Top="258" HorizontalAlignment="Center" VerticalAlignment="Center" Height="22" Width="25" Click="ParentActivitiesReset_Click" />
         </Canvas>
-        <TextBlock TextWrapping="Wrap" Text="Batch number"  Name="BatchNumberLabel" FontWeight="Bold" Margin="15,24,1191,591" Height="20" Width="100" />
-        <TextBlock TextWrapping="Wrap" Text="Batch name"  Name="BatchNameLabel"  FontWeight="Bold" Margin="143,25,1063,590" Height="20" Width="100"  />
-        <Button Content="Save batch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Margin="673,34,0,0" Command="{Binding SaveBatchCmd}" />
-        <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Left" Margin="673,63,0,0" VerticalAlignment="Top" Width="99" Click="Cancel_Click" />
+
 
     </Grid>
 

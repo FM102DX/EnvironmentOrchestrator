@@ -130,5 +130,39 @@ namespace ActivityScheduler.Core
         {
             SelectScriptPathTb.Text = string.Empty;
         }
+
+        private void SelectScriptrFileForBatchReset_Click(object sender, RoutedEventArgs e)
+        {
+            SelectScriptPathForBatchTb.Text = string.Empty; 
+        }
+
+        private void SelectScriptFileForBatch_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Set filter for file extension and default file extension
+            dlg.DefaultExt = ".ps1";
+            dlg.Filter = "PowershellScript (.ps1)|*.ps1";
+
+            //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+            // Display OpenFileDialog by calling ShowDialog method
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox
+            if (result == true)
+            {
+                // Open document
+                string filename = dlg.FileName;
+                SelectScriptPathForBatchTb.Text = filename;
+            }
+        }
+
+        private void SaveBatch_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
