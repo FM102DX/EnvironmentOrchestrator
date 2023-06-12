@@ -9,7 +9,7 @@ namespace ActivityScheduler.Data.Models
     public enum BatchStartTypeEnum
     {
         Single=0,
-        Periodic=1
+        Daily=1
     }
 
     public enum ActivityParentRuleEnum

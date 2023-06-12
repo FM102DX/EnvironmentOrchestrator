@@ -164,5 +164,11 @@ namespace ActivityScheduler.Core
         {
 
         }
+
+        private void SetDaysOfWeek_Click(object sender, RoutedEventArgs e)
+        {
+            //
+
+        }
     }
 }

@@ -101,6 +101,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             _logger.Information($"listening to incoming stack");
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
+            
             var batchRunner = _serviceProvider.GetService<BatchRunner>();
 
             if (m == null) 
@@ -117,13 +118,16 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 {
                     _logger.Information($"got message of startbatch type");
                     Task.Run(()=> {
-                        var rez=batchRunner.RunBatch(m.TransactionId);
-                        var msgObject = new WorkerToAppMessage()
+                        if (batchRunner!=null && m.TransactionId!=null)
                         {
-                            MessageType = "CommandExecutionResult".ToLower(),
-                            Result=rez
-                        };
-                        _pipeServer.SendObject(msgObject);
+                            var rez = batchRunner.RunBatch(m.TransactionId);
+                            var msgObject = new WorkerToAppMessage()
+                            {
+                                MessageType = "CommandExecutionResult".ToLower(),
+                                Result = rez
+                            };
+                            _pipeServer.SendObject(msgObject);
+                        }
                     });
                 }
                 if (m.Command.ToLower() == "stopbatch")

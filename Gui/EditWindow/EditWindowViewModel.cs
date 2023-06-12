@@ -5,6 +5,7 @@ using ActivityScheduler.Data.Models;
 using ActivityScheduler.Gui.MainWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Service;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,6 +26,69 @@ namespace ActivityScheduler.Gui.EditWindow
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
         public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
+
+        private bool MondayChk {get{return GetDowBoolValue(1);}set{SetDowValue(1, value);}}
+        private bool TuesdayChk { get { return GetDowBoolValue(2); } set { SetDowValue(2, value); } }
+        private bool WednesdayChk { get { return GetDowBoolValue(3); } set { SetDowValue(3, value); } }
+        private bool ThursdayChk { get { return GetDowBoolValue(4); } set { SetDowValue(4, value); } }
+        private bool FridayChk { get { return GetDowBoolValue(5); } set { SetDowValue(5, value); } }
+        private bool SatudayChk { get { return GetDowBoolValue(6); } set { SetDowValue(6, value); } }
+        private bool SundayChk { get { return GetDowBoolValue(7); } set { SetDowValue(7, value); } }
+
+        private bool GetDowBoolValue(int index)
+        {
+            SetDefaultDowValue();
+
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+                return _currentBatch.ActiveDaysOfWeek[index] == 1;
+            }
+            return false;
+            
+        }
+
+        private void SetDowValue(int index, bool value)
+        {
+            SetDefaultDowValue();
+
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+            
+                List<string> lStr = new List<string>(); 
+
+                for(int i = 0; i< _currentBatch.ActiveDaysOfWeek.Length;i++)
+                {
+                    if(i == index) 
+                    {
+                        string s = (value == true) ? "1" : "0";
+                        lStr.Add(s);
+                    }
+                    else
+                    {
+                        lStr.Add("0");
+                    }
+                }
+                _currentBatch.ActiveDaysOfWeek = string.Join("", lStr);
+            }
+        }
+
+        private void SetDefaultDowValue()
+        {
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+                if (_currentBatch.ActiveDaysOfWeek.Length != 7)
+                {
+                    _currentBatch.ActiveDaysOfWeek = "0000000";
+                    return;
+                }
+            }
+            else
+            {
+                _currentBatch.ActiveDaysOfWeek = "0000000";
+            }
+        }
+
+
         private Batch _currentBatch;
         public ICommand SaveActivityCmd { get; private set; }
         public ICommand SaveBatchCmd { get; private set; }

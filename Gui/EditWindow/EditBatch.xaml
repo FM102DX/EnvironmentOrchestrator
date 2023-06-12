@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Edit Batch" Height="651" Width="1305"
+        Title="Edit Batch" Height="765" Width="1305"
         ResizeMode="NoResize" Closing="EditBatchFrm_Closing" >
 
     <Window.Resources>
@@ -49,16 +49,17 @@
 
     </Window.Resources>
 
-    <Grid HorizontalAlignment="Center" Width="1306">
-        <Canvas Margin="15,10,534,522">
+    <Grid HorizontalAlignment="Center" Width="1306" Margin="0,0,0,15">
+        <Canvas Margin="15,10,534,537">
             <TextBlock TextWrapping="Wrap" Text="Batch number"  Name="BatchNumberLabel" FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="7" HorizontalAlignment="Center" VerticalAlignment="Top" />
             <TextBlock TextWrapping="Wrap" Text="Batch name"  Name="BatchNameLabel"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="31" HorizontalAlignment="Center" VerticalAlignment="Top"  />
             <TextBlock TextWrapping="Wrap"  Text="Script path"  Name="BatchScriptPath"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="54" HorizontalAlignment="Center" VerticalAlignment="Top"  />
+            <TextBlock TextWrapping="Wrap"  Text="Run mode"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="102" HorizontalAlignment="Center" VerticalAlignment="Top"  />
+            <TextBlock TextWrapping="Wrap"  Text="Days of week"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="151" HorizontalAlignment="Center" VerticalAlignment="Top"  />
             <Button Content="Save batch" x:Name="SaveBatch" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="99" Command="{Binding SaveBatchCmd}" Canvas.Left="648" Canvas.Top="9" />
             <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Click="Cancel_Click" Canvas.Left="648" Canvas.Top="38" />
-            <TextBox HorizontalAlignment="Center" Name="BatchNumberTb" TextWrapping="Wrap" VerticalAlignment="Top" Width="90"  Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Canvas.Left="117" Canvas.Top="8"/>
+            <TextBox HorizontalAlignment="Left" Name="BatchNumberTb" TextWrapping="Wrap" VerticalAlignment="Center" Width="117"  Text="{Binding CurrentBatch.Number, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Canvas.Left="117" Canvas.Top="8"/>
             <TextBox HorizontalAlignment="Center" Name="BatchNameTb" TextWrapping="Wrap" VerticalAlignment="Top" Width="323" Text="{Binding CurrentBatch.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Canvas.Left="117" Canvas.Top="32"/>
-
             <TextBox    TextWrapping="Wrap" 
                         x:Name="SelectScriptPathForBatchTb"
                         Width="324" 
@@ -69,8 +70,8 @@
                         Height="37" 
                         IsReadOnly="True"
                         Text="{Binding CurrentBatch.DefaultScriptPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-            
-            <Button Content="Select file" Name="SelectScriptFileForBatch" Canvas.Left="445" Canvas.Top="56" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="91" RenderTransformOrigin="0.5,0.5" Click="SelectScriptFileForBatch_Click"   >
+
+            <Button Content="Select file" Name="SelectScriptFileForBatch" Canvas.Left="444" Canvas.Top="56" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="91" RenderTransformOrigin="0.5,0.5" Click="SelectScriptFileForBatch_Click"   >
                 <Button.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="1"/>
@@ -82,6 +83,21 @@
             </Button>
 
             <Button Content="X" Name="SelectScriptrFileForBatchReset" Canvas.Left="538" Canvas.Top="56" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="21" Click="SelectScriptrFileForBatchReset_Click" />
+            <ComboBox Canvas.Left="117" Canvas.Top="101" Width="120" HorizontalAlignment="Center" Height="20" VerticalAlignment="Center"/>
+            <CheckBox Name="MondayCbx"  Canvas.Left="116" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="TuesdayCbx"  Canvas.Left="146" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="WednesdayCbx"  Canvas.Left="176" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="ThursdayCbx"  Canvas.Left="206" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="FridayCbx"  Canvas.Left="236" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="SatudayCbx"  Canvas.Left="266" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <CheckBox Name="SundayCbx"  Canvas.Left="296" Canvas.Top="155" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label Content="Sun" Canvas.Left="292" Canvas.Top="134" FontSize="9" HorizontalAlignment="Center" Height="21" VerticalAlignment="Top"/>
+            <Label Content="Sat" Canvas.Left="263" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
+            <Label Content="Fri" Canvas.Left="234" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
+            <Label Content="Thu" Canvas.Left="202" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
+            <Label Content="Wed" Canvas.Left="170" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
+            <Label Content="Tue" Canvas.Left="143" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
+            <Label Content="Mon" Canvas.Left="110" Canvas.Top="134" FontSize="9" HorizontalAlignment="Left" Height="21" VerticalAlignment="Center"/>
 
         </Canvas>
 
@@ -89,8 +105,8 @@
         <DataGrid 
             HorizontalAlignment="Left"
             Name="ActivityGrid" 
-            Height="484" 
-            Margin="15,123,0,0" 
+            Height="492" 
+            Margin="15,214,0,0" 
             VerticalAlignment="Top" 
             Width="757" 
             SelectionMode="Single" 
@@ -141,7 +157,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Canvas Name ="ActivityEditCanvas" Margin="794,123,20,28" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
+        <Canvas Name ="ActivityEditCanvas" Margin="794,176,20,28" Background="{DynamicResource {x:Static SystemColors.InactiveCaptionBrushKey}}">
             <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Center" Canvas.Left="10" Canvas.Top="48" VerticalAlignment="Top" />
 
 

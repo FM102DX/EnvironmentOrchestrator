@@ -19,6 +19,8 @@ namespace ActivityScheduler.Data.Models
         public TimeSpan Duration { get; set; }
         public bool IsGroup { get; set; }
 
+        public string? ActiveDaysOfWeek { get; set; }
+
         public string? DefaultScriptPath { get; set; }
     }
 }

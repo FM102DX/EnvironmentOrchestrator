@@ -18,7 +18,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         private List<string> _batches = new List<string>();
 
-        public BatchRunner(BatchManager batchManager, Serilog.ILogger logger)
+        public BatchRunner(BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
             _batchManager=batchManager;
             _logger=logger;

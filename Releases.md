@@ -1,4 +1,9 @@
 
+
+## 1.4.0
+- #24: As admin, when Im running a batch, I want application to run activities according to ... (story)
+- #25: Add RunMode and ActiveDaysOfWeek parameters to Batch object (task)
+
 ## 1.3.0
 - #20: As Admin I want to run batches for execution in order to perform some work on environment
 - #21: Admin wants to see error message in case of unsuccessful batch start
