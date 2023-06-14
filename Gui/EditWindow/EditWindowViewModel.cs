@@ -33,7 +33,8 @@ namespace ActivityScheduler.Gui.EditWindow
         {
             get
             {
-                return RunModeComboDataSource.Where(x => x.Value == CurrentBatch.RunMode).FirstOrDefault();
+                var stt= RunModeComboDataSource.Where(x => x.Value == CurrentBatch.RunMode).FirstOrDefault();
+                return stt;
             }
             set
             {

@@ -43,7 +43,9 @@ namespace ActivityScheduler.Core
                 CreateActivity.Visibility = Visibility.Visible;
                 DeleteActivityBtn.Visibility = Visibility.Visible;
                 CnvRealBatch.Visibility = Visibility.Visible;
+
                 CnvRealBatchDow.Visibility = Visibility.Visible;
+                
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -56,6 +58,7 @@ namespace ActivityScheduler.Core
                 DeleteActivityBtn.Visibility = Visibility.Visible;
                 CnvRealBatch.Visibility = Visibility.Visible;
                 CnvRealBatchDow.Visibility = Visibility.Visible;
+
             });
 
             _formStateHolder2.CreateFormState(EditWindowViewModel.SelectionMode2.DowSeen.ToString()).AddAction(() =>

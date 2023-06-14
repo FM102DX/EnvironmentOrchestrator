@@ -205,6 +205,7 @@ namespace ActivityScheduler.Data.Managers
             newBatch.Name = sourceBatch.Name;
             newBatch.Interval = sourceBatch.Interval;
             newBatch.Duration = sourceBatch.Duration;
+            newBatch.RunMode = sourceBatch.RunMode;
             newBatch.Number = sourceBatch.Number;
             newBatch.IsGroup = sourceBatch.IsGroup;
             newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
