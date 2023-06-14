@@ -3,12 +3,14 @@ using ActivityScheduler.Shared.Service;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using static ActivityScheduler.Core.SetParentActivities;
 
 namespace ActivityScheduler.Core
 {
     public partial class EditBatch : Window
     {
         private FormStateHolder _formStateHolder = new FormStateHolder();
+        private FormStateHolder _formStateHolder2 = new FormStateHolder();
 
         private EditWindowViewModel _viewModel;
 
@@ -28,6 +30,8 @@ namespace ActivityScheduler.Core
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
                 CreateActivity.Visibility = Visibility.Hidden;
                 DeleteActivityBtn.Visibility = Visibility.Hidden;
+                CnvRealBatch.Visibility = Visibility.Hidden;
+                CnvRealBatchDow.Visibility = Visibility.Hidden;
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeNoSelection.ToString()).AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -38,7 +42,8 @@ namespace ActivityScheduler.Core
                 ActivityEditCanvas.Visibility = Visibility.Visible;
                 CreateActivity.Visibility = Visibility.Visible;
                 DeleteActivityBtn.Visibility = Visibility.Visible;
-
+                CnvRealBatch.Visibility = Visibility.Visible;
+                CnvRealBatchDow.Visibility = Visibility.Visible;
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -49,14 +54,33 @@ namespace ActivityScheduler.Core
                 ActivityEditCanvas.Visibility = Visibility.Visible;
                 CreateActivity.Visibility = Visibility.Visible;
                 DeleteActivityBtn.Visibility = Visibility.Visible;
+                CnvRealBatch.Visibility = Visibility.Visible;
+                CnvRealBatchDow.Visibility = Visibility.Visible;
+            });
+
+            _formStateHolder2.CreateFormState(EditWindowViewModel.SelectionMode2.DowSeen.ToString()).AddAction(() =>
+            {
+                CnvRealBatchDow.Visibility = Visibility.Visible;
+
+            }).Parent.CreateFormState(EditWindowViewModel.SelectionMode2.DowUnseen.ToString()).AddAction(() =>
+            {
+                CnvRealBatchDow.Visibility = Visibility.Hidden;
             });
 
             _viewModel.SelectionModeChanged += _viewModel_SelectionModeChanged;
+            _viewModel.SelectionModeChanged2 += _viewModel_SelectionModeChanged2;
+
             this.PreviewKeyDown += new KeyEventHandler(HandleEsc);
             _viewModel.NeedToCloseForm += () => { Close(); };
 
             InitializeComponent();
         }
+
+        private void _viewModel_SelectionModeChanged2(EditWindowViewModel.SelectionMode2 selectionMode)
+        {
+            _formStateHolder2.SetFormState(selectionMode.ToString());
+        }
+
         private void HandleEsc(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -169,6 +193,15 @@ namespace ActivityScheduler.Core
         {
             //
 
+        }
+
+        private void EditBatchFrm_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.FormLoadedCmd.CanExecute(this))
+            {
+                _viewModel.FormLoadedCmd.Execute(this);
+            }
+                
         }
     }
 }

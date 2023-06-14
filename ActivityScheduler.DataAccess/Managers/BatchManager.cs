@@ -208,6 +208,8 @@ namespace ActivityScheduler.Data.Managers
             newBatch.Number = sourceBatch.Number;
             newBatch.IsGroup = sourceBatch.IsGroup;
             newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
+            newBatch.ActiveDaysOfWeek = sourceBatch.ActiveDaysOfWeek;
+            newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
             return newBatch;
         }
     }

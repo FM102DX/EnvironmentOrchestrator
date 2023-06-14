@@ -27,13 +27,38 @@ namespace ActivityScheduler.Gui.EditWindow
         private ActivityManager _activityManager;
         public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
 
-        private bool MondayChk {get{return GetDowBoolValue(1);}set{SetDowValue(1, value);}}
-        private bool TuesdayChk { get { return GetDowBoolValue(2); } set { SetDowValue(2, value); } }
-        private bool WednesdayChk { get { return GetDowBoolValue(3); } set { SetDowValue(3, value); } }
-        private bool ThursdayChk { get { return GetDowBoolValue(4); } set { SetDowValue(4, value); } }
-        private bool FridayChk { get { return GetDowBoolValue(5); } set { SetDowValue(5, value); } }
-        private bool SatudayChk { get { return GetDowBoolValue(6); } set { SetDowValue(6, value); } }
-        private bool SundayChk { get { return GetDowBoolValue(7); } set { SetDowValue(7, value); } }
+        public List<RunModeComboDataSourceItem> RunModeComboDataSource { get; set; }=new List<RunModeComboDataSourceItem>();
+
+        public RunModeComboDataSourceItem? SelectedRunModeComboDataSourceItem
+        {
+            get
+            {
+                return RunModeComboDataSource.Where(x => x.Value == CurrentBatch.RunMode).FirstOrDefault();
+            }
+            set
+            {
+                if (value != null)
+                {
+                    CurrentBatch.RunMode = value.Value;
+                    if (value.Value== BatchStartTypeEnum.Single)
+                    {
+                        SelectionModeChanged2(SelectionMode2.DowUnseen);
+                    }
+                    else
+                    {
+                        SelectionModeChanged2(SelectionMode2.DowSeen);
+                    }
+                }
+            }
+        }
+
+        public bool MondayChk {get{return GetDowBoolValue(0);}set{SetDowValue(0, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MondayChk")); } }
+        public bool TuesdayChk { get { return GetDowBoolValue(1); } set { SetDowValue(1, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TuesdayChk")); } }
+        public bool WednesdayChk { get { return GetDowBoolValue(2); } set { SetDowValue(2, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WednesdayChk")); } }
+        public bool ThursdayChk { get { return GetDowBoolValue(3); } set { SetDowValue(3, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ThursdayChk")); } }
+        public bool FridayChk { get { return GetDowBoolValue(4); } set { SetDowValue(4, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FridayChk")); } }
+        public bool SatudayChk { get { return GetDowBoolValue(5); } set { SetDowValue(5, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SatudayChk")); } }
+        public bool SundayChk { get { return GetDowBoolValue(6); } set { SetDowValue(6, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SundayChk")); } }
 
         private bool GetDowBoolValue(int index)
         {
@@ -41,7 +66,10 @@ namespace ActivityScheduler.Gui.EditWindow
 
             if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
             {
-                return _currentBatch.ActiveDaysOfWeek[index] == 1;
+                if (_currentBatch.ActiveDaysOfWeek.Length == 7)
+                {
+                    return _currentBatch.ActiveDaysOfWeek[index] == '1';
+                }
             }
             return false;
             
@@ -65,11 +93,12 @@ namespace ActivityScheduler.Gui.EditWindow
                     }
                     else
                     {
-                        lStr.Add("0");
+                        lStr.Add(_currentBatch.ActiveDaysOfWeek[i].ToString());
                     }
                 }
                 _currentBatch.ActiveDaysOfWeek = string.Join("", lStr);
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
         }
 
         private void SetDefaultDowValue()
@@ -86,10 +115,12 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 _currentBatch.ActiveDaysOfWeek = "0000000";
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
         }
 
 
         private Batch _currentBatch;
+        public ICommand FormLoadedCmd { get; private set; }
         public ICommand SaveActivityCmd { get; private set; }
         public ICommand SaveBatchCmd { get; private set; }
 
@@ -174,7 +205,10 @@ namespace ActivityScheduler.Gui.EditWindow
                 if (_selectedItem == null)
                 {
                     SelectionModeVar = SelectionMode.None;
-                    SelectionModeChanged(SelectionModeVar);
+                    if (SelectionModeChanged != null)
+                    {
+                        SelectionModeChanged(SelectionModeVar);
+                    }
                     SelectedItemDisplayed = null;
                     return;
                 }
@@ -198,9 +232,10 @@ namespace ActivityScheduler.Gui.EditWindow
         public event Action NeedToCancelGridChange;
 
         public event SelectionModeChangedDelegate SelectionModeChanged;
+        public event SelectionModeChangedDelegate2 SelectionModeChanged2;
 
         public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
-
+        public delegate void SelectionModeChangedDelegate2(SelectionMode2 selectionMode);
         public string BufferIn { get; set; }
 
         public EditWindowViewModel (BatchManager batchManager, ActivityManager activityManager, Batch currentBatch, Serilog.ILogger logger, MainWindowViewModel mainWindowViewModel)
@@ -215,7 +250,10 @@ namespace ActivityScheduler.Gui.EditWindow
             
             _activityManager = activityManager;
 
-            if(CurrentBatch.IsGroup) 
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Single), Name= BatchStartTypeEnum.Single.ToString(),Value= BatchStartTypeEnum.Single });
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Daily), Name = BatchStartTypeEnum.Daily.ToString(), Value = BatchStartTypeEnum.Daily });
+
+            if (CurrentBatch.IsGroup) 
             {
                 SelectionModeVar = SelectionMode.GroupMode;
             }
@@ -262,6 +300,29 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 SetParentActivities act = new SetParentActivities(_activityManager, _currentBatch, SelectedItem, _logger, this);
                 act.ShowDialog();
+            });
+
+            FormLoadedCmd = new ActionCommand(() =>
+            {
+                if (_currentBatch!=null && SelectionModeChanged2 != null && SelectionModeChanged!=null)
+                {
+                    if (_currentBatch.IsGroup)
+                    {
+                        SelectionModeChanged(SelectionMode.GroupMode);
+                    }
+                    else
+                    {
+                        SelectionModeChanged(SelectionMode.ActivityModeNoSelection);
+                        if(_currentBatch.RunMode== BatchStartTypeEnum.Single)
+                        {
+                            SelectionModeChanged2(SelectionMode2.DowUnseen);
+                        }
+                        else
+                        {
+                            SelectionModeChanged2(SelectionMode2.DowSeen);
+                        }
+                    }
+                }
             });
 
             CreateActivityCmd = new ActionCommand(() =>
@@ -460,28 +521,10 @@ namespace ActivityScheduler.Gui.EditWindow
 
         private void UpdateSelectionMode()
         {
-            //if (CurrentBatch == null) return;
-
-            //if (CurrentBatch.IsGroup)
-            //{
-            //    SelectionModeVar = SelectionMode.Group;
-            //}
-            //else
-            //{
-            //    if (IsBatchRunning(CurrentBatch.Number))
-            //    {
-            //        SelectionModeVar = SelectionMode.RealBatchRunning;
-            //    }
-            //    else
-            //    {
-            //        SelectionModeVar = SelectionMode.RealBatchStopped;
-            //    }
-            //}
-
-            //if (SelectionModeChanged != null)
-            //{
-            //    SelectionModeChanged(SelectionModeVar);
-            //}
+            if (SelectionModeChanged != null)
+            {
+                SelectionModeChanged(SelectionModeVar);
+            }
         }
 
         public enum SelectionMode
@@ -491,6 +534,12 @@ namespace ActivityScheduler.Gui.EditWindow
             ActivityModeNoSelection = 2,
             ActivityModeRegularSelection = 3
         }
+        public enum SelectionMode2
+        {
+            DowSeen = 0,
+            DowUnseen = 1
+        }
+
         public enum RecordSelectionMode
         {
             SelectNone = 0,
@@ -498,6 +547,14 @@ namespace ActivityScheduler.Gui.EditWindow
             SelectLastRecord = 2,
             SelectSpecifiedId = 3,
             DontPerformSelection=4
+        }
+
+        public class RunModeComboDataSourceItem
+        {
+            public int Id { get; set; }
+            public string? Name { get; set; }
+
+            public BatchStartTypeEnum Value { get; set; }
         }
 
 

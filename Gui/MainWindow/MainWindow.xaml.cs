@@ -125,7 +125,6 @@ namespace ActivityScheduler
             {
                 foreach (var x in runningBatchList)
                 {
-
                     //open tabs wich are running but not opened
 
                     var lst2 = Tabs.Items.OfType<TabItem>().ToList().Where(y => y.Header == x.Name).ToList();
