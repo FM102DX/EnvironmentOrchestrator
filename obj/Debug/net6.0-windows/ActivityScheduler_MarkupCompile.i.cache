@@ -16,5 +16,5 @@ C:\Develop\ActivityScheduler\App.xaml
 2331068191490
 Gui\EditWindow\EditBatch.xaml;Gui\MainWindow\MainWindow.xaml;Gui\SetParentActivitiesWindow\SetParentActivities.xaml;Gui\SettingsWindow\Settings.xaml;Gui\TrayContextMenu.xaml;
 
-False
+True
 

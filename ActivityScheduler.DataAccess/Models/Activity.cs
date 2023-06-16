@@ -32,6 +32,14 @@ namespace ActivityScheduler.Data.Models
         
         public string? ScriptPath { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
+        public ActivityStatusEnum Status { get; set; }
+
+        public int RetriesAvivble { get; set; }
+
+        public int RetriesPerformed { get; set; }
+
         public List<int> GetParentActionIds()
         {
             if (string.IsNullOrEmpty(ParentActivities)) { return new List<int>(); }
@@ -55,28 +63,29 @@ namespace ActivityScheduler.Data.Models
             rez.ChildDelay = ChildDelay;
             rez.IsDomestic = IsDomestic;
             rez.IsHub = IsHub;
+            rez.IsActive = IsActive;
+
             rez.ParentActivities = ParentActivities;
             return rez;
         }
 
-        public override Activity Clone()
+        public bool IsTimeDriven
         {
-            Activity acv = new Activity();
-            acv.Id = Id;
-            acv.BatchId = BatchId;
-            acv.Name = Name;
-            acv.ActivityId = ActivityId;
-            acv.AlwaysSuccess = AlwaysSuccess;
-            acv.StartTime = StartTime;
-            acv.TransactionId = TransactionId;
-            acv.IsDomestic= IsDomestic;
-            acv.IsHub= IsHub;
-            acv.ChildDelay = ChildDelay;
-            acv.ParentActivities = ParentActivities;
-            acv.ActivityParentRule= ActivityParentRule;
-            acv.ScriptPath = ScriptPath;
-            return acv;
+            get => GetParentActionIds().Count == 0;
+        }
+        public bool IsParentDriven
+        {
+            get => !IsTimeDriven;
         }
 
+        public bool IsWaitingOrIdle
+        {
+            get=>Status== ActivityStatusEnum.Waiting || Status== ActivityStatusEnum.Idle;
+        }
+
+        public void Run (DateTime activityStartDateTime, string workingFolder, string jobName)
+        {
+            
+        }
     }
 }

@@ -17,4 +17,21 @@ namespace ActivityScheduler.Data.Models
         And = 0, //activity starts when all parent are successful
         Or = 1 //activity starts when one of parent is successful
     }
+
+    public enum ActivityStatusEnum
+    {
+        Idle = 10,
+        WaitingForParent=20,
+        Waiting=30,
+        Running=40,
+        Completed = 50,
+        Failed=60,
+        WaitingForRetry=70
+    }
+
+    public enum BatchStatusEnum
+    {
+
+    }
+
 }

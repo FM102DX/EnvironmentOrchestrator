@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using static ActivityScheduler.Core.SetParentActivities;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ActivityScheduler.Core
 {
@@ -44,8 +45,6 @@ namespace ActivityScheduler.Core
                 DeleteActivityBtn.Visibility = Visibility.Visible;
                 CnvRealBatch.Visibility = Visibility.Visible;
 
-                CnvRealBatchDow.Visibility = Visibility.Visible;
-                
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
                 BatchNumberLabel.Visibility = Visibility.Visible;
@@ -205,6 +204,30 @@ namespace ActivityScheduler.Core
                 _viewModel.FormLoadedCmd.Execute(this);
             }
                 
+        }
+
+        private void EmptyStartDateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            StartDateTb.Text = string.Empty;
+        }
+
+        private void EmptyStartTimeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            StartTimeTb.Text = string.Empty;
+        }
+
+        private void test_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel.Test01Cmd.CanExecute(this))
+            {
+                _viewModel.Test01Cmd.Execute(this);
+            }
+            
+            if (_viewModel.Test02Cmd.CanExecute(this))
+            {
+                _viewModel.Test02Cmd.Execute(this);
+            }
+
         }
     }
 }

@@ -20,7 +20,9 @@ namespace ActivityScheduler.Data.Models
 
         public TimeSpan StartTime { get; set; }
 
-        public String? TransactionId { get; set; } 
+        public String? TransactionId { get; set; }
+
+        public bool IsActive { get; set; }
 
         public bool IsDomestic { get; set; } 
         

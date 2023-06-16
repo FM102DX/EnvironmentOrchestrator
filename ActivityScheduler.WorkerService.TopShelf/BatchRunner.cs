@@ -15,13 +15,15 @@ namespace ActivityScheduler.WorkerService.TopShelf
     {
         private BatchManager _batchManager;
         private Serilog.ILogger _logger;
+        private ActivityManager _activityManager;
 
         private List<string> _batches = new List<string>();
 
         public BatchRunner(BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
             _batchManager=batchManager;
-            _logger=logger;
+            _activityManager=activityManager;
+            _logger =logger;
         }
         public CommonOperationResult RunBatch(string batchId) 
         {
@@ -62,5 +64,43 @@ namespace ActivityScheduler.WorkerService.TopShelf
             return _batches.Count;
         }
 
+        public void RunBatchOnce(DateTime startDateTime, Batch batch)
+        {
+
+            var activities = _activityManager.GetAll(batch.Id).Result.ToList().OrderBy(x=>x.ActivityId).ToList();
+            
+            bool canExit=false;
+
+            do 
+            {
+                foreach (var activity in activities)
+                {
+                    
+                    if (activity.IsActive)
+                    {
+                        if (activity.Status == ActivityStatusEnum.Idle)
+                        {
+                            activity.Status = ActivityStatusEnum.Waiting;
+                        }
+                        bool isRunningTimeNow = DateTime.Now > startDateTime + activity.StartTime;
+
+
+                        if (isRunningTimeNow  && (activity.Status == ActivityStatusEnum.Waiting))
+                        {
+                            //launch task
+                            //run powershell with params
+
+
+
+                        }
+
+
+
+                    }
+                }
+                Thread.Sleep(500);
+            }
+            while (!canExit);
+        }
     }
 }

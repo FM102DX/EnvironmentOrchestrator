@@ -25,6 +25,26 @@ namespace ActivityScheduler.Gui.EditWindow
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
+
+        private DateTime _startDateBindingVar { get; set; }
+        private DateTime _startTimeBindingVar { get; set; }
+
+        public DateTime StartDateBindingVar 
+        { 
+            get => _startDateBindingVar;
+            set
+            {
+                _startDateBindingVar = value;
+                //CurrentBatch.StartTime;
+            } 
+        }
+        public DateTime StartTimeBindingVar { get; set; }
+
+        private void SetStartDateTime(DateTime date, DateTime time)
+        {
+            
+        }
+
         public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
 
         public List<RunModeComboDataSourceItem> RunModeComboDataSource { get; set; }=new List<RunModeComboDataSourceItem>();
@@ -133,6 +153,10 @@ namespace ActivityScheduler.Gui.EditWindow
 
         public ICommand SelectParentActivitiesCmd { get; private set; }
 
+        public ICommand Test01Cmd { get; private set; }
+
+        public ICommand Test02Cmd { get; private set; }
+
         private MainWindowViewModel _mainWindowViewModel;
 
         private bool IsModified
@@ -206,15 +230,12 @@ namespace ActivityScheduler.Gui.EditWindow
                 if (_selectedItem == null)
                 {
                     SelectionModeVar = SelectionMode.None;
-                    if (SelectionModeChanged != null)
-                    {
-                        SelectionModeChanged(SelectionModeVar);
-                    }
+                    UpdateSelectionMode();
                     SelectedItemDisplayed = null;
                     return;
                 }
 
-                SelectedItemDisplayed = _selectedItem.Clone();
+                SelectedItemDisplayed = _activityManager.Clone(_selectedItem);
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItem"));
 
@@ -293,7 +314,7 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 if (SelectedItem !=null)
                 {
-                    SelectedItemDisplayed = SelectedItem.Clone();
+                    SelectedItemDisplayed = _activityManager.Clone(SelectedItem);
                 }
             });
 
@@ -309,12 +330,16 @@ namespace ActivityScheduler.Gui.EditWindow
                 {
                     if (_currentBatch.IsGroup)
                     {
-                        SelectionModeChanged(SelectionMode.GroupMode);
+                        SelectionModeVar = SelectionMode.GroupMode;
+                        UpdateSelectionMode();
+                        SelectionModeChanged2(SelectionMode2.DowUnseen);
                     }
                     else
                     {
-                        SelectionModeChanged(SelectionMode.ActivityModeNoSelection);
-                        if(_currentBatch.RunMode== BatchStartTypeEnum.Single)
+                        SelectionModeVar = SelectionMode.ActivityModeNoSelection;
+                        UpdateSelectionMode();
+                        
+                        if (_currentBatch.RunMode== BatchStartTypeEnum.Single)
                         {
                             SelectionModeChanged2(SelectionMode2.DowUnseen);
                         }
@@ -366,6 +391,16 @@ namespace ActivityScheduler.Gui.EditWindow
                 LoadActivities( RecordSelectionMode.SelectLastRecord);
             });
 
+            Test01Cmd = new ActionCommand(() =>
+            {
+                MessageBox.Show(StartDateBindingVar.ToString());
+            });
+
+            Test02Cmd = new ActionCommand(() =>
+            {
+                MessageBox.Show(StartTimeBindingVar.ToString());
+            });
+
             LoadActivities(RecordSelectionMode.SelectFirstRecord);
         }
         public bool NeedToStopItemSelectionChange()
@@ -391,7 +426,7 @@ namespace ActivityScheduler.Gui.EditWindow
                 
                 if (mbxRez == MessageBoxResult.No)
                 {
-                    if (SelectedItem!=null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
+                    if (SelectedItem!=null) SelectedItemDisplayed =_activityManager.Clone(SelectedItem); else SelectedItemDisplayed = null;
                     return false;
                 }
 
@@ -433,7 +468,7 @@ namespace ActivityScheduler.Gui.EditWindow
 
                 if (mbxRez == MessageBoxResult.No)
                 {
-                    if (SelectedItem != null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
+                    if (SelectedItem != null) SelectedItemDisplayed = _activityManager.Clone(SelectedItem); else SelectedItemDisplayed = null;
                     return false;
                 }
 

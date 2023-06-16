@@ -1,8 +1,10 @@
 
 
 ## 1.4.0
-- #24: As admin, when Im running a batch, I want application to run activities according to ... (story)
+- #27: Add StartTime param to batch object
+- #26: Add Activity.IsActive parameter
 - #25: Add RunMode and ActiveDaysOfWeek parameters to Batch object (task)
+- #24: As admin, when Im running a batch, I want application to run activities according to ... (story)
 
 ## 1.3.0
 - #20: As Admin I want to run batches for execution in order to perform some work on environment
