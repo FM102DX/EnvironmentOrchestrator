@@ -82,19 +82,32 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         {
                             activity.Status = ActivityStatusEnum.Waiting;
                         }
+
                         bool isRunningTimeNow = DateTime.Now > startDateTime + activity.StartTime;
 
+                        //get script path
+                        string? scriptPath = batch.DefaultScriptPath;
+                        if (!string.IsNullOrEmpty(activity.ScriptPath)) { scriptPath = activity.ScriptPath; }
+                        if(string.IsNullOrEmpty(scriptPath))
+                        {
+                            throw new Exception($"No ScriptPath value specified for batch or activity, batch number={batch.Number}");
+                        }
 
                         if (isRunningTimeNow  && (activity.Status == ActivityStatusEnum.Waiting))
                         {
                             //launch task
                             //run powershell with params
-
-
-
+                            
+                            string appName = "powershell.exe";
+                            System.Diagnostics.Process process = new System.Diagnostics.Process();
+                            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                            startInfo.CreateNoWindow = false;
+                            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                            startInfo.FileName = appName;
+                            startInfo.Arguments = $"-file {scriptPath} -transactionId {activity.TransactionId}";
+                            process.StartInfo = startInfo;
+                            process.Start();
                         }
-
-
 
                     }
                 }
