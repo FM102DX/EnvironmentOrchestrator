@@ -28,6 +28,14 @@ namespace ActivityScheduler.Data.Models
         Failed=60,
         WaitingForRetry=70
     }
+    public enum BatchStartPointTypeEnum
+    {
+        StartFromNow=1,
+        StartTodayFromSpecifiedTime=2,
+        StartFromSpecifiedDateAndTime=3
+    }
+
+
 
     public enum BatchStatusEnum
     {

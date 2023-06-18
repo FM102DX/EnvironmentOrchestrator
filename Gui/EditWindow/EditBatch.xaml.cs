@@ -1,8 +1,11 @@
-﻿using ActivityScheduler.Gui.EditWindow;
+﻿using ActivityScheduler.Data.Models;
+using ActivityScheduler.Gui.EditWindow;
 using ActivityScheduler.Shared.Service;
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml;
 using static ActivityScheduler.Core.SetParentActivities;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -12,6 +15,7 @@ namespace ActivityScheduler.Core
     {
         private FormStateHolder _formStateHolder = new FormStateHolder();
         private FormStateHolder _formStateHolder2 = new FormStateHolder();
+        private FormStateHolder _formStateHolder3 = new FormStateHolder(); //start point type selection
 
         private EditWindowViewModel _viewModel;
 
@@ -69,13 +73,37 @@ namespace ActivityScheduler.Core
                 CnvRealBatchDow.Visibility = Visibility.Hidden;
             });
 
+            _formStateHolder3.CreateFormState(BatchStartPointTypeEnum.StartFromNow.ToString()).AddAction(() =>
+            {
+                StartDateTimeTb.Visibility = Visibility.Hidden;
+                StartTimeTb.Visibility = Visibility.Hidden;
+
+            }).Parent.CreateFormState(BatchStartPointTypeEnum.StartTodayFromSpecifiedTime.ToString()).AddAction(() =>
+            {
+                StartDateTimeTb.Visibility = Visibility.Hidden;
+                StartTimeTb.Visibility = Visibility.Visible;
+            }).Parent.CreateFormState(BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime.ToString()).AddAction(() =>
+            {
+                StartDateTimeTb.Visibility = Visibility.Visible;
+                StartTimeTb.Visibility = Visibility.Hidden;
+            });
+
             _viewModel.SelectionModeChanged += _viewModel_SelectionModeChanged;
             _viewModel.SelectionModeChanged2 += _viewModel_SelectionModeChanged2;
+            _viewModel.SelectionModeChanged3 += _viewModel_SelectionModeChanged3; ;
 
             this.PreviewKeyDown += new KeyEventHandler(HandleEsc);
             _viewModel.NeedToCloseForm += () => { Close(); };
 
             InitializeComponent();
+            StartDateTimeTb.FormatProvider = CultureInfo.CurrentCulture;
+
+
+        }
+
+        private void _viewModel_SelectionModeChanged3(BatchStartPointTypeEnum selectionMode)
+        {
+            _formStateHolder3.SetFormState(selectionMode.ToString());
         }
 
         private void _viewModel_SelectionModeChanged2(EditWindowViewModel.SelectionMode2 selectionMode)
@@ -203,12 +231,14 @@ namespace ActivityScheduler.Core
             {
                 _viewModel.FormLoadedCmd.Execute(this);
             }
-                
+            
+
+
         }
 
         private void EmptyStartDateBtn_Click(object sender, RoutedEventArgs e)
         {
-            StartDateTb.Text = string.Empty;
+            //StartDateTb.Text = string.Empty;
         }
 
         private void EmptyStartTimeBtn_Click(object sender, RoutedEventArgs e)

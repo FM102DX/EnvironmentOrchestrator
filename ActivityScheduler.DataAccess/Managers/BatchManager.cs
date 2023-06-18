@@ -211,6 +211,9 @@ namespace ActivityScheduler.Data.Managers
             newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
             newBatch.ActiveDaysOfWeek = sourceBatch.ActiveDaysOfWeek;
             newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
+            newBatch.StartPointType = sourceBatch.StartPointType;
+            newBatch.StartTimeInADay= sourceBatch.StartTimeInADay;
+            newBatch.StartDateTime = sourceBatch.StartDateTime;
             return newBatch;
         }
     }

@@ -14,7 +14,11 @@ namespace ActivityScheduler.Data.Models
         public string Name { get; set; } = "DefaultBatchName"; //Name - english alf without spaces, for example This.is.transaction
 
         public BatchStartTypeEnum RunMode { get; set; } = BatchStartTypeEnum.Single;
-        public DateTime StartTime { get; set; }
+        public BatchStartPointTypeEnum StartPointType { get; set; } = BatchStartPointTypeEnum.StartFromNow;
+        public DateTime StartDateTime { get; set; }
+
+        public TimeSpan StartTimeInADay { get; set; }
+
         public TimeSpan Interval { get; set; }
         public TimeSpan Duration { get; set; }
         public bool IsGroup { get; set; }
