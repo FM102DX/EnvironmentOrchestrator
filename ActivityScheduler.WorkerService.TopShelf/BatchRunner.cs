@@ -2,6 +2,7 @@
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.Models.Communication;
 using ActivityScheduler.Shared;
+using ActivityScheduler.Shared.Pipes;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
@@ -11,38 +12,69 @@ using System.Threading.Tasks;
 
 namespace ActivityScheduler.WorkerService.TopShelf
 {
-    public  class BatchRunner
+    public class BatchRunner
     {
         private BatchManager _batchManager;
         private Serilog.ILogger _logger;
         private ActivityManager _activityManager;
+        private readonly System.Timers.Timer _timer;
+        private List<BatchRunningInfo> _runningBatches = new List<BatchRunningInfo>();
 
-        private List<string> _runningBatches = new List<string>();
+        public event TaskCompletedDelegate  TaskCompleted;
+        public delegate void TaskCompletedDelegate(TaskCompletedInfo taskCompletedInfo);
+
 
         public BatchRunner(BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
-            _batchManager=batchManager;
-            _activityManager=activityManager;
-            _logger =logger;
+            _batchManager = batchManager;
+            _activityManager = activityManager;
+            _logger = logger;
+            _timer = new System.Timers.Timer(500) { AutoReset = true };
+            _timer.Elapsed += _timer_Elapsed;
         }
-        public CommonOperationResult RunBatch(string batchId) 
+
+        private void _timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            if (_runningBatches.Contains(batchId))
+            //go through _runningBatches looking for completed tasks, raise event, remove task 
+
+        }
+
+        private bool IsBatchRunning(string batchNumber)
+        {
+            return _runningBatches.Where(x => x.BatchNumber== batchNumber).ToList().Count() > 0;   
+        }
+
+        public CommonOperationResult RunBatch(string batchNumber)
+        {
+            if (IsBatchRunning(batchNumber))
             {
-                return CommonOperationResult.SayFail($"Cant start batch {batchId} because its already running");
+                return CommonOperationResult.SayFail($"Cant start batch {batchNumber} because its already running");
             }
-            _runningBatches.Add(batchId);
+
+            try
+            {
+                var rez = Task.Run(() => {
+                    var instance = new RunningBatchInstance(batchNumber, _batchManager, _activityManager, _logger);
+                    instance.Run();
+                });
+                _runningBatches.Add(new BatchRunningInfo() { BatchNumber= batchNumber, BatchRunTask= rez });
+            }
+            catch (Exception ex)
+            {
+                return CommonOperationResult.SayFail($"Filed to start batch {batchNumber} exception is: {ex.Message}, innerexception is {ex.InnerException}");
+            }
+
             return CommonOperationResult.SayOk();
         }
 
-        public CommonOperationResult StopBatch(string batchId)
+        public CommonOperationResult StopBatch(string batchNumber)
         {
-            if (!_runningBatches.Contains(batchId))
+            if (!IsBatchRunning(batchNumber))
             {
-                return CommonOperationResult.SayFail($"Cant stop batch {batchId} because its not running");
+                return CommonOperationResult.SayFail($"Cant stop batch {batchNumber} because its not running");
             }
-            
-            _runningBatches.RemoveAll(x => x == batchId);
+
+            ////
 
             return CommonOperationResult.SayOk();
         }
@@ -50,13 +82,8 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             return new RunningBatchesInfo()
             {
-                Batches = _runningBatches
+                Batches = _runningBatches.Select(x =>x.BatchNumber).ToList()
             };
-        }
-
-        public string GetRunBatchList()
-        {
-            return string.Join(",", _runningBatches);
         }
 
         public int GetRunBatchCount()
@@ -64,61 +91,17 @@ namespace ActivityScheduler.WorkerService.TopShelf
             return _runningBatches.Count;
         }
 
-        public CommonOperationResult RunBatch0(string batchId)
+        public class BatchRunningInfo
         {
-
+            public string? BatchNumber { get; set; }
+            public Task? BatchRunTask { get; set; }
+        }
+        public class TaskCompletedInfo
+        {
+            public string? BatchNumber { get; set; }
+            public CommonOperationResult? Result { get; set; }
         }
 
-        public void RunBatchOnce(DateTime startDateTime, Batch batch)
-        {
-
-            var activities = _activityManager.GetAll(batch.Id).Result.ToList().OrderBy(x=>x.ActivityId).ToList();
-            
-            bool canExit=false;
-
-            do 
-            {
-                foreach (var activity in activities)
-                {
-                    
-                    if (activity.IsActive)
-                    {
-                        if (activity.Status == ActivityStatusEnum.Idle)
-                        {
-                            activity.Status = ActivityStatusEnum.Waiting;
-                        }
-
-                        bool isRunningTimeNow = DateTime.Now > startDateTime + activity.StartTime;
-
-                        //get script path
-                        string? scriptPath = batch.DefaultScriptPath;
-                        if (!string.IsNullOrEmpty(activity.ScriptPath)) { scriptPath = activity.ScriptPath; }
-                        if(string.IsNullOrEmpty(scriptPath))
-                        {
-                            throw new Exception($"No ScriptPath value specified for batch or activity, batch number={batch.Number}");
-                        }
-
-                        if (isRunningTimeNow  && (activity.Status == ActivityStatusEnum.Waiting))
-                        {
-                            //launch task
-                            //run powershell with params
-                            
-                            string appName = "powershell.exe";
-                            System.Diagnostics.Process process = new System.Diagnostics.Process();
-                            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                            startInfo.CreateNoWindow = false;
-                            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                            startInfo.FileName = appName;
-                            startInfo.Arguments = $"-file {scriptPath} -transactionId {activity.TransactionId}";
-                            process.StartInfo = startInfo;
-                            process.Start();
-                        }
-
-                    }
-                }
-                Thread.Sleep(500);
-            }
-            while (!canExit);
-        }
     }
+
 }

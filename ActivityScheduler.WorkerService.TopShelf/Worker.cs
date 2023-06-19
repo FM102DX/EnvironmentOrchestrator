@@ -64,6 +64,17 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _serviceProvider = services.BuildServiceProvider();
 
             _logger.Information("Worker service ConfigureServices passed");
+            
+            _batchRunner = _serviceProvider.GetService<BatchRunner>();
+            
+            _batchRunner.TaskCompleted += _batchRunner_TaskCompleted;
+
+
+        }
+
+        private void _batchRunner_TaskCompleted(BatchRunner.TaskCompletedInfo taskCompletedInfo)
+        {
+            //here processing batch stop
         }
 
         private void ConfigureServices(ServiceCollection services)
@@ -102,7 +113,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _logger.Information($"listening to incoming stack");
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
             
-            var batchRunner = _serviceProvider.GetService<BatchRunner>();
+            
 
             if (m == null) 
             { 
