@@ -1,6 +1,7 @@
 
 
 ## 1.4.0
+- #28: In Edit batch form -- move elements to tab items
 - #27: Add  StartPointType param to batch object
 - #26: Add Activity.IsActive parameter
 - #25: Add RunMode and ActiveDaysOfWeek parameters to Batch object (task)

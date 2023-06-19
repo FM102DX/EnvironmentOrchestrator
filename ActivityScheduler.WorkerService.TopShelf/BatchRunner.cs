@@ -17,7 +17,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private Serilog.ILogger _logger;
         private ActivityManager _activityManager;
 
-        private List<string> _batches = new List<string>();
+        private List<string> _runningBatches = new List<string>();
 
         public BatchRunner(BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
@@ -27,22 +27,22 @@ namespace ActivityScheduler.WorkerService.TopShelf
         }
         public CommonOperationResult RunBatch(string batchId) 
         {
-            if (_batches.Contains(batchId))
+            if (_runningBatches.Contains(batchId))
             {
                 return CommonOperationResult.SayFail($"Cant start batch {batchId} because its already running");
             }
-            _batches.Add(batchId);
+            _runningBatches.Add(batchId);
             return CommonOperationResult.SayOk();
         }
 
         public CommonOperationResult StopBatch(string batchId)
         {
-            if (!_batches.Contains(batchId))
+            if (!_runningBatches.Contains(batchId))
             {
                 return CommonOperationResult.SayFail($"Cant stop batch {batchId} because its not running");
             }
             
-            _batches.RemoveAll(x => x == batchId);
+            _runningBatches.RemoveAll(x => x == batchId);
 
             return CommonOperationResult.SayOk();
         }
@@ -50,18 +50,23 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             return new RunningBatchesInfo()
             {
-                Batches = _batches
+                Batches = _runningBatches
             };
         }
 
         public string GetRunBatchList()
         {
-            return string.Join(",", _batches);
+            return string.Join(",", _runningBatches);
         }
 
         public int GetRunBatchCount()
         {
-            return _batches.Count;
+            return _runningBatches.Count;
+        }
+
+        public CommonOperationResult RunBatch0(string batchId)
+        {
+
         }
 
         public void RunBatchOnce(DateTime startDateTime, Batch batch)
