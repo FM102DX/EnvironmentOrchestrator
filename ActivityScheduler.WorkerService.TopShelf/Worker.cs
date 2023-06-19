@@ -111,9 +111,8 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void CheckMail(object? sender, ElapsedEventArgs e)
         {
             _logger.Information($"listening to incoming stack");
+
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
-            
-            
 
             if (m == null) 
             { 
@@ -129,9 +128,9 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 {
                     _logger.Information($"got message of startbatch type");
                     Task.Run(()=> {
-                        if (batchRunner!=null && m.TransactionId!=null)
+                        if (m.TransactionId!=null)
                         {
-                            var rez = batchRunner.RunBatch(m.TransactionId);
+                            var rez = _batchRunner.RunBatch(m.TransactionId);
                             var msgObject = new WorkerToAppMessage()
                             {
                                 MessageType = "CommandExecutionResult".ToLower(),
@@ -145,7 +144,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 {
                     _logger.Information($"got message of stopbatch type");
                     Task.Run(() => {
-                        var rez = batchRunner.StopBatch(m.TransactionId);
+                        var rez = _batchRunner.StopBatch(m.TransactionId);
                         var msgObject = new WorkerToAppMessage()
                         {
                             MessageType = "CommandExecutionResult".ToLower(),
@@ -162,14 +161,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
-            var btcr = _serviceProvider.GetService<BatchRunner>();
-            //int x = random.Next(0, 1000);
-            //string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
-            
             var msgObject = new WorkerToAppMessage()
             {
                 MessageType = "runningbatchesInfo",
-                RunningBatches = btcr.GetRunningBatchesInfo()
+                RunningBatches = _batchRunner.GetRunningBatchesInfo()
             };
             _pipeServer.SendObject(msgObject);
         }

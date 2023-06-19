@@ -19,10 +19,8 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private ActivityManager _activityManager;
         private readonly System.Timers.Timer _timer;
         private List<BatchRunningInfo> _runningBatches = new List<BatchRunningInfo>();
-
         public event TaskCompletedDelegate  TaskCompleted;
         public delegate void TaskCompletedDelegate(TaskCompletedInfo taskCompletedInfo);
-
 
         public BatchRunner(BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
@@ -36,7 +34,14 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void _timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             //go through _runningBatches looking for completed tasks, raise event, remove task 
-
+            foreach (BatchRunningInfo batchRunningInfo in _runningBatches)
+            {
+                if (batchRunningInfo.BatchRunTask.IsCompleted)
+                {
+                    TaskCompleted(new TaskCompletedInfo() { BatchNumber = batchRunningInfo.BatchNumber, Result = batchRunningInfo.BatchRunTask.Result });
+                }
+            }
+            _runningBatches.RemoveAll(x => x.BatchRunTask.IsCompleted);
         }
 
         private bool IsBatchRunning(string batchNumber)
@@ -50,20 +55,19 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 return CommonOperationResult.SayFail($"Cant start batch {batchNumber} because its already running");
             }
-
             try
             {
-                var rez = Task.Run(() => {
-                    var instance = new RunningBatchInstance(batchNumber, _batchManager, _activityManager, _logger);
-                    instance.Run();
+                var instance = new RunningBatchInstance(batchNumber, _batchManager, _activityManager, _logger);
+                var rez = Task<CommonOperationResult>.Run(() => {
+                    return instance.Run();
                 });
-                _runningBatches.Add(new BatchRunningInfo() { BatchNumber= batchNumber, BatchRunTask= rez });
+                _runningBatches.Add(new BatchRunningInfo() { BatchNumber= batchNumber, BatchRunTask= rez, Instance= instance });
+                _logger.Information($"010024 Adding batch {batchNumber} to running ones");
             }
             catch (Exception ex)
             {
                 return CommonOperationResult.SayFail($"Filed to start batch {batchNumber} exception is: {ex.Message}, innerexception is {ex.InnerException}");
             }
-
             return CommonOperationResult.SayOk();
         }
 
@@ -74,7 +78,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 return CommonOperationResult.SayFail($"Cant stop batch {batchNumber} because its not running");
             }
 
-            ////
+            var x=_runningBatches.Where(x => x.BatchNumber== batchNumber).ToList().FirstOrDefault();
+
+            x.Instance.Stop();
+
+            _logger.Information($"010024 Remmoving batch {batchNumber} from running ones");
 
             return CommonOperationResult.SayOk();
         }
@@ -94,7 +102,9 @@ namespace ActivityScheduler.WorkerService.TopShelf
         public class BatchRunningInfo
         {
             public string? BatchNumber { get; set; }
-            public Task? BatchRunTask { get; set; }
+            public Task<CommonOperationResult>? BatchRunTask { get; set; }
+
+            public RunningBatchInstance Instance { get; set; }
         }
         public class TaskCompletedInfo
         {
