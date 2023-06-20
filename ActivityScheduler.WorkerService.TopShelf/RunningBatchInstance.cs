@@ -5,6 +5,8 @@ using ActivityScheduler.Shared;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +18,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private BatchManager _batchManager;
         private Serilog.ILogger _logger;
         private ActivityManager _activityManager;
-        string _batchNumber;
+        private string _batchNumber;
         bool _stopMarker;
         private readonly System.Timers.Timer _timer;
+        private Batch _batch;
 
         public RunningBatchInstance(string batchNumber, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
@@ -26,7 +29,17 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _activityManager=activityManager;
             _logger =logger;
             _batchNumber = batchNumber;
-            
+            var batchTmp = batchManager.GetByNumberOrNull(batchNumber).Result;
+            if(batchTmp != null ) 
+            {
+                _batch = batchTmp;
+            }
+            else
+            { 
+                throw new ArgumentException($"Error reading batch number {batchNumber} from database while trying to run it"); 
+            }
+
+
             //timer
             //_timer = new System.Timers.Timer(500) { AutoReset = true };
             //_timer.Elapsed += _timer_Elapsed;
@@ -35,14 +48,62 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         public CommonOperationResult Run() 
         {
+
+            if (_batch.RunMode == BatchStartTypeEnum.Single)
+            {
+                // Case 1: no interval, no duration
+                // Just run once and stop
+
+                DateTime dtNow = DateTime.Now;
+                DateTime beginOfThisDay;
+
+                var parseRez= DateTime.TryParse($"{dtNow.Day}.{dtNow.Month}.{dtNow.Year} 00:00:00", CultureInfo.CurrentCulture, DateTimeStyles.None, out beginOfThisDay);
+                if (!parseRez)
+                {
+                    throw new ArgumentException($"Error parsing datetime while running batch");
+                }
+
+
+                DateTime actualStartDateTime = DateTime.Now;
+
+                if(_batch.StartPointType== BatchStartPointTypeEnum.StartFromNow)
+                {
+                    actualStartDateTime = DateTime.Now;
+                }
+                else if(_batch.StartPointType == BatchStartPointTypeEnum.StartTodayFromSpecifiedTime)
+                {
+                    actualStartDateTime = beginOfThisDay.AddHours(_batch.StartTimeInADay.Hours);
+                    actualStartDateTime = actualStartDateTime.AddMinutes(_batch.StartTimeInADay.Minutes);
+                    actualStartDateTime = actualStartDateTime.AddSeconds(_batch.StartTimeInADay.Seconds);
+                }
+                else if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime)
+                {
+                    actualStartDateTime = _batch.StartDateTime;
+                }
+                RunBatchOnce(actualStartDateTime, _batch);
+
+            }
+
+
+
+            
+            
             _stopMarker = false;
             
+            Stopwatch stopwatch = new Stopwatch();  
+            
+            stopwatch.Start();
+
             do
             {
                 Thread.Sleep(500);
+                _stopMarker = stopwatch.Elapsed.TotalSeconds>10;
+                _logger.Information($"010025 Stopwatch.Elapsed={stopwatch.Elapsed.TotalSeconds} value={stopwatch.Elapsed.TotalSeconds > 10}");
             }
             while (!_stopMarker);
+
             _logger.Information($"010024 RunningBatchInstance: Exiting run cycle");
+            
             return CommonOperationResult.SayOk();
         }
 

@@ -35,6 +35,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void _timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             //go through _runningBatches looking for completed tasks, raise event, remove task 
+            _logger.Information($"BatchRunner: 1200070 clearing tasklist _runningBatches.Count={_runningBatches.Count}");
             foreach (BatchRunningInfo batchRunningInfo in _runningBatches)
             {
                 if (batchRunningInfo.BatchRunTask.IsCompleted)
@@ -43,6 +44,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 }
             }
             _runningBatches.RemoveAll(x => x.BatchRunTask.IsCompleted);
+            _logger.Information($"BatchRunner: 1200070 DONE clearing tasklist _runningBatches.Count={_runningBatches.Count}");
         }
 
         private bool IsBatchRunning(string batchNumber)
