@@ -75,6 +75,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void _batchRunner_TaskCompleted(BatchRunner.TaskCompletedInfo taskCompletedInfo)
         {
             //here processing batch stop
+            _logger.Information($"[Worker] Batch {taskCompletedInfo.BatchNumber} stopped");
         }
 
         private void ConfigureServices(ServiceCollection services)
@@ -84,8 +85,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
             EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
+
             _logger.Information("P1");
+            
             sqLiteDbContext.Database.EnsureCreated();
+            
             _logger.Information("P2");
             
             try
@@ -143,17 +147,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 if (m.Command.ToLower() == "stopbatch")
                 {
                     _logger.Information($"got message of stopbatch type");
+                    
                     Task.Run(() => {
+
                         var rez = _batchRunner.StopBatch(m.TransactionId);
+                        
                         var msgObject = new WorkerToAppMessage()
                         {
                             MessageType = "CommandExecutionResult".ToLower(),
                             Result = rez
                         };
+                        
                         _pipeServer.SendObject(msgObject);
                     });
                 }
-
             }
             Task.Delay(100);
         }

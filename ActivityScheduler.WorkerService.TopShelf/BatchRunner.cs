@@ -29,6 +29,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _logger = logger;
             _timer = new System.Timers.Timer(500) { AutoReset = true };
             _timer.Elapsed += _timer_Elapsed;
+            _timer.Start();
         }
 
         private void _timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -62,11 +63,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
                     return instance.Run();
                 });
                 _runningBatches.Add(new BatchRunningInfo() { BatchNumber= batchNumber, BatchRunTask= rez, Instance= instance });
-                _logger.Information($"010024 Adding batch {batchNumber} to running ones");
+                _logger.Information($"010024 Adding batch {batchNumber} to running ones, now {_runningBatches.Count} tasks in list, {_runningBatches.Where(x=>x.BatchRunTask.IsCompleted).ToList().Count} completed");
             }
             catch (Exception ex)
             {
-                return CommonOperationResult.SayFail($"Filed to start batch {batchNumber} exception is: {ex.Message}, innerexception is {ex.InnerException}");
+                return CommonOperationResult.SayFail($"010024 Filed to start batch {batchNumber} exception is: {ex.Message}, innerexception is {ex.InnerException}");
             }
             return CommonOperationResult.SayOk();
         }

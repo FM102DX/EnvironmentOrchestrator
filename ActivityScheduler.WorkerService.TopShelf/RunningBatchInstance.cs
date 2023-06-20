@@ -17,6 +17,8 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private Serilog.ILogger _logger;
         private ActivityManager _activityManager;
         string _batchNumber;
+        bool _stopMarker;
+        private readonly System.Timers.Timer _timer;
 
         public RunningBatchInstance(string batchNumber, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
         {
@@ -24,14 +26,30 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _activityManager=activityManager;
             _logger =logger;
             _batchNumber = batchNumber;
+            
+            //timer
+            //_timer = new System.Timers.Timer(500) { AutoReset = true };
+            //_timer.Elapsed += _timer_Elapsed;
+            //_timer.Start();
         }
+
         public CommonOperationResult Run() 
         {
+            _stopMarker = false;
+            
+            do
+            {
+                Thread.Sleep(500);
+            }
+            while (!_stopMarker);
+            _logger.Information($"010024 RunningBatchInstance: Exiting run cycle");
             return CommonOperationResult.SayOk();
         }
 
         public CommonOperationResult Stop()
         {
+            _stopMarker=true;
+            _logger.Information($"010024 RunningBatchInstance: Stop command");
             return CommonOperationResult.SayOk();
         }
 
@@ -42,7 +60,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         private void RunBatchOnce(DateTime startDateTime, Batch batch)
         {
-
             var activities = _activityManager.GetAll(batch.Id).Result.ToList().OrderBy(x=>x.ActivityId).ToList();
             
             bool canExit=false;
@@ -51,7 +68,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 foreach (var activity in activities)
                 {
-                    
                     if (activity.IsActive)
                     {
                         if (activity.Status == ActivityStatusEnum.Idle)
