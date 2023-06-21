@@ -105,6 +105,10 @@ namespace ActivityScheduler.Data.Managers
         {
             return Task.FromResult(Validation.CheckIfTransactionOrBatchNameIsCorrect(name));
         }
+        public Task<Batch?> GetByNumberOrNull(string number)
+        {
+            return Task.FromResult(_repo.GetAllAsync().Result.ToList().Where(x=>x.Number== number).FirstOrDefault());
+        }
         public Task<List<Batch>> GetAll()
         {
             return Task.FromResult(_repo.GetAllAsync().Result.ToList());

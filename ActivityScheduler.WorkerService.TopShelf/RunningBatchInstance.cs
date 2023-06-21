@@ -46,6 +46,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
             //_timer.Start();
         }
 
+        public void Run01() 
+        {
+
+        }
+
         public CommonOperationResult Run() 
         {
 
@@ -54,33 +59,88 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 // Case 1: no interval, no duration
                 // Just run once and stop
 
-                DateTime dtNow = DateTime.Now;
-                DateTime beginOfThisDay;
-
-                var parseRez= DateTime.TryParse($"{dtNow.Day}.{dtNow.Month}.{dtNow.Year} 00:00:00", CultureInfo.CurrentCulture, DateTimeStyles.None, out beginOfThisDay);
-                if (!parseRez)
+                if (!_batch.HasInterval && !_batch.HasDuration)
                 {
-                    throw new ArgumentException($"Error parsing datetime while running batch");
+                    DateTime dtNow = DateTime.Now;
+
+                    DateTime beginOfThisDay;
+
+                    var parseRez = DateTime.TryParse($"{dtNow.Day}.{dtNow.Month}.{dtNow.Year} 00:00:00", CultureInfo.CurrentCulture, DateTimeStyles.None, out beginOfThisDay);
+
+                    if (!parseRez)
+                    {
+                        throw new ArgumentException($"Error parsing datetime while running batch");
+                    }
+
+
+                    DateTime actualStartDateTime = DateTime.Now;
+
+                    if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromNow)
+                    {
+                        actualStartDateTime = DateTime.Now;
+                    }
+                    else if (_batch.StartPointType == BatchStartPointTypeEnum.StartTodayFromSpecifiedTime)
+                    {
+                        actualStartDateTime = beginOfThisDay.AddHours(_batch.StartTimeInADay.Hours);
+                        actualStartDateTime = actualStartDateTime.AddMinutes(_batch.StartTimeInADay.Minutes);
+                        actualStartDateTime = actualStartDateTime.AddSeconds(_batch.StartTimeInADay.Seconds);
+                    }
+                    else if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime)
+                    {
+                        actualStartDateTime = _batch.StartDateTime;
+                    }
+                    RunBatchOnce(actualStartDateTime, _batch);
                 }
 
 
-                DateTime actualStartDateTime = DateTime.Now;
+                // Case 2: has interval, no duration
+                // Retry forever
 
-                if(_batch.StartPointType== BatchStartPointTypeEnum.StartFromNow)
+                if (_batch.HasInterval && !_batch.HasDuration)
                 {
-                    actualStartDateTime = DateTime.Now;
+
+                    // 1) run according starttime
+                    // 2) when finished, calculate next datetime
+                    // 3) run form this time -> p.1
+
+                    do
+                    {
+
+
+
+                    }
+                    while (true);
+
+                    DateTime dtNow = DateTime.Now;
+                    DateTime beginOfThisDay;
+
+                    var parseRez = DateTime.TryParse($"{dtNow.Day}.{dtNow.Month}.{dtNow.Year} 00:00:00", CultureInfo.CurrentCulture, DateTimeStyles.None, out beginOfThisDay);
+                    if (!parseRez)
+                    {
+                        throw new ArgumentException($"Error parsing datetime while running batch");
+                    }
+
+
+                    DateTime actualStartDateTime = DateTime.Now;
+
+                    if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromNow)
+                    {
+                        actualStartDateTime = DateTime.Now;
+                    }
+                    else if (_batch.StartPointType == BatchStartPointTypeEnum.StartTodayFromSpecifiedTime)
+                    {
+                        actualStartDateTime = beginOfThisDay.AddHours(_batch.StartTimeInADay.Hours);
+                        actualStartDateTime = actualStartDateTime.AddMinutes(_batch.StartTimeInADay.Minutes);
+                        actualStartDateTime = actualStartDateTime.AddSeconds(_batch.StartTimeInADay.Seconds);
+                    }
+                    else if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime)
+                    {
+                        actualStartDateTime = _batch.StartDateTime;
+                    }
+                    RunBatchOnce(actualStartDateTime, _batch);
                 }
-                else if(_batch.StartPointType == BatchStartPointTypeEnum.StartTodayFromSpecifiedTime)
-                {
-                    actualStartDateTime = beginOfThisDay.AddHours(_batch.StartTimeInADay.Hours);
-                    actualStartDateTime = actualStartDateTime.AddMinutes(_batch.StartTimeInADay.Minutes);
-                    actualStartDateTime = actualStartDateTime.AddSeconds(_batch.StartTimeInADay.Seconds);
-                }
-                else if (_batch.StartPointType == BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime)
-                {
-                    actualStartDateTime = _batch.StartDateTime;
-                }
-                RunBatchOnce(actualStartDateTime, _batch);
+
+
 
             }
 

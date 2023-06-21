@@ -27,5 +27,8 @@ namespace ActivityScheduler.Data.Models
 
         public string? DefaultScriptPath { get; set; }
 
+        public bool HasInterval => Interval.TotalMilliseconds == 0;
+        public bool HasDuration => Duration.TotalMilliseconds == 0;
+
     }
 }

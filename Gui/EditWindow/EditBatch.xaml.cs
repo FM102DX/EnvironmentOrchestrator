@@ -16,6 +16,7 @@ namespace ActivityScheduler.Core
         private FormStateHolder _formStateHolder = new FormStateHolder();
         private FormStateHolder _formStateHolder2 = new FormStateHolder();
         private FormStateHolder _formStateHolder3 = new FormStateHolder(); //start point type selection
+        private FormStateHolder _formStateHolder4 = new FormStateHolder(); //start point type selection
 
         private EditWindowViewModel _viewModel;
 
@@ -27,50 +28,38 @@ namespace ActivityScheduler.Core
 
             _formStateHolder.CreateFormState(EditWindowViewModel.SelectionMode.GroupMode.ToString()).AddAction(() =>
             {
-                BatchNumberLabel.Visibility = Visibility.Visible;
-                BatchNumberTb.Visibility = Visibility.Visible;
-                BatchNameLabel.Visibility = Visibility.Visible;
-                BatchNameTb.Visibility = Visibility.Visible;
-                ActivityGrid.Visibility = Visibility.Hidden;
+                BatchTbi.Visibility = Visibility.Visible;
+                ActivitiesTbi.Visibility = Visibility.Hidden;
+                CnvNameAndNumber.Visibility = Visibility.Visible;
+                CnvStartTimePoint.Visibility = Visibility.Hidden;
+                CnvIntervalDuration.Visibility = Visibility.Hidden;
+                CnvDow.Visibility = Visibility.Hidden;
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
-                CreateActivity.Visibility = Visibility.Hidden;
-                DeleteActivityBtn.Visibility = Visibility.Hidden;
-                CnvRealBatch.Visibility = Visibility.Hidden;
-                CnvRealBatchDow.Visibility = Visibility.Hidden;
+                ActivityGrid.Visibility = Visibility.Hidden;
+
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeNoSelection.ToString()).AddAction(() =>
             {
-                BatchNumberLabel.Visibility = Visibility.Visible;
-                BatchNumberTb.Visibility = Visibility.Visible;
-                BatchNameLabel.Visibility = Visibility.Visible;
-                BatchNameTb.Visibility = Visibility.Visible;
+                BatchTbi.Visibility = Visibility.Visible;
+                ActivitiesTbi.Visibility = Visibility.Visible;
+                CnvNameAndNumber.Visibility = Visibility.Visible;
+                CnvStartTimePoint.Visibility = Visibility.Visible;
+                CnvIntervalDuration.Visibility = Visibility.Hidden;
+                CnvDow.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Visible;
-                ActivityEditCanvas.Visibility = Visibility.Visible;
-                CreateActivity.Visibility = Visibility.Visible;
-                DeleteActivityBtn.Visibility = Visibility.Visible;
-                CnvRealBatch.Visibility = Visibility.Visible;
+                ActivityEditCanvas.Visibility = Visibility.Hidden;
+                
 
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
-                BatchNumberLabel.Visibility = Visibility.Visible;
-                BatchNumberTb.Visibility = Visibility.Visible;
-                BatchNameLabel.Visibility = Visibility.Visible;
-                BatchNameTb.Visibility = Visibility.Visible;
+                BatchTbi.Visibility = Visibility.Visible;
+                ActivitiesTbi.Visibility = Visibility.Visible;
+                CnvNameAndNumber.Visibility = Visibility.Visible;
+                CnvStartTimePoint.Visibility = Visibility.Visible;
+                CnvIntervalDuration.Visibility = Visibility.Hidden;
+                CnvDow.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Visible;
                 ActivityEditCanvas.Visibility = Visibility.Visible;
-                CreateActivity.Visibility = Visibility.Visible;
-                DeleteActivityBtn.Visibility = Visibility.Visible;
-                CnvRealBatch.Visibility = Visibility.Visible;
-                CnvRealBatchDow.Visibility = Visibility.Visible;
 
-            });
-
-            _formStateHolder2.CreateFormState(EditWindowViewModel.SelectionMode2.DowSeen.ToString()).AddAction(() =>
-            {
-                CnvRealBatchDow.Visibility = Visibility.Visible;
-
-            }).Parent.CreateFormState(EditWindowViewModel.SelectionMode2.DowUnseen.ToString()).AddAction(() =>
-            {
-                CnvRealBatchDow.Visibility = Visibility.Hidden;
             });
 
             _formStateHolder3.CreateFormState(BatchStartPointTypeEnum.StartFromNow.ToString()).AddAction(() =>
@@ -88,9 +77,24 @@ namespace ActivityScheduler.Core
                 StartTimeTb.Visibility = Visibility.Hidden;
             });
 
+            _formStateHolder4.CreateFormState(BatchStartTypeEnum.Single.ToString()).AddAction(() =>
+            {
+                CnvIntervalDuration.Visibility= Visibility.Hidden;
+                CnvDow.Visibility= Visibility.Hidden;
+            }).Parent.CreateFormState(BatchStartTypeEnum.Periodic.ToString()).AddAction(() =>
+            {
+                CnvIntervalDuration.Visibility = Visibility.Visible;
+                CnvDow.Visibility = Visibility.Hidden;
+
+            }).Parent.CreateFormState(BatchStartTypeEnum.PeriodicDaily.ToString()).AddAction(() =>
+            {
+                CnvIntervalDuration.Visibility = Visibility.Visible;
+                CnvDow.Visibility = Visibility.Visible;
+            });
+
             _viewModel.SelectionModeChanged += _viewModel_SelectionModeChanged;
-            _viewModel.SelectionModeChanged2 += _viewModel_SelectionModeChanged2;
-            _viewModel.SelectionModeChanged3 += _viewModel_SelectionModeChanged3; ;
+            _viewModel.SelectionModeChanged4 += _viewModel_SelectionModeChanged4;
+            _viewModel.SelectionModeChanged3 += _viewModel_SelectionModeChanged3;
 
             this.PreviewKeyDown += new KeyEventHandler(HandleEsc);
             _viewModel.NeedToCloseForm += () => { Close(); };
@@ -106,9 +110,9 @@ namespace ActivityScheduler.Core
             _formStateHolder3.SetFormState(selectionMode.ToString());
         }
 
-        private void _viewModel_SelectionModeChanged2(EditWindowViewModel.SelectionMode2 selectionMode)
+        private void _viewModel_SelectionModeChanged4(BatchStartTypeEnum selectionMode)
         {
-            _formStateHolder2.SetFormState(selectionMode.ToString());
+            _formStateHolder4.SetFormState(selectionMode.ToString());
         }
 
         private void HandleEsc(object sender, KeyEventArgs e)

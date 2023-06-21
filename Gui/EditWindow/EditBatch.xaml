@@ -50,37 +50,41 @@
 
     </Window.Resources>
 
-    <Grid HorizontalAlignment="left" VerticalAlignment="Top" Width="1200" Height="700" Margin="0,0,0,15">
-
-
-
-
+    <Grid HorizontalAlignment="left" VerticalAlignment="Top" Width="1200" Height="700" Margin="0,0,0,0">
         <TabControl Margin="10,10,0,0">
-            <TabItem Header="Batch">
-                <Grid  Margin="133,0,-133,0">
-                    <Canvas Margin="-124,10,247,245">
+            <TabItem Header="Batch" Name="BatchTbi">
+                <Grid  Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="892" Height="409">
+                    <Canvas x:Name="CnvNameAndNumber" Width="800" Height="60" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <TextBox HorizontalAlignment="Left" x:Name="BatchNumberTb" TextWrapping="Wrap" VerticalAlignment="Center" Width="117"  Text="{Binding CurrentBatch.Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Canvas.Left="117" Canvas.Top="8"/>
-                        <TextBox HorizontalAlignment="Center" x:Name="BatchNameTb" TextWrapping="Wrap" VerticalAlignment="Top" Width="323" Text="{Binding CurrentBatch.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Canvas.Left="117" Canvas.Top="32"/>
+                        <TextBox HorizontalAlignment="Left" x:Name="BatchNameTb" TextWrapping="Wrap" VerticalAlignment="Center" Width="366" Text="{Binding CurrentBatch.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Canvas.Left="117" Canvas.Top="32"/>
                         <TextBlock TextWrapping="Wrap" Text="Batch number"  x:Name="BatchNumberLabel" FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="7" HorizontalAlignment="Center" VerticalAlignment="Top" />
                         <TextBlock TextWrapping="Wrap" Text="Batch name"  x:Name="BatchNameLabel"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="31" HorizontalAlignment="Center" VerticalAlignment="Top"  />
                         <Button Content="Save batch" x:Name="SaveBatch" HorizontalAlignment="Center"  VerticalAlignment="Top" Width="99" Command="{Binding SaveBatchCmd}" Canvas.Left="633" Canvas.Top="8" />
                         <Button Content="Cancel" x:Name="Cancel" HorizontalAlignment="Center" VerticalAlignment="Top" Width="99" Click="Cancel_Click" Canvas.Left="633" Canvas.Top="33" />
                     </Canvas>
 
-                    <Canvas Margin="-124,72,247,54" x:Name="CnvRealBatch">
+                    <Canvas x:Name="CnvStartTimePoint" Width="800" Height="112" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,56,0,0">
+                        <TextBlock TextWrapping="Wrap"  Text="Start point"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="6" HorizontalAlignment="Center" VerticalAlignment="Top" />
 
-                        <TextBlock TextWrapping="Wrap"  Text="Script path" FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="111" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
-
-                        <Button Content="X" x:Name="SelectScriptrFileForBatchReset" Canvas.Left="541" Canvas.Top="108" HorizontalAlignment="Center" VerticalAlignment="Top" Height="20" Width="21" Click="SelectScriptrFileForBatchReset_Click" />
-
-
+                        <TextBlock TextWrapping="Wrap"  Text="Run mode"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="11" Canvas.Top="36" HorizontalAlignment="Left" VerticalAlignment="Top"  />
                         <ComboBox 
-                            Canvas.Left="120" 
-                            Canvas.Top="22" 
-                            Width="219" 
+                            Canvas.Left="117" 
+                            Canvas.Top="36" 
+                            Width="120" 
                             HorizontalAlignment="Left" 
                             Height="20" 
-                            VerticalAlignment="Center"
+                            VerticalAlignment="Top"
+                            ItemsSource="{Binding RunModeComboDataSource, Mode=OneWay}"
+                            SelectedItem="{Binding SelectedRunModeComboDataSourceItem, Mode=TwoWay}"
+                            DisplayMemberPath="Name"/>
+
+                        <ComboBox 
+                            Canvas.Left="117" 
+                            Canvas.Top="6" 
+                            Width="219" 
+                            HorizontalAlignment="Center" 
+                            Height="20" 
+                            VerticalAlignment="Top"
                             SelectedItem="{Binding SelectedBatchStartPointTypeItem, Mode=TwoWay}"
                             ItemsSource="{Binding BatchStartPointTypeComboDataSource, Mode=OneWay}"
                             DisplayMemberPath="Name"/>
@@ -90,9 +94,9 @@
                             Height="18" 
                             Mask="00/00/0000 00:00:00"
                             Canvas.Left="356" 
-                            Canvas.Top="23" 
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
+                            Canvas.Top="7" 
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
                             x:Name="StartDateTimeTb"
                             Text="{Binding StartDateTimeBindingVar, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" MaxLines="1"/>
 
@@ -101,62 +105,59 @@
                             Height="18" 
                             Mask="00:00:00" 
                             Canvas.Left="356" 
-                            Canvas.Top="23" 
+                            Canvas.Top="7" 
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Top" 
                             x:Name="StartTimeTb"
                             Text="{Binding CurrentBatch.StartTimeInADay, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
 
-                        <wpfx:MaskedTextBox 
-                            Width="92" 
-                            Height="18" 
-                            Mask="00:00:00" 
-                            Canvas.Left="120" 
-                            Canvas.Top="55" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Top" 
-                            Text="{Binding CurrentBatch.Interval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <wpfx:MaskedTextBox 
-                            Width="92" 
-                            Height="18" 
-                            Mask="00:00:00" 
-                            Canvas.Left="120" 
-                            Canvas.Top="80" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Top" 
-                            Text="{Binding CurrentBatch.Duration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-
-                        <ComboBox 
-                            Canvas.Left="120" 
-                            Canvas.Top="154" 
-                            Width="120" 
-                            HorizontalAlignment="Center" 
-                            Height="20" 
-                            VerticalAlignment="Top"
-                            ItemsSource="{Binding RunModeComboDataSource, Mode=OneWay}"
-                            SelectedItem="{Binding SelectedRunModeComboDataSourceItem, Mode=TwoWay}"
-                            DisplayMemberPath="Name"/>
+                        <Button Content="X" x:Name="SelectScriptrFileForBatchReset" Canvas.Left="519" Canvas.Top="65" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="21" Click="SelectScriptrFileForBatchReset_Click" />
+                        <Button Content="Select file" x:Name="SelectScriptFileForBatch" Canvas.Left="423" Canvas.Top="65" HorizontalAlignment="Left" VerticalAlignment="Center" Height="20" Width="91" RenderTransformOrigin="0.5,0.5"  />
+                        <TextBlock TextWrapping="Wrap"  Text="Script path" FontWeight="Bold" Height="20" Width="71" Canvas.Left="10" Canvas.Top="65" HorizontalAlignment="Left" VerticalAlignment="Center"  />
 
                         <TextBox    TextWrapping="Wrap"
                             x:Name="SelectScriptPathForBatchTb"
-                            Width="324"
-                            Canvas.Left="120" 
-                            Canvas.Top="107" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Top" 
+                            Width="300"
+                            Canvas.Left="117" 
+                            Canvas.Top="65" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
                             Height="36" 
                             IsReadOnly="True"
                             Text="{Binding CurrentBatch.DefaultScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <TextBlock TextWrapping="Wrap"  Text="Start point"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="23" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
-                        <TextBlock TextWrapping="Wrap"  Text="Interval"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="55" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
-                        <TextBlock TextWrapping="Wrap"  Text="Duration"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="80" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
-                        <TextBlock TextWrapping="Wrap"  Text="Run mode"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="154" HorizontalAlignment="Center" VerticalAlignment="Top"  />
-                        <Button Content="Select file" x:Name="SelectScriptFileForBatch" Canvas.Left="447" Canvas.Top="108" HorizontalAlignment="Center" VerticalAlignment="Top" Height="20" Width="91" RenderTransformOrigin="0.5,0.5"  />
                     </Canvas>
-                    <Canvas Margin="-121,253,244,352" x:Name="CnvRealBatchDow">
+
+                    <Canvas Margin="0,169,92,182" x:Name="CnvIntervalDuration" Width="800">
+
+                        <wpfx:MaskedTextBox 
+                            Width="92" 
+                            Height="18" 
+                            Mask="00:00:00" 
+                            Canvas.Left="116" 
+                            Canvas.Top="5" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Text="{Binding CurrentBatch.Interval, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+
+                        <wpfx:MaskedTextBox 
+                            Width="92" 
+                            Height="18" 
+                            Mask="00:00:00" 
+                            Canvas.Left="116" 
+                            Canvas.Top="30" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Text="{Binding CurrentBatch.Duration, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+
+
+                        <TextBlock TextWrapping="Wrap"  Text="Interval"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="5" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
+                        <TextBlock TextWrapping="Wrap"  Text="Duration"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="10" Canvas.Top="30" HorizontalAlignment="Center" VerticalAlignment="Top" RenderTransformOrigin="0.615,-0.348"  />
+
+
+                    </Canvas>
+
+                    <Canvas Margin="8,225,84,84" x:Name="CnvDow" Visibility="Visible" Width="800" Height="100">
                         <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="96" Text="{Binding CurrentBatch.ActiveDaysOfWeek, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Canvas.Left="336" Canvas.Top="18" Visibility="Hidden"/>
                         <TextBlock TextWrapping="Wrap"  Text="Days of week"  FontWeight="Bold" Height="20" Width="100" Canvas.Left="7" Canvas.Top="18" HorizontalAlignment="Left" VerticalAlignment="Center"  />
                         <CheckBox x:Name="MondayCbx"  Canvas.Left="124" Canvas.Top="20" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked ="{Binding MondayChk, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -176,7 +177,7 @@
                     </Canvas>
                 </Grid>
             </TabItem>
-            <TabItem Header="Activities">
+            <TabItem Header="Activities" Name="ActivitiesTbi">
                 <Grid  Margin="0,0,0,0">
                     <DataGrid 
             HorizontalAlignment="Left"

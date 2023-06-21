@@ -22,10 +22,13 @@ namespace ActivityScheduler.Gui.EditWindow
 {
     public class EditWindowViewModel : INotifyPropertyChanged
     {
+
         private Serilog.ILogger _logger;
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
+
+
 
         public String StartDateTimeBindingVar { 
             get => CurrentBatch.StartDateTime.ToString(); 
@@ -54,14 +57,7 @@ namespace ActivityScheduler.Gui.EditWindow
                 if (value != null)
                 {
                     CurrentBatch.RunMode = value.Value;
-                    if (value.Value== BatchStartTypeEnum.Single)
-                    {
-                        SelectionModeChanged2(SelectionMode2.DowUnseen);
-                    }
-                    else
-                    {
-                        SelectionModeChanged2(SelectionMode2.DowSeen);
-                    }
+                    SelectionModeChanged4(value.Value);
                 }
             }
         }
@@ -267,12 +263,12 @@ namespace ActivityScheduler.Gui.EditWindow
         public event Action NeedToCancelGridChange;
 
         public event SelectionModeChangedDelegate SelectionModeChanged;
-        public event SelectionModeChangedDelegate2 SelectionModeChanged2;
         public event SelectionModeChangedDelegate3 SelectionModeChanged3;
+        public event SelectionModeChangedDelegate4 SelectionModeChanged4;
 
         public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
-        public delegate void SelectionModeChangedDelegate2(SelectionMode2 selectionMode);
         public delegate void SelectionModeChangedDelegate3(BatchStartPointTypeEnum selectionMode);
+        public delegate void SelectionModeChangedDelegate4(BatchStartTypeEnum selectionMode);
         public string BufferIn { get; set; }
 
         public EditWindowViewModel (BatchManager batchManager, ActivityManager activityManager, Batch currentBatch, Serilog.ILogger logger, MainWindowViewModel mainWindowViewModel)
@@ -288,9 +284,10 @@ namespace ActivityScheduler.Gui.EditWindow
             _activityManager = activityManager;
 
             RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Single), Name= BatchStartTypeEnum.Single.ToString(),Value= BatchStartTypeEnum.Single });
-            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Daily), Name = BatchStartTypeEnum.Daily.ToString(), Value = BatchStartTypeEnum.Daily });
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Periodic), Name = BatchStartTypeEnum.Periodic.ToString(), Value = BatchStartTypeEnum.Periodic });
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.PeriodicDaily), Name = BatchStartTypeEnum.PeriodicDaily.ToString(), Value = BatchStartTypeEnum.PeriodicDaily });
 
-            BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id= (byte)BatchStartPointTypeEnum.StartFromNow,                     Name= BatchStartPointTypeEnum.StartFromNow.ToString(),                      Value= BatchStartPointTypeEnum.StartFromNow});
+            BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartFromNow,                     Name= BatchStartPointTypeEnum.StartFromNow.ToString(),                      Value= BatchStartPointTypeEnum.StartFromNow});
             BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartTodayFromSpecifiedTime,     Name = BatchStartPointTypeEnum.StartTodayFromSpecifiedTime.ToString(),      Value = BatchStartPointTypeEnum.StartTodayFromSpecifiedTime });
             BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime,   Name = BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime.ToString(),    Value = BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime });
 
@@ -345,7 +342,7 @@ namespace ActivityScheduler.Gui.EditWindow
 
             FormLoadedCmd = new ActionCommand(() =>
             {
-                if (_currentBatch!=null && SelectionModeChanged!=null)
+                if (_currentBatch!=null && SelectionModeChanged!=null)//is group or real batch
                 {
                     if (_currentBatch.IsGroup)
                     {
@@ -359,25 +356,27 @@ namespace ActivityScheduler.Gui.EditWindow
                     }
                 }
 
-                if (_currentBatch != null && SelectionModeChanged2 != null )
+                if (_currentBatch != null && SelectionModeChanged4 != null ) //run mode -- Single, Periodic, Periodic daily
                 {
                     if (_currentBatch.IsGroup)
                     {
-                        SelectionModeChanged2(SelectionMode2.DowUnseen);
+                        
                     }
                     else
                     {
+                        SelectionModeChanged4(_currentBatch.RunMode);
+
                         if (_currentBatch.RunMode == BatchStartTypeEnum.Single)
                         {
-                            SelectionModeChanged2(SelectionMode2.DowUnseen);
+                            
                         }
                         else
                         {
-                            SelectionModeChanged2(SelectionMode2.DowSeen);
+                            
                         }
                     }
                 }
-                if (_currentBatch != null && SelectionModeChanged3 != null)
+                if (_currentBatch != null && SelectionModeChanged3 != null) //start point type - FromNow, FromTime, FromDateTime
                 {
                     SelectionModeChanged3(_currentBatch.StartPointType);
                 }
