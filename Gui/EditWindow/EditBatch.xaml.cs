@@ -47,7 +47,6 @@ namespace ActivityScheduler.Core
                 CnvDow.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Visible;
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
-                
 
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
