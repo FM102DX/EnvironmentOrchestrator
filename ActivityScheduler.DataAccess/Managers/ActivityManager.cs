@@ -21,11 +21,12 @@ namespace ActivityScheduler.Data.Managers
         private IAsyncRepositoryT<Activity> _repo;
         public CheckExecutor<Activity> _checker = new CheckExecutor<Activity>();
         public List<Activity> _activitiesList = new List<Activity>();
-        //private Batch _currentBatch;
+        private Batch _currentBatch;
 
-        public ActivityManager(IAsyncRepositoryT<Activity> repo)
+        public ActivityManager(IAsyncRepositoryT<Activity> repo, Batch currentBatch)
         {
             _repo = repo;
+            _currentBatch = currentBatch;
             _checker
             .AddCheck(new List<string>() { "Update" }, "ActivityId", (Activity activity) => {
 
@@ -103,7 +104,9 @@ namespace ActivityScheduler.Data.Managers
 
         public Task<List<Activity>> GetAll()
         {
-            return Task.FromResult(_repo.GetAllAsync().Result.ToList());
+            var rezList= _repo.GetAllAsync().Result.ToList();
+            rezList.ForEach(x => { x.ParentBatch = _currentBatch; });
+            return Task.FromResult(rezList);
         }
 
         public Task<CommonOperationResult> AddNewActivity(Activity activity)

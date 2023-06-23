@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,11 @@ namespace ActivityScheduler.Data.Models
     {
         public Guid BatchId { get; set; }
 
+        public Batch? ParentBatch { get; set; }
+
         public string Name { get; set; }
 
-        public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets
+        public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets 
         
         public TimeSpan StartTime { get; set; }
 
@@ -86,6 +89,42 @@ namespace ActivityScheduler.Data.Models
         public void Run (DateTime activityStartDateTime, string workingFolder, string jobName)
         {
             
+        }
+
+        public string ScriptPathCalculated
+        {
+            get
+            {
+                string? s = "";
+
+                if(ParentBatch != null)
+                {
+                    s = ParentBatch.DefaultScriptPath;
+                }
+
+                if (!string.IsNullOrEmpty(ScriptPath))
+                {
+                    s = ScriptPath;
+                }
+
+                return (string.IsNullOrEmpty(s)) ? "" : s;
+            }
+        }
+        public ActivityStartInfo Run()
+        {
+            //run powershell with params
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            var rezTask = Task<int>.Run(() => {
+                string appName = "powershell.exe";
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.CreateNoWindow = false;
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                startInfo.FileName = appName;
+                startInfo.Arguments = $"-file {ScriptPath} -transactionId {TransactionId}";
+                process.StartInfo = startInfo;
+                process.Start();
+            });
+            return new ActivityStartInfo(rezTask, process);
         }
     }
 }

@@ -1,6 +1,5 @@
-
-
 ## 1.4.0
+- #29: Add timeout parameter to batch
 - #28: In Edit batch form -- move elements to tab items
 - #27: Add  StartPointType param to batch object
 - #26: Add Activity.IsActive parameter

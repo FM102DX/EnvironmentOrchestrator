@@ -40,7 +40,12 @@ namespace ActivityScheduler.Data.Models
 
     public enum BatchStatusEnum
     {
-
+        Idle=0,
+        WaitingForAnActiveDay=10,
+        WaitingForStartPoint = 10,
+        Running =20,
+        CompletedSuccessfully=30, 
+        Failed=40
     }
 
 }

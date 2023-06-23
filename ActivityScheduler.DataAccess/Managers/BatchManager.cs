@@ -218,6 +218,7 @@ namespace ActivityScheduler.Data.Managers
             newBatch.StartPointType = sourceBatch.StartPointType;
             newBatch.StartTimeInADay= sourceBatch.StartTimeInADay;
             newBatch.StartDateTime = sourceBatch.StartDateTime;
+            newBatch.Timeout = sourceBatch.Timeout;
             return newBatch;
         }
     }
