@@ -22,7 +22,6 @@ namespace ActivityScheduler.Gui.EditWindow
 {
     public class EditWindowViewModel : INotifyPropertyChanged
     {
-
         private Serilog.ILogger _logger;
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
@@ -77,7 +76,6 @@ namespace ActivityScheduler.Gui.EditWindow
                 }
             }
         }
-
 
         public bool MondayChk {get{return GetDowBoolValue(0);}set{SetDowValue(0, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MondayChk")); } }
         public bool TuesdayChk { get { return GetDowBoolValue(1); } set { SetDowValue(1, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TuesdayChk")); } }
@@ -228,13 +226,17 @@ namespace ActivityScheduler.Gui.EditWindow
             }
             set
             {
-                if (value == null && AcivityListItemSource.Count != 0) return;
+                if (value == null && AcivityListItemSource.Count != 0)
+                {
+
+                    return;
+                }
                 
                 _selectedItem = value;
 
                 if (_selectedItem == null)
                 {
-                    SelectionModeVar = SelectionMode.None;
+                    SelectionModeVar = SelectionMode.ActivityModeNoSelection;
                     UpdateSelectionMode();
                     SelectedItemDisplayed = null;
                     return;
@@ -243,6 +245,8 @@ namespace ActivityScheduler.Gui.EditWindow
                 SelectedItemDisplayed = _activityManager.Clone(_selectedItem);
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItem"));
+
+                SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
 
                 UpdateSelectionMode();
             }
@@ -340,13 +344,19 @@ namespace ActivityScheduler.Gui.EditWindow
                     if (_currentBatch.IsGroup)
                     {
                         SelectionModeVar = SelectionMode.GroupMode;
-                        UpdateSelectionMode();
                     }
                     else
                     {
-                        SelectionModeVar = SelectionMode.ActivityModeNoSelection;
-                        UpdateSelectionMode();
+                        if (SelectedItem!=null)
+                        {
+                            SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
+                        }
+                        else
+                        {
+                            SelectionModeVar = SelectionMode.ActivityModeNoSelection;
+                        }
                     }
+                    UpdateSelectionMode();
                 }
 
                 if (_currentBatch != null && SelectionModeChanged4 != null ) //run mode -- Single, Periodic, Periodic daily
@@ -375,6 +385,7 @@ namespace ActivityScheduler.Gui.EditWindow
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StartDateTimeBindingVar"));
 
+                UpdateSelectionMode();
 
             });
 

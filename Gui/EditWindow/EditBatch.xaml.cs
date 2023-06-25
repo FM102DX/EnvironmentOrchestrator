@@ -14,7 +14,6 @@ namespace ActivityScheduler.Core
     public partial class EditBatch : Window
     {
         private FormStateHolder _formStateHolder = new FormStateHolder();
-        private FormStateHolder _formStateHolder2 = new FormStateHolder();
         private FormStateHolder _formStateHolder3 = new FormStateHolder(); //start point type selection
         private FormStateHolder _formStateHolder4 = new FormStateHolder(); //start point type selection
 
@@ -36,6 +35,7 @@ namespace ActivityScheduler.Core
                 CnvDow.Visibility = Visibility.Hidden;
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Hidden;
+                CreateActivityBtn.Visibility = Visibility.Hidden;
 
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeNoSelection.ToString()).AddAction(() =>
             {
@@ -47,6 +47,7 @@ namespace ActivityScheduler.Core
                 CnvDow.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Visible;
                 ActivityEditCanvas.Visibility = Visibility.Hidden;
+                CreateActivityBtn.Visibility = Visibility.Visible;
 
             }).Parent.CreateFormState(EditWindowViewModel.SelectionMode.ActivityModeRegularSelection.ToString()).AddAction(() =>
             {
@@ -58,6 +59,7 @@ namespace ActivityScheduler.Core
                 CnvDow.Visibility = Visibility.Hidden;
                 ActivityGrid.Visibility = Visibility.Visible;
                 ActivityEditCanvas.Visibility = Visibility.Visible;
+                CreateActivityBtn.Visibility = Visibility.Visible;
 
             });
 
