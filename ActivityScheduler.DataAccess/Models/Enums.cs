@@ -42,9 +42,10 @@ namespace ActivityScheduler.Data.Models
     {
         Idle=0,
         WaitingForAnActiveDay=10,
-        WaitingForStartPoint = 10,
+        WaitingForStartPoint = 15,
         Running =20,
         CompletedSuccessfully=30, 
+        StoppedByUser=35,
         Failed=40
     }
 

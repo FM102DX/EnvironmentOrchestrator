@@ -8,7 +8,7 @@ namespace ActivityScheduler.Data.Models.Settings
 {
     public class SettingsData
     {
-        public string Setting01 { get; set; }
+        public string? DefaultScriptPath { get; set; }
 
         public bool FillTestDataOnLaunch { get; set; }
 

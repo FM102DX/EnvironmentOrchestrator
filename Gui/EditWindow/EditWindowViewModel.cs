@@ -27,9 +27,6 @@ namespace ActivityScheduler.Gui.EditWindow
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
-
-
-
         public String StartDateTimeBindingVar { 
             get => CurrentBatch.StartDateTime.ToString(); 
             set 
@@ -89,7 +86,6 @@ namespace ActivityScheduler.Gui.EditWindow
         public bool FridayChk { get { return GetDowBoolValue(4); } set { SetDowValue(4, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FridayChk")); } }
         public bool SatudayChk { get { return GetDowBoolValue(5); } set { SetDowValue(5, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SatudayChk")); } }
         public bool SundayChk { get { return GetDowBoolValue(6); } set { SetDowValue(6, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SundayChk")); } }
-
         private bool GetDowBoolValue(int index)
         {
             SetDefaultDowValue();
@@ -299,9 +295,6 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 SelectionModeVar = SelectionMode.ActivityModeNoSelection;
             }
-
-            //_batchManager._checker.BindControlToCheck("UpdateNumber", CurrentBatch.Number).BindControlToCheck("UpdateName", CurrentBatch.Name);
-            //_activityManager._checker.BindActionToCheck("UpdateTransactionId", () => { TransactionIdTb.Focus(); TransactionIdTb.SelectAll(); });
 
             SaveActivityCmd = new ActionCommand(() =>
             {

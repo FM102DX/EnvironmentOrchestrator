@@ -123,6 +123,7 @@ namespace ActivityScheduler.Data.Models
                 startInfo.Arguments = $"-file {ScriptPath} -transactionId {TransactionId}";
                 process.StartInfo = startInfo;
                 process.Start();
+                return 1;
             });
             return new ActivityStartInfo(rezTask, process);
         }

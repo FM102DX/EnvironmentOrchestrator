@@ -23,10 +23,9 @@ namespace ActivityScheduler.Data.Managers
         public List<Activity> _activitiesList = new List<Activity>();
         private Batch _currentBatch;
 
-        public ActivityManager(IAsyncRepositoryT<Activity> repo, Batch currentBatch)
+        public ActivityManager(IAsyncRepositoryT<Activity> repo)
         {
             _repo = repo;
-            _currentBatch = currentBatch;
             _checker
             .AddCheck(new List<string>() { "Update" }, "ActivityId", (Activity activity) => {
 
@@ -102,6 +101,11 @@ namespace ActivityScheduler.Data.Managers
              });
         }
 
+        public ActivityManager SetCurrentBatch(Batch currentBatch)
+        {
+            _currentBatch = currentBatch;
+            return this;
+        }
         public Task<List<Activity>> GetAll()
         {
             var rezList= _repo.GetAllAsync().Result.ToList();

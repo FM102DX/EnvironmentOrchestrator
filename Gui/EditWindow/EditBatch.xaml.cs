@@ -262,5 +262,10 @@ namespace ActivityScheduler.Core
             }
 
         }
+
+        private void SelectScriptFileForBatch_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
