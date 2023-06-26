@@ -48,7 +48,7 @@ namespace ActivityScheduler.Data.Models
 
         public string ActiveDaysOfWeek { get; set; } = "0000000";
 
-        public string? DefaultScriptPath { get; set; }
+        public string? ScriptPath { get; set; }
 
         public bool HasInterval => Interval.TotalMilliseconds == 0;
         public bool HasDuration => Duration.TotalMilliseconds == 0;

@@ -18,6 +18,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             string logFilePath = System.IO.Path.Combine(app.LogsDirectory, Functions.GetNextFreeFileName(app.LogsDirectory, "ActivitySchedulerLogs", "txt"));
 
             Serilog.ILogger _logger = new LoggerConfiguration()
+                  .MinimumLevel.Information()
                   .WriteTo.File(logFilePath)
                   .CreateLogger();
 
@@ -32,7 +33,6 @@ namespace ActivityScheduler.WorkerService.TopShelf
                         s.ConstructUsing(service => new WorkerContainer(_logger, app));
                         s.WhenStarted(service => service.Start(null));
                         s.WhenStopped(service => service.Stop(null));
-                        
                     });
                     x.RunAsLocalSystem();
                     //x.RunAs("HOMECOM01\\Admin", "123");

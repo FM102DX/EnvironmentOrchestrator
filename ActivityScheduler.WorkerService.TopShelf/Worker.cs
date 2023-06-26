@@ -55,7 +55,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("service2app", _logger);
             Task task2 = Task.Run(() => _pipeServer.Run());
 
-            _logger.Information("Worker service constructor passed");
+            _logger.Debug("Worker service constructor passed");
 
             ServiceCollection services = new ServiceCollection();
 
@@ -63,7 +63,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             
             _serviceProvider = services.BuildServiceProvider();
 
-            _logger.Information("Worker service ConfigureServices passed");
+            _logger.Debug("Worker service ConfigureServices passed");
             
             _batchRunner = _serviceProvider.GetService<BatchRunner>();
             
@@ -80,18 +80,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         private void ConfigureServices(ServiceCollection services)
         {
-            _logger.Information("entered ConfigureServices");
-
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
             EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
 
-            _logger.Information("P1");
-            
             sqLiteDbContext.Database.EnsureCreated();
-            
-            _logger.Information("P2");
-            
             try
             {
                 services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
@@ -103,24 +96,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
             }
 
-            _logger.Information($"Point 2");
-            _logger.Information("P3");
             services.AddSingleton<SettingsManager>();
             services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
             services.AddSingleton<BatchRunner>();
-            
-            _logger.Information("P4");
         }
         private void CheckMail(object? sender, ElapsedEventArgs e)
         {
-            _logger.Information($"listening to incoming stack");
+            _logger.Debug($"listening to incoming stack");
 
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
 
             if (m == null) 
             { 
-                _logger.Information($"got null");
+                _logger.Debug($"got null");
                 return; 
             }
 
@@ -130,7 +119,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 if (m.Command.ToLower() == "startbatch")
                 {
-                    _logger.Information($"got message of startbatch type");
+                    _logger.Debug($"got message of startbatch type");
                     Task.Run(()=> {
                         if (m.TransactionId!=null)
                         {
@@ -146,7 +135,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 }
                 if (m.Command.ToLower() == "stopbatch")
                 {
-                    _logger.Information($"got message of stopbatch type");
+                    _logger.Debug($"got message of stopbatch type");
                     
                     Task.Run(() => {
 

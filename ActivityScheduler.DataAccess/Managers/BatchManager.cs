@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using ActivityScheduler.Shared.Validation;
 using Activity = ActivityScheduler.Data.Models.Activity;
 using ActivityScheduler.Data.Executors;
+using ActivityScheduler.Data.Models.Settings;
 
 namespace ActivityScheduler.Data.Managers
 {
@@ -22,6 +23,7 @@ namespace ActivityScheduler.Data.Managers
         private IAsyncRepositoryT<Batch> _repo;
 
         private ActivityManager _activityManager;
+        private SettingsManager _settingsManager;
 
         //TODO make this more accurate
         public CheckExecutor<Batch> _checker = new CheckExecutor<Batch>();
@@ -111,7 +113,8 @@ namespace ActivityScheduler.Data.Managers
         }
         public Task<List<Batch>> GetAll()
         {
-            return Task.FromResult(_repo.GetAllAsync().Result.ToList());
+            var list = _repo.GetAllAsync().Result.ToList();
+            return Task.FromResult(list);
         }
 
         public Task<CommonOperationResult> AddNewBatch(Batch batch)
@@ -212,14 +215,15 @@ namespace ActivityScheduler.Data.Managers
             newBatch.RunMode = sourceBatch.RunMode;
             newBatch.Number = sourceBatch.Number;
             newBatch.IsGroup = sourceBatch.IsGroup;
-            newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
+            newBatch.ScriptPath = sourceBatch.ScriptPath;
             newBatch.ActiveDaysOfWeek = sourceBatch.ActiveDaysOfWeek;
-            newBatch.DefaultScriptPath = sourceBatch.DefaultScriptPath;
+            newBatch.ScriptPath = sourceBatch.ScriptPath;
             newBatch.StartPointType = sourceBatch.StartPointType;
             newBatch.StartTimeInADay= sourceBatch.StartTimeInADay;
             newBatch.StartDateTime = sourceBatch.StartDateTime;
             newBatch.Timeout = sourceBatch.Timeout;
             return newBatch;
         }
+
     }
 }

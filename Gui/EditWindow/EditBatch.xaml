@@ -141,7 +141,7 @@
                             VerticalAlignment="Center" 
                             Height="36" 
                             IsReadOnly="True"
-                            Text="{Binding CurrentBatch.DefaultScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            Text="{Binding CurrentBatch.ScriptPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </Canvas>
 
@@ -196,7 +196,7 @@
             </TabItem>
             <TabItem Header="Activities" Name="ActivitiesTbi">
                 <Grid  Margin="0,0,0,0">
-                    <Button Content="Create Activity" x:Name="CreateActivityBtn" Width="99" Canvas.Left="200" Canvas.Top="20" Command="{Binding CreateActivityCmd}" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1075,10,0,0" />
+                    <Button Content="Create Activity" x:Name="CreateActivityBtn" Width="99" Canvas.Left="200" Canvas.Top="20" Command="{Binding CreateActivityCmd}" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1085,10,0,0" />
                     <DataGrid 
             HorizontalAlignment="Left"
             x:Name="ActivityGrid" 
@@ -252,7 +252,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <Canvas x:Name ="ActivityEditCanvas" Margin="680,44,0,10" Background="LightBlue">
+                    <Canvas x:Name ="ActivityEditCanvas" Margin="680,42,0,10" Background="LightBlue">
                         <TextBlock TextWrapping="Wrap" Text="Activity Id" HorizontalAlignment="Center" Canvas.Left="10" Canvas.Top="48" VerticalAlignment="Top" />
 
                         <TextBox 

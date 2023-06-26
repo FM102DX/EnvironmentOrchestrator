@@ -21,7 +21,7 @@ namespace ActivityScheduler.Data.Managers
         private IAsyncRepositoryT<Activity> _repo;
         public CheckExecutor<Activity> _checker = new CheckExecutor<Activity>();
         public List<Activity> _activitiesList = new List<Activity>();
-        private Batch _currentBatch;
+        private Batch? _currentBatch;
 
         public ActivityManager(IAsyncRepositoryT<Activity> repo)
         {
@@ -106,12 +106,6 @@ namespace ActivityScheduler.Data.Managers
             _currentBatch = currentBatch;
             return this;
         }
-        public Task<List<Activity>> GetAll()
-        {
-            var rezList= _repo.GetAllAsync().Result.ToList();
-            rezList.ForEach(x => { x.ParentBatch = _currentBatch; });
-            return Task.FromResult(rezList);
-        }
 
         public Task<CommonOperationResult> AddNewActivity(Activity activity)
         {
@@ -134,7 +128,9 @@ namespace ActivityScheduler.Data.Managers
         }
         public Task<List<Activity>> GetAll(Guid batchId)
         {
-            return Task.FromResult(_repo.GetAllAsync(x => x.BatchId == batchId).Result.ToList());
+            var activities = _repo.GetAllAsync(x => x.BatchId == batchId).Result.ToList();
+            activities.ForEach(x => x.Status = ActivityStatusEnum.Idle);
+            return Task.FromResult(activities);
         }
         public Task<CommonOperationResult> ModifyActivity(Activity activity)
         {

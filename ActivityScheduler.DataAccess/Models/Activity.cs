@@ -1,4 +1,5 @@
 ﻿using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -37,7 +38,7 @@ namespace ActivityScheduler.Data.Models
 
         public bool IsActive { get; set; } = true;
 
-        public ActivityStatusEnum Status { get; set; }
+        public ActivityStatusEnum Status { get; set; } = ActivityStatusEnum.Idle;
 
         public int RetriesAvivble { get; set; }
 
@@ -91,41 +92,43 @@ namespace ActivityScheduler.Data.Models
             
         }
 
-        public string ScriptPathCalculated
+
+        public ActivityStartInfo Run(Serilog.ILogger logger, string? scriptPath)
         {
-            get
+            string errText;
+            if (string.IsNullOrEmpty(scriptPath))
             {
-                string? s = "";
 
-                if(ParentBatch != null)
-                {
-                    s = ParentBatch.DefaultScriptPath;
-                }
-
-                if (!string.IsNullOrEmpty(ScriptPath))
-                {
-                    s = ScriptPath;
-                }
-
-                return (string.IsNullOrEmpty(s)) ? "" : s;
+                errText = $"Activity: no script path scpecified when trying to run activity {ActivityId}";
+                logger.Error(errText);
+                return new ActivityStartInfo(null, null, CommonOperationResult.SayFail(errText));
             }
-        }
-        public ActivityStartInfo Run()
-        {
-            //run powershell with params
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            var rezTask = Task<int>.Run(() => {
-                string appName = "powershell.exe";
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.CreateNoWindow = false;
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                startInfo.FileName = appName;
-                startInfo.Arguments = $"-file {ScriptPath} -transactionId {TransactionId}";
-                process.StartInfo = startInfo;
-                process.Start();
-                return 1;
-            });
-            return new ActivityStartInfo(rezTask, process);
+            try
+            {
+                //run powershell with params
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                var rezTask = Task<int>.Run(() => {
+                    string appName = "powershell.exe";
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.CreateNoWindow = false;
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                    startInfo.FileName = appName;
+                    startInfo.Arguments = $"-file {scriptPath} -transactionId {TransactionId}";
+                    process.StartInfo = startInfo;
+                    logger.Information($"Activity.Run -- running activity {ActivityId}, -file {scriptPath} -transactionId {TransactionId}");
+                    bool runRez = process.Start();
+                    logger.Information($"Activity.Run -- result = {runRez}");
+                    return runRez == true ? 1 : 0;
+                });
+                return new ActivityStartInfo(rezTask, process, CommonOperationResult.SayOk());
+            }
+            catch(Exception ex)
+            {
+                errText = $"ERROR message={ex.Message}, innerexception={ex.InnerException}";
+                logger.Error(errText);
+                return new ActivityStartInfo(null, null, CommonOperationResult.SayFail(errText));
+            }
+             
         }
     }
 }

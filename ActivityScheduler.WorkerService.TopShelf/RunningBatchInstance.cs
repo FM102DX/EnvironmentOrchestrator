@@ -1,6 +1,7 @@
 ﻿using ActivityScheduler.Data.Managers;
 using ActivityScheduler.Data.Models;
 using ActivityScheduler.Data.Models.Communication;
+using ActivityScheduler.Data.Models.Settings;
 using ActivityScheduler.Shared;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -26,13 +27,18 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private readonly System.Timers.Timer _timer;
         private Batch _batch;
         private List<ActivityRunningInfo> ActivityRunningData = new List<ActivityRunningInfo>();
+        private int _successCout;
+        private int _totalCount;
+        private int _sleepDuration = 500;
+        private SettingsData _settings;
 
-        public RunningBatchInstance(string batchNumber, BatchManager batchManager, ActivityManager activityManager, Serilog.ILogger logger)
+        public RunningBatchInstance(string batchNumber, BatchManager batchManager, ActivityManager activityManager, SettingsManager settingsManager, Serilog.ILogger logger)
         {
             _batchManager=batchManager;
             _activityManager=activityManager;
             _logger =logger;
             _batchNumber = batchNumber;
+            _settings = settingsManager.GetSettings();
             var batchTmp = batchManager.GetByNumberOrNull(batchNumber).Result;
             if(batchTmp != null ) 
             {
@@ -43,11 +49,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 throw new ArgumentException($"Error reading batch number {batchNumber} from database while trying to run it"); 
             }
 
-
-            //timer
-            //_timer = new System.Timers.Timer(500) { AutoReset = true };
-            //_timer.Elapsed += _timer_Elapsed;
-            //_timer.Start();
+            _logger.Information($"RunningBatchInstance: attempt to run batch {batchNumber}");
         }
 
         
@@ -78,16 +80,27 @@ namespace ActivityScheduler.WorkerService.TopShelf
         
         private void WaitForTimePoint(DateTime point)
         {
-            //simply wait for timepoint
-            bool canExit=false;
-            do
+            try
             {
-                canExit = DateTime.Now > point;
+                //simply wait for timepoint
 
-                Thread.Sleep(1000);
+                bool canExit = false;
+                do
+                {
+                    _logger.Information($"Waiting for timepoint {point}, left {(point - DateTime.Now)}");
+
+                    canExit = DateTime.Now > point;
+
+                    Thread.Sleep(1000);
+
+                }
+                while (!canExit);
 
             }
-            while (!canExit);
+            catch (Exception ex) 
+            { 
+                _logger.Error($"ERROR message={ex.Message}, innerexception={ex.InnerException}");
+            }
         }
 
         private void WaitForAnActiveDay() 
@@ -152,11 +165,14 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         public CommonOperationResult Run() 
         {
+            _logger.Information($"RunningBatchInstance.Run Batch number={_batch.Number} RunMode={_batch.RunMode}");
             
             // Case 1: Simply run once and stop
             if (_batch.RunMode == BatchStartTypeEnum.Single)
             {
-                RunBatchOnce(DefineFirstStartDateTimePoint(), _batch);
+                var targetPoint = DefineFirstStartDateTimePoint();
+                _logger.Information($"Starting batch {_batch.Number} in single run mode from timepoint: {targetPoint}");
+                RunBatchOnce(targetPoint, _batch);
             }
 
             if (_batch.RunMode == BatchStartTypeEnum.Periodic)
@@ -327,9 +343,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
             return CommonOperationResult.SayOk();
         }
 
-        private CommonOperationResult RunBatch0()
+        private string? GetScriptPath(Activity activity)
         {
-            return CommonOperationResult.SayOk();
+            if (!string.IsNullOrEmpty(activity.ScriptPath))
+                return activity.ScriptPath;
+
+            if(activity.ParentBatch!=null)
+            {
+                if (!string.IsNullOrEmpty(activity.ParentBatch.ScriptPath))
+                    return activity.ParentBatch.ScriptPath;
+            }
+
+            return _settings.DefaultScriptPath;
+
+
         }
 
         private void RunBatchOnce(DateTime startDateTime, Batch batch)
@@ -342,35 +369,43 @@ namespace ActivityScheduler.WorkerService.TopShelf
             
             bool canExit=false;
             bool batchFailed = false;
+            
+            _logger.Information($"[RunningBatchInstance.RunBatchOnce] {batch.Number}, activities.Count={activities.Count} ");
 
             do 
             {
                 //go through activities and run them if needed
                 foreach (var activity in activities)
                 {
+                    _logger.Information($"Enumerating activities, activity.ActivityId={activity.ActivityId} activity.IsActive={activity.IsActive} activity.Status={activity.Status} activity.IsTimeDriven={activity.IsTimeDriven} ");
                     if (activity.IsActive)
                     {
                         if (activity.Status == ActivityStatusEnum.Idle)
                         {
-                            if (!activity.IsTimeDriven)
+                            if (activity.IsTimeDriven)
                             {
                                 activity.Status = ActivityStatusEnum.Waiting;
+                                _logger.Information($"[RunningBatchInstance.RunBatchOnce] -- moving activity {activity.ActivityId} to status Waiting");
                             }
-                            else if (!activity.IsParentDriven)
+                            else if (activity.IsParentDriven)
                             {
                                 activity.Status = ActivityStatusEnum.WaitingForParent;
+                                _logger.Information($"[RunningBatchInstance.RunBatchOnce] -- moving activity {activity.ActivityId} to status WaitingForParent");
                             }
                         }
 
-                        if (activity.IsTimeDriven)
+                        if (activity.IsTimeDriven && activity.Status == ActivityStatusEnum.Waiting)
                         {
-                            bool isActivityRunningTimeNow = DateTime.Now > startDateTime + activity.StartTime;
+                                bool isActivityRunningTimeNow = DateTime.Now > startDateTime + activity.StartTime;
+                                _logger.Information($"[RunningBatchInstance.RunBatchOnce]: looking if have to run time-driven activity, {DateTime.Now - (startDateTime + activity.StartTime)} left to start, running time now: {isActivityRunningTimeNow}");
 
-                            if (isActivityRunningTimeNow && activity.Status == ActivityStatusEnum.Waiting)
-                            {
-                                var rez= activity.Run();
-                                ActivityRunningData.Add(new ActivityRunningInfo(activity, rez.ActivityStartTask, rez.Process));
-                            }
+                                if (isActivityRunningTimeNow)
+                                {
+                                    _logger.Information($"[RunningBatchInstance.RunBatchOnce] -- running time driven activity {activity.ActivityId}");
+                                    var rez = activity.Run(_logger, GetScriptPath(activity));
+                                    ActivityRunningData.Add(new ActivityRunningInfo(activity, rez.ActivityStartTask, rez.Process));
+                                    activity.Status = ActivityStatusEnum.Running;
+                                }
                         }
                             
                         if (activity.IsParentDriven)
@@ -378,35 +413,59 @@ namespace ActivityScheduler.WorkerService.TopShelf
                             //if parent activities are completed, launch this activity
                             if (AreActivityParentsCompleted(activity))
                             {
-                                var rez = activity.Run();
+                                _logger.Information($"[RunningBatchInstance.RunBatchOnce] -- running parent driven activity {activity.ActivityId}");
+                                var rez = activity.Run(_logger, GetScriptPath(activity));
                                 ActivityRunningData.Add(new ActivityRunningInfo(activity, rez.ActivityStartTask, rez.Process));
+                                activity.Status = ActivityStatusEnum.Running;
                             }
                         }
 
+                        if (_stopMarker)
+                        {
+                            break;
+                        }
                     }
                 }
+                _logger.Information($"[RunningBatchInstance.RunBatchOnce]");
+                _logger.Information($"[RunningBatchInstance.RunBatchOnce] ActivityRunningData dump");
+                //ActivityRunningData.ForEach(x => _logger.Information($"{x.Activity.ActivityId}--{x.ActivityRunningTask.Status}"));
+                
+
 
                 //go through launched activities and catch result
-                canExit = true;
+                _totalCount = activities.Count;
+                _successCout = 0;
+                _logger.Information($"[RunningBatchInstance.RunBatchOnce]  Before -- Success/total {_successCout}/{_totalCount}");
+                canExit=false;
                 foreach (var activityRunInfo in ActivityRunningData)
                 {
-                    
-                    //if at least one uncompleted, cant exit
-                    if(!activityRunInfo.ActivityRunningTask.IsCompleted)
-                    {
-                        canExit = false;
-                    }
-                    
-                    //if at least one activity fails, batch fails and stops
-                    if (activityRunInfo.ActivityRunningTask.Result==0)
-                    {
-                        batchFailed = true;
-                        _batch.Status = BatchStatusEnum.Failed;
-                        canExit = true; 
-                        break;
-                    }
+                        _logger.Information($"[RunningBatchInstance.RunBatchOnce]  Before--ActivityId={activityRunInfo.Activity.ActivityId}--status={activityRunInfo.ActivityRunningTask.Status}--result={activityRunInfo.ActivityRunningTask.Result}");
+
+                        //if at least one uncompleted, cant exit
+                        if (activityRunInfo.ActivityRunningTask.IsCompleted)
+                        {
+                            _successCout += 1;
+                            activityRunInfo.Activity.Status = ActivityStatusEnum.Completed;
+                        }
+
+                        //if at least one activity fails, batch fails and stops
+                        if (activityRunInfo.ActivityRunningTask.Result == 0)
+                        {
+                            batchFailed = true;
+                            activityRunInfo.Activity.Status = ActivityStatusEnum.Failed;
+                            _batch.Status = BatchStatusEnum.Failed;
+                            break;
+                        }
+                    _logger.Information($"[RunningBatchInstance.RunBatchOnce] After--ActivityId={activityRunInfo.Activity.ActivityId}--status={activityRunInfo.ActivityRunningTask.Status}--result={activityRunInfo.ActivityRunningTask.Result}");
                 }
-                
+                _logger.Information($"[RunningBatchInstance.RunBatchOnce] ");
+                _logger.Information($"[RunningBatchInstance.RunBatchOnce] After-- Success/total {_successCout}/{_totalCount}");
+                canExit = _successCout == _totalCount;
+                if (batchFailed) 
+                { 
+                    canExit = true; 
+                }
+
                 if (canExit==true && !batchFailed && !_stopMarker)
                 {
                     _batch.Status = BatchStatusEnum.CompletedSuccessfully;
@@ -417,11 +476,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
                     _batch.Status = BatchStatusEnum.StoppedByUser;
                 }
 
-
-
-                Thread.Sleep(500);
+                Thread.Sleep(_sleepDuration);
             }
             while (!canExit);
+            
+            _logger.Information($"[RunningBatchInstance.RunBatchOnce] Batch Stopped by reason: {_batch.Status}");
         }
 
         public class ActivityRunningInfo
