@@ -55,7 +55,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
             _pipeServer = new ServerCommunicationObjectT<WorkerToAppMessage>("service2app", _logger);
             Task task2 = Task.Run(() => _pipeServer.Run());
 
-            _logger.Information("Worker service constructor passed");
+            _logger.Debug("Worker service constructor passed");
 
             ServiceCollection services = new ServiceCollection();
 
@@ -63,20 +63,28 @@ namespace ActivityScheduler.WorkerService.TopShelf
             
             _serviceProvider = services.BuildServiceProvider();
 
-            _logger.Information("Worker service ConfigureServices passed");
+            _logger.Debug("Worker service ConfigureServices passed");
+            
+            _batchRunner = _serviceProvider.GetService<BatchRunner>();
+            
+            _batchRunner.TaskCompleted += _batchRunner_TaskCompleted;
+
+
+        }
+
+        private void _batchRunner_TaskCompleted(BatchRunner.TaskCompletedInfo taskCompletedInfo)
+        {
+            //here processing batch stop
+            _logger.Information($"[Worker] Batch {taskCompletedInfo.BatchNumber} stopped");
         }
 
         private void ConfigureServices(ServiceCollection services)
         {
-            _logger.Information("entered ConfigureServices");
-
             services.AddSingleton(typeof(Serilog.ILogger), (x) => _logger);
 
             EFSqliteDbContext sqLiteDbContext = new EFSqliteDbContext(_app.DataDirectory);
-            _logger.Information("P1");
+
             sqLiteDbContext.Database.EnsureCreated();
-            _logger.Information("P2");
-            
             try
             {
                 services.AddSingleton(typeof(IAsyncRepositoryT<SettingStorageUnit>), (x) => new EfAsyncRepository<SettingStorageUnit>(sqLiteDbContext));
@@ -88,24 +96,20 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 _logger.Error($"ERROR while registering repositories: message={ex.Message} innerexception={ex.InnerException}");
             }
 
-            _logger.Information($"Point 2");
-            _logger.Information("P3");
             services.AddSingleton<SettingsManager>();
             services.AddSingleton<ActivityManager>();
             services.AddSingleton<BatchManager>();
             services.AddSingleton<BatchRunner>();
-            
-            _logger.Information("P4");
         }
         private void CheckMail(object? sender, ElapsedEventArgs e)
         {
-            _logger.Information($"listening to incoming stack");
+            _logger.Debug($"listening to incoming stack");
+
             Data.Models.Communication.AppToWorkerMessage? m = _pipeClient.Take();
-            var batchRunner = _serviceProvider.GetService<BatchRunner>();
 
             if (m == null) 
             { 
-                _logger.Information($"got null");
+                _logger.Debug($"got null");
                 return; 
             }
 
@@ -115,31 +119,37 @@ namespace ActivityScheduler.WorkerService.TopShelf
             {
                 if (m.Command.ToLower() == "startbatch")
                 {
-                    _logger.Information($"got message of startbatch type");
+                    _logger.Debug($"got message of startbatch type");
                     Task.Run(()=> {
-                        var rez=batchRunner.RunBatch(m.TransactionId);
-                        var msgObject = new WorkerToAppMessage()
+                        if (m.TransactionId!=null)
                         {
-                            MessageType = "CommandExecutionResult".ToLower(),
-                            Result=rez
-                        };
-                        _pipeServer.SendObject(msgObject);
+                            var rez = _batchRunner.RunBatch(m.TransactionId);
+                            var msgObject = new WorkerToAppMessage()
+                            {
+                                MessageType = "CommandExecutionResult".ToLower(),
+                                Result = rez
+                            };
+                            _pipeServer.SendObject(msgObject);
+                        }
                     });
                 }
                 if (m.Command.ToLower() == "stopbatch")
                 {
-                    _logger.Information($"got message of stopbatch type");
+                    _logger.Debug($"got message of stopbatch type");
+                    
                     Task.Run(() => {
-                        var rez = batchRunner.StopBatch(m.TransactionId);
+
+                        var rez = _batchRunner.StopBatch(m.TransactionId);
+                        
                         var msgObject = new WorkerToAppMessage()
                         {
                             MessageType = "CommandExecutionResult".ToLower(),
                             Result = rez
                         };
+                        
                         _pipeServer.SendObject(msgObject);
                     });
                 }
-
             }
             Task.Delay(100);
         }
@@ -147,14 +157,10 @@ namespace ActivityScheduler.WorkerService.TopShelf
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
-            var btcr = _serviceProvider.GetService<BatchRunner>();
-            //int x = random.Next(0, 1000);
-            //string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
-            
             var msgObject = new WorkerToAppMessage()
             {
                 MessageType = "runningbatchesInfo",
-                RunningBatches = btcr.GetRunningBatchesInfo()
+                RunningBatches = _batchRunner.GetRunningBatchesInfo()
             };
             _pipeServer.SendObject(msgObject);
         }

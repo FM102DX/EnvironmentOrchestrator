@@ -36,7 +36,7 @@ namespace ActivityScheduler.Shared.Pipes
             T t = new T();
             T t1 = t.GetObject(message);
             Stack.Push (t1);
-            _logger.Information($"Got mail: new message from pipe {PipeName}, now {Stack.Count} messages in queue, message content is: {message}");
+            _logger.Debug($"Got mail: new message from pipe {PipeName}, now {Stack.Count} messages in queue, message content is: {message}");
         }
 
         public void Run()
@@ -49,7 +49,7 @@ namespace ActivityScheduler.Shared.Pipes
 
         public T? Take()
         {
-            _logger.Information($"Taking incoming mail from stack, now {Stack.Count} messages in queue");
+            _logger.Debug($"Taking incoming mail from stack, now {Stack.Count} messages in queue");
 
             if (Stack.Count == 0) return default(T);
             

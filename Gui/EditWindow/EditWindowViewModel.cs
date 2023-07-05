@@ -5,9 +5,11 @@ using ActivityScheduler.Data.Models;
 using ActivityScheduler.Gui.MainWindow;
 using ActivityScheduler.Shared;
 using ActivityScheduler.Shared.Service;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,8 +26,125 @@ namespace ActivityScheduler.Gui.EditWindow
         private IAsyncRepositoryT<Activity> _repo;
         private BatchManager _batchManager;
         private ActivityManager _activityManager;
+        public String StartDateTimeBindingVar { 
+            get => CurrentBatch.StartDateTime.ToString(); 
+            set 
+            {
+                DateTime _dt;
+                if (DateTime.TryParse(value,CultureInfo.CurrentCulture, DateTimeStyles.None, out _dt ))
+                {
+                    CurrentBatch.StartDateTime = _dt;
+                }
+            } 
+        }
         public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
+
+        public List<RunModeComboDataSourceItem> RunModeComboDataSource { get; set; }=new List<RunModeComboDataSourceItem>();
+
+        public RunModeComboDataSourceItem? SelectedRunModeComboDataSourceItem
+        {
+            get
+            {
+                var stt= RunModeComboDataSource.Where(x => x.Value == CurrentBatch.RunMode).FirstOrDefault();
+                return stt;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    CurrentBatch.RunMode = value.Value;
+                    SelectionModeChanged4(value.Value);
+                }
+            }
+        }
+
+        public List<BatchStartPointTypeComboItem> BatchStartPointTypeComboDataSource { get; set; } = new List<BatchStartPointTypeComboItem>();
+
+        public BatchStartPointTypeComboItem? SelectedBatchStartPointTypeItem
+        {
+            get
+            {
+                var stt = BatchStartPointTypeComboDataSource.Where(x => x.Value == CurrentBatch.StartPointType).FirstOrDefault();
+                return stt;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    CurrentBatch.StartPointType = value.Value;
+                    SelectionModeChanged3(value.Value);
+                }
+            }
+        }
+
+        public bool MondayChk {get{return GetDowBoolValue(0);}set{SetDowValue(0, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MondayChk")); } }
+        public bool TuesdayChk { get { return GetDowBoolValue(1); } set { SetDowValue(1, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("TuesdayChk")); } }
+        public bool WednesdayChk { get { return GetDowBoolValue(2); } set { SetDowValue(2, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WednesdayChk")); } }
+        public bool ThursdayChk { get { return GetDowBoolValue(3); } set { SetDowValue(3, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ThursdayChk")); } }
+        public bool FridayChk { get { return GetDowBoolValue(4); } set { SetDowValue(4, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FridayChk")); } }
+        public bool SatudayChk { get { return GetDowBoolValue(5); } set { SetDowValue(5, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SatudayChk")); } }
+        public bool SundayChk { get { return GetDowBoolValue(6); } set { SetDowValue(6, value); PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SundayChk")); } }
+        private bool GetDowBoolValue(int index)
+        {
+            SetDefaultDowValue();
+
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+                if (_currentBatch.ActiveDaysOfWeek.Length == 7)
+                {
+                    return _currentBatch.ActiveDaysOfWeek[index] == '1';
+                }
+            }
+            return false;
+            
+        }
+
+        private void SetDowValue(int index, bool value)
+        {
+            SetDefaultDowValue();
+
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+            
+                List<string> lStr = new List<string>(); 
+
+                for(int i = 0; i< _currentBatch.ActiveDaysOfWeek.Length;i++)
+                {
+                    if(i == index) 
+                    {
+                        string s = (value == true) ? "1" : "0";
+                        lStr.Add(s);
+                    }
+                    else
+                    {
+                        lStr.Add(_currentBatch.ActiveDaysOfWeek[i].ToString());
+                    }
+                }
+                _currentBatch.ActiveDaysOfWeek = string.Join("", lStr);
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
+        }
+
+        private void SetDefaultDowValue()
+        {
+            if (!string.IsNullOrEmpty(_currentBatch.ActiveDaysOfWeek))
+            {
+                if (_currentBatch.ActiveDaysOfWeek.Length != 7)
+                {
+                    _currentBatch.ActiveDaysOfWeek = "0000000";
+                    return;
+                }
+            }
+            else
+            {
+                _currentBatch.ActiveDaysOfWeek = "0000000";
+            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
+        }
+
+
         private Batch _currentBatch;
+        public ICommand FormLoadedCmd { get; private set; }
         public ICommand SaveActivityCmd { get; private set; }
         public ICommand SaveBatchCmd { get; private set; }
 
@@ -36,6 +155,10 @@ namespace ActivityScheduler.Gui.EditWindow
         public ICommand CancelRecordEditCmd { get; private set; }
 
         public ICommand SelectParentActivitiesCmd { get; private set; }
+
+        public ICommand Test01Cmd { get; private set; }
+
+        public ICommand Test02Cmd { get; private set; }
 
         private MainWindowViewModel _mainWindowViewModel;
 
@@ -103,21 +226,27 @@ namespace ActivityScheduler.Gui.EditWindow
             }
             set
             {
-                if (value == null && AcivityListItemSource.Count != 0) return;
+                if (value == null && AcivityListItemSource.Count != 0)
+                {
+
+                    return;
+                }
                 
                 _selectedItem = value;
 
                 if (_selectedItem == null)
                 {
-                    SelectionModeVar = SelectionMode.None;
-                    SelectionModeChanged(SelectionModeVar);
+                    SelectionModeVar = SelectionMode.ActivityModeNoSelection;
+                    UpdateSelectionMode();
                     SelectedItemDisplayed = null;
                     return;
                 }
 
-                SelectedItemDisplayed = _selectedItem.Clone();
+                SelectedItemDisplayed = _activityManager.Clone(_selectedItem);
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItem"));
+
+                SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
 
                 UpdateSelectionMode();
             }
@@ -134,9 +263,12 @@ namespace ActivityScheduler.Gui.EditWindow
         public event Action NeedToCancelGridChange;
 
         public event SelectionModeChangedDelegate SelectionModeChanged;
+        public event SelectionModeChangedDelegate3 SelectionModeChanged3;
+        public event SelectionModeChangedDelegate4 SelectionModeChanged4;
 
         public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
-
+        public delegate void SelectionModeChangedDelegate3(BatchStartPointTypeEnum selectionMode);
+        public delegate void SelectionModeChangedDelegate4(BatchStartTypeEnum selectionMode);
         public string BufferIn { get; set; }
 
         public EditWindowViewModel (BatchManager batchManager, ActivityManager activityManager, Batch currentBatch, Serilog.ILogger logger, MainWindowViewModel mainWindowViewModel)
@@ -151,7 +283,15 @@ namespace ActivityScheduler.Gui.EditWindow
             
             _activityManager = activityManager;
 
-            if(CurrentBatch.IsGroup) 
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Single), Name= BatchStartTypeEnum.Single.ToString(),Value= BatchStartTypeEnum.Single });
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.Periodic), Name = BatchStartTypeEnum.Periodic.ToString(), Value = BatchStartTypeEnum.Periodic });
+            RunModeComboDataSource.Add(new RunModeComboDataSourceItem() { Id = ((byte)BatchStartTypeEnum.PeriodicDaily), Name = BatchStartTypeEnum.PeriodicDaily.ToString(), Value = BatchStartTypeEnum.PeriodicDaily });
+
+            BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartFromNow,                     Name= BatchStartPointTypeEnum.StartFromNow.ToString(),                      Value= BatchStartPointTypeEnum.StartFromNow});
+            BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartTodayFromSpecifiedTime,     Name = BatchStartPointTypeEnum.StartTodayFromSpecifiedTime.ToString(),      Value = BatchStartPointTypeEnum.StartTodayFromSpecifiedTime });
+            BatchStartPointTypeComboDataSource.Add(new BatchStartPointTypeComboItem() { Id = (byte)BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime,   Name = BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime.ToString(),    Value = BatchStartPointTypeEnum.StartFromSpecifiedDateAndTime });
+
+            if (CurrentBatch.IsGroup) 
             {
                 SelectionModeVar = SelectionMode.GroupMode;
             }
@@ -159,9 +299,6 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 SelectionModeVar = SelectionMode.ActivityModeNoSelection;
             }
-
-            //_batchManager._checker.BindControlToCheck("UpdateNumber", CurrentBatch.Number).BindControlToCheck("UpdateName", CurrentBatch.Name);
-            //_activityManager._checker.BindActionToCheck("UpdateTransactionId", () => { TransactionIdTb.Focus(); TransactionIdTb.SelectAll(); });
 
             SaveActivityCmd = new ActionCommand(() =>
             {
@@ -190,7 +327,7 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 if (SelectedItem !=null)
                 {
-                    SelectedItemDisplayed = SelectedItem.Clone();
+                    SelectedItemDisplayed = _activityManager.Clone(SelectedItem);
                 }
             });
 
@@ -198,6 +335,58 @@ namespace ActivityScheduler.Gui.EditWindow
             {
                 SetParentActivities act = new SetParentActivities(_activityManager, _currentBatch, SelectedItem, _logger, this);
                 act.ShowDialog();
+            });
+
+            FormLoadedCmd = new ActionCommand(() =>
+            {
+                if (_currentBatch!=null && SelectionModeChanged!=null)//is group or real batch
+                {
+                    if (_currentBatch.IsGroup)
+                    {
+                        SelectionModeVar = SelectionMode.GroupMode;
+                    }
+                    else
+                    {
+                        if (SelectedItem!=null)
+                        {
+                            SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
+                        }
+                        else
+                        {
+                            SelectionModeVar = SelectionMode.ActivityModeNoSelection;
+                        }
+                    }
+                    UpdateSelectionMode();
+                }
+
+                if (_currentBatch != null && SelectionModeChanged4 != null ) //run mode -- Single, Periodic, Periodic daily
+                {
+                    if (_currentBatch.IsGroup)
+                    {
+                        
+                    }
+                    else
+                    {
+                        SelectionModeChanged4(_currentBatch.RunMode);
+
+                        if (_currentBatch.RunMode == BatchStartTypeEnum.Single)
+                        {
+                            
+                        }
+                        else
+                        {
+                            
+                        }
+                    }
+                }
+                if (_currentBatch != null && SelectionModeChanged3 != null) //start point type - FromNow, FromTime, FromDateTime
+                {
+                    SelectionModeChanged3(_currentBatch.StartPointType);
+                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StartDateTimeBindingVar"));
+
+                UpdateSelectionMode();
+
             });
 
             CreateActivityCmd = new ActionCommand(() =>
@@ -240,6 +429,11 @@ namespace ActivityScheduler.Gui.EditWindow
                 LoadActivities( RecordSelectionMode.SelectLastRecord);
             });
 
+            Test02Cmd = new ActionCommand(() =>
+            {
+                MessageBox.Show(StartDateTimeBindingVar.ToString());
+            });
+
             LoadActivities(RecordSelectionMode.SelectFirstRecord);
         }
         public bool NeedToStopItemSelectionChange()
@@ -265,7 +459,7 @@ namespace ActivityScheduler.Gui.EditWindow
                 
                 if (mbxRez == MessageBoxResult.No)
                 {
-                    if (SelectedItem!=null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
+                    if (SelectedItem!=null) SelectedItemDisplayed =_activityManager.Clone(SelectedItem); else SelectedItemDisplayed = null;
                     return false;
                 }
 
@@ -307,7 +501,7 @@ namespace ActivityScheduler.Gui.EditWindow
 
                 if (mbxRez == MessageBoxResult.No)
                 {
-                    if (SelectedItem != null) SelectedItemDisplayed = SelectedItem.Clone(); else SelectedItemDisplayed = null;
+                    if (SelectedItem != null) SelectedItemDisplayed = _activityManager.Clone(SelectedItem); else SelectedItemDisplayed = null;
                     return false;
                 }
 
@@ -396,28 +590,10 @@ namespace ActivityScheduler.Gui.EditWindow
 
         private void UpdateSelectionMode()
         {
-            //if (CurrentBatch == null) return;
-
-            //if (CurrentBatch.IsGroup)
-            //{
-            //    SelectionModeVar = SelectionMode.Group;
-            //}
-            //else
-            //{
-            //    if (IsBatchRunning(CurrentBatch.Number))
-            //    {
-            //        SelectionModeVar = SelectionMode.RealBatchRunning;
-            //    }
-            //    else
-            //    {
-            //        SelectionModeVar = SelectionMode.RealBatchStopped;
-            //    }
-            //}
-
-            //if (SelectionModeChanged != null)
-            //{
-            //    SelectionModeChanged(SelectionModeVar);
-            //}
+            if (SelectionModeChanged != null)
+            {
+                SelectionModeChanged(SelectionModeVar);
+            }
         }
 
         public enum SelectionMode
@@ -427,6 +603,12 @@ namespace ActivityScheduler.Gui.EditWindow
             ActivityModeNoSelection = 2,
             ActivityModeRegularSelection = 3
         }
+        public enum SelectionMode2
+        {
+            DowSeen = 0,
+            DowUnseen = 1
+        }
+
         public enum RecordSelectionMode
         {
             SelectNone = 0,
@@ -435,6 +617,25 @@ namespace ActivityScheduler.Gui.EditWindow
             SelectSpecifiedId = 3,
             DontPerformSelection=4
         }
+
+        public class RunModeComboDataSourceItem
+        {
+            public int Id { get; set; }
+
+            public string? Name { get; set; }
+
+            public BatchStartTypeEnum Value { get; set; }
+        }
+
+        public class BatchStartPointTypeComboItem
+        {
+            public int Id { get; set; }
+
+            public string? Name { get; set; }
+
+            public BatchStartPointTypeEnum Value { get; set; }
+        }
+
 
 
     }

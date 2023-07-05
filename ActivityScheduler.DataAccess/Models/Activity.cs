@@ -1,7 +1,9 @@
 ﻿using ActivityScheduler.Data.DataAccess;
+using ActivityScheduler.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +14,11 @@ namespace ActivityScheduler.Data.Models
     {
         public Guid BatchId { get; set; }
 
+        public Batch? ParentBatch { get; set; }
+
         public string Name { get; set; }
 
-        public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets
+        public int ActivityId { get; set; } // number like 10, 20, 30 ... 450, 460, ets 
         
         public TimeSpan StartTime { get; set; }
 
@@ -31,6 +35,14 @@ namespace ActivityScheduler.Data.Models
         public string? ParentActivities { get; set; }
         
         public string? ScriptPath { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public ActivityStatusEnum Status { get; set; } = ActivityStatusEnum.Idle;
+
+        public int RetriesAvivble { get; set; }
+
+        public int RetriesPerformed { get; set; }
 
         public List<int> GetParentActionIds()
         {
@@ -55,28 +67,68 @@ namespace ActivityScheduler.Data.Models
             rez.ChildDelay = ChildDelay;
             rez.IsDomestic = IsDomestic;
             rez.IsHub = IsHub;
+            rez.IsActive = IsActive;
+
             rez.ParentActivities = ParentActivities;
             return rez;
         }
 
-        public override Activity Clone()
+        public bool IsTimeDriven
         {
-            Activity acv = new Activity();
-            acv.Id = Id;
-            acv.BatchId = BatchId;
-            acv.Name = Name;
-            acv.ActivityId = ActivityId;
-            acv.AlwaysSuccess = AlwaysSuccess;
-            acv.StartTime = StartTime;
-            acv.TransactionId = TransactionId;
-            acv.IsDomestic= IsDomestic;
-            acv.IsHub= IsHub;
-            acv.ChildDelay = ChildDelay;
-            acv.ParentActivities = ParentActivities;
-            acv.ActivityParentRule= ActivityParentRule;
-            acv.ScriptPath = ScriptPath;
-            return acv;
+            get => GetParentActionIds().Count == 0;
+        }
+        public bool IsParentDriven
+        {
+            get => !IsTimeDriven;
         }
 
+        public bool IsWaitingOrIdle
+        {
+            get=>Status== ActivityStatusEnum.Waiting || Status== ActivityStatusEnum.Idle;
+        }
+
+        public void Run (DateTime activityStartDateTime, string workingFolder, string jobName)
+        {
+            
+        }
+
+
+        public ActivityStartInfo Run(Serilog.ILogger logger, string? scriptPath)
+        {
+            string errText;
+            if (string.IsNullOrEmpty(scriptPath))
+            {
+
+                errText = $"Activity: no script path scpecified when trying to run activity {ActivityId}";
+                logger.Error(errText);
+                return new ActivityStartInfo(null, null, CommonOperationResult.SayFail(errText));
+            }
+            try
+            {
+                //run powershell with params
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                var rezTask = Task<int>.Run(() => {
+                    string appName = "powershell.exe";
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.CreateNoWindow = false;
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                    startInfo.FileName = appName;
+                    startInfo.Arguments = $"-file {scriptPath} -transactionId {TransactionId}";
+                    process.StartInfo = startInfo;
+                    logger.Information($"Activity.Run -- running activity {ActivityId}, -file {scriptPath} -transactionId {TransactionId}");
+                    bool runRez = process.Start();
+                    logger.Information($"Activity.Run -- result = {runRez}");
+                    return runRez == true ? 1 : 0;
+                });
+                return new ActivityStartInfo(rezTask, process, CommonOperationResult.SayOk());
+            }
+            catch(Exception ex)
+            {
+                errText = $"ERROR message={ex.Message}, innerexception={ex.InnerException}";
+                logger.Error(errText);
+                return new ActivityStartInfo(null, null, CommonOperationResult.SayFail(errText));
+            }
+             
+        }
     }
 }

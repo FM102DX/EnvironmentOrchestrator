@@ -20,6 +20,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Timer = System.Timers.Timer;
 
 namespace ActivityScheduler.Gui.MainWindow
 {
