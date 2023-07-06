@@ -90,7 +90,7 @@ namespace ActivityScheduler.Gui.MainWindow
         private ClientCommunicationObjectT<WorkerToAppMessage> _pipeClient;
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly Timer _timer;
-        private List<string> _runningBatchesNumberList = new List<string>();
+        private List<Batch> _runningBatchesList = new List<Batch>();
         public string InfoRunBatchText { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action ListSourceChanged;
@@ -237,7 +237,7 @@ namespace ActivityScheduler.Gui.MainWindow
 
         private bool IsBatchRunning(string number)
         {
-            var items = _runningBatchesNumberList.Where(x => x == number).ToList();
+            var items = _runningBatchesList.Where(x => x.Number == number).ToList();
             return items.Count > 0;
         }
 
@@ -291,21 +291,21 @@ namespace ActivityScheduler.Gui.MainWindow
 
             if (m.MessageType.ToLower() == "runningbatchesinfo")
             {
-                _runningBatchesNumberList = m.RunningBatches.Batches;
+                _runningBatchesList = m.RunningBatches.Batches;
+
+                _logger.Information($"1338 _runningBatchesList.Count={_runningBatchesList.Count}");
 
                 ArrangeBatchListRunningStatus();
 
                 if (m.RunningBatches.Batches.Count == 0)
                 {
                     AddBatchTbLine("Batches running: none");
-                    _runningBatchList = new List<Batch>();
                 }
                 else
                 {
-                    AddBatchTbLine($"Batches running: {string.Join(",", _runningBatchesNumberList)}");
-                    _runningBatchList = _batchList.Where(x => _runningBatchesNumberList.Contains(x.Number)).ToList();
+                    AddBatchTbLine($"Batches running: {string.Join(",", _runningBatchesList)}");
                 }
-                RunningBatchesInfoUpdated(_runningBatchList);
+                RunningBatchesInfoUpdated(_runningBatchesList);
             }
 
             if (m.MessageType.ToLower() == "CommandExecutionResult".ToLower())

@@ -94,6 +94,18 @@ function CreateDirectoryOnLocalHostIfNotExists([string] $directoryName)
         New-Item -ItemType Directory -Force -Path $directoryName
     } 
 }
+function PerformTimeSpanFormat([timespan] $ts)
+{
+    if ($ts.TotalMilliseconds -gt 86400000)
+    {
+        "{0:dd}:{0:hh}:{0:mm}:{0:ss}" -f $ts
+    }
+    else 
+    {
+        
+        "{0:hh}:{0:mm}:{0:ss}" -f $ts
+    }
+}
 
 function KeepOnlyNLastFilesInDirectory([string] $directory, [int] $itemsCol)
 {
@@ -101,19 +113,55 @@ function KeepOnlyNLastFilesInDirectory([string] $directory, [int] $itemsCol)
     Get-ChildItem $directory | Sort-Object CreationTime | Select-Object -SkipLast $itemsCol | Remove-Item -Force -Recurse
 }
 
+function PerformSecondsCountDown ([int] $seconds, [string]$prefix="Performing countdown", [bool] $performLog=$false)
+{
+    [datetime] $currentTime= Get-Date;
+    [datetime] $targetTime= $currentTime.AddSeconds($seconds);
+    [bool] $flag=$true;
+    DO
+    {
+        $currentTime= Get-Date;
+        $delta = $targetTime - $currentTime;
 
+            if($flag) 
+            {
+                [string] $ts= PerformTimeSpanFormat -ts $delta
+                write-host "`r$($prefix): $ts"
+                if($performLog)
+                {
+                    Log -text "Performing countdown log, its $ts left"
+                }
+                $flag = $false;
+            }
+            else
+            {
+                $flag=$true;            
+            }
 
-
+        Start-Sleep -Milliseconds 500
+    }
+    WHILE ($delta.TotalMilliseconds -ge 0)
+}
 
 
 
 
 #CORE CONTENT
-function test01()
+function Test01()
 {
-    write-host "this is 100000"
-    pause
+    write-host "this is 100101"
+    PerformSecondsCountDown -seconds 10 -performLog $true
+    
 }
+
+function Test02()
+{
+    write-host "this is 100102"
+    PerformSecondsCountDown -seconds 15 -performLog $false
+    
+}
+
+
 
 
 
@@ -126,8 +174,8 @@ function ExecMenuItem([string] $menuItem) {
     if ($ex -eq "00")     {    }
     #menubegin
     
-    elseif ($ex -eq "100000") { test01 }
-    elseif ($ex -eq "100001") { ClearLogs }
+    elseif ($ex -eq "100101") { Test01 }
+    elseif ($ex -eq "100102") { Test02 }
 
     elseif ($ex -eq "99") { $script:canExit = $true }
     else {

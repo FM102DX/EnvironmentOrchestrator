@@ -8,7 +8,7 @@ namespace ActivityScheduler.Data.Models.Communication
 {
     public class RunningBatchesInfo
     {
-        public List<string> Batches { get; set; }=new List<string>();
+        public List<Batch> Batches { get; set; }=new List<Batch>();
         
     }
 }

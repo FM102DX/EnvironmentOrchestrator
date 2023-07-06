@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using ActivityScheduler.Shared;
 
 namespace ActivityScheduler.Data.Models
 {
@@ -82,23 +84,41 @@ namespace ActivityScheduler.Data.Models
             get => !IsTimeDriven;
         }
 
+        [NotMapped]
+        public Stopwatch _stopwatch = new Stopwatch();
+
+
+        [NotMapped]
+        public int ActivityRunResult { get; set; }
+
+        [NotMapped]
+        public TimeSpan TimeLeftToStart { get; set; }
+
+        //total elapsed time considering retries
+        [NotMapped]
+        public string TimeLeftToStartAsString => Functions.TimeSpanAsString(TimeLeftToStart);
+
+        //total elapsed time considering retries
+        [NotMapped]
+        public TimeSpan ElapsedTime { get; set; }
+
+        [NotMapped]
+        public string ElapsedTimeAsString => Functions.TimeSpanAsString(ElapsedTime);
+
+        [NotMapped]
+        private System.Timers.Timer _timer;
+
         public bool IsWaitingOrIdle
         {
             get=>Status== ActivityStatusEnum.Waiting || Status== ActivityStatusEnum.Idle;
         }
 
-        public void Run (DateTime activityStartDateTime, string workingFolder, string jobName)
-        {
-            
-        }
-
-
         public ActivityStartInfo Run(Serilog.ILogger logger, string? scriptPath)
         {
             string errText;
+
             if (string.IsNullOrEmpty(scriptPath))
             {
-
                 errText = $"Activity: no script path scpecified when trying to run activity {ActivityId}";
                 logger.Error(errText);
                 return new ActivityStartInfo(null, null, CommonOperationResult.SayFail(errText));
@@ -107,7 +127,16 @@ namespace ActivityScheduler.Data.Models
             {
                 //run powershell with params
                 System.Diagnostics.Process process = new System.Diagnostics.Process();
-                var rezTask = Task<int>.Run(() => {
+                ActivityRunResult = 0;
+                var rezThread = new Thread(() => {
+                   
+                    _timer = new System.Timers.Timer(500);
+                    _timer.AutoReset = true;
+                    _timer.Elapsed += (s, e) => { ElapsedTime = _stopwatch.Elapsed; };
+                    _timer.Start();
+                    _stopwatch.Start();
+
+                    logger.Information($"[Activity.Run] -- running activity {ActivityId}, -file {scriptPath} -transactionId {TransactionId} _stopwatch {_stopwatch.Elapsed}");
                     string appName = "powershell.exe";
                     System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
                     startInfo.CreateNoWindow = false;
@@ -115,12 +144,19 @@ namespace ActivityScheduler.Data.Models
                     startInfo.FileName = appName;
                     startInfo.Arguments = $"-file {scriptPath} -transactionId {TransactionId}";
                     process.StartInfo = startInfo;
-                    logger.Information($"Activity.Run -- running activity {ActivityId}, -file {scriptPath} -transactionId {TransactionId}");
-                    bool runRez = process.Start();
-                    logger.Information($"Activity.Run -- result = {runRez}");
-                    return runRez == true ? 1 : 0;
+                    
+                    process.Start();
+                    logger.Information($"[Activity.Run] started process, waiting for exit");
+                    process.WaitForExit();
+                    logger.Information($"[Activity.Run] exited with code {process.ExitCode} _stopwatch {_stopwatch.Elapsed}");
+                    bool runRez = process.ExitCode == 0;
+                    ActivityRunResult = runRez == true ? 1 : -1;
+                    _stopwatch.Stop();
+                    _timer.Stop();
+
                 });
-                return new ActivityStartInfo(rezTask, process, CommonOperationResult.SayOk());
+                rezThread.Start();
+                return new ActivityStartInfo(rezThread, null, CommonOperationResult.SayOk());
             }
             catch(Exception ex)
             {

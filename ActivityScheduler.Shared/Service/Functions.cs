@@ -33,5 +33,15 @@ namespace ActivityScheduler.Shared
             var filesToRemove = files.ToList().OrderBy(x => x.CreationTime).Skip(leaveNumber).ToList();
             filesToRemove.ForEach(file => file.Delete());
         }
+
+        public static string TimeSpanAsString(TimeSpan timeSpan)
+        {
+            if (timeSpan.TotalDays < 1)
+                return timeSpan.ToString(@"hh\:mm\:ss");
+
+            return timeSpan.TotalDays < 2
+                ? timeSpan.ToString(@"d\ \d\a\y\ hh\:mm\:ss")
+                : timeSpan.ToString(@"d\ \d\a\y\s\ hh\:mm\:ss");
+        }
     }
 }

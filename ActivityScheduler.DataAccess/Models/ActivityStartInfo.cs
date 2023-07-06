@@ -9,15 +9,16 @@ namespace ActivityScheduler.Data.Models
 {
     public class ActivityStartInfo
     {
-        public Task<int>? ActivityStartTask { get; set; }
+        public Thread? ActivityStartThread { get; set; }
 
         public System.Diagnostics.Process? Process { get; set; }
 
-        public ActivityStartInfo(Task<int> activityStartTask, System.Diagnostics.Process process, CommonOperationResult result) 
-        { 
-            ActivityStartTask = activityStartTask;
+        public ActivityStartInfo(Thread? activityStartThread, System.Diagnostics.Process process, CommonOperationResult result) 
+        {
+            ActivityStartThread = activityStartThread;
             Process = process;
             Result = result;
+
         }
         public CommonOperationResult Result { get; set; }
 
