@@ -42,16 +42,20 @@ namespace ActivityScheduler
 
         private FormStateHolder _formStateHolder = new FormStateHolder();
 
+        // private Dictionary<string, List<Activity>> _gridsDataSources = new Dictionary<string, List<Activity>>();
+
+        private List<GridDataSoucesRecord> _gridsDataSources = new List<GridDataSoucesRecord>();
+
         private MainWindowViewModel.SelectionMode _selectionMode;
 
         private MainWindowViewModel _viewModel;
         private MainWindowViewModel.SelectionMode SelectionMode
-        { 
-            get 
-            { 
+        {
+            get
+            {
                 return _selectionMode;
             }
-            set 
+            set
             {
                 _selectionMode = value;
             }
@@ -60,7 +64,7 @@ namespace ActivityScheduler
         public MainWindow(MainWindowViewModel dataContext)
         {
             DataContext = dataContext;
-            
+
             _viewModel = (MainWindowViewModel)DataContext;
 
             _viewModel.SelectionModeChanged += ViewModel_SelectionModeChanged;
@@ -69,49 +73,53 @@ namespace ActivityScheduler
 
             _viewModel.RunningBatchesInfoUpdated += ViewModel_RunningBatchesInfoUpdated;
 
-            _formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() => {
-                NameTxt.Visibility      = Visibility.Visible;
-                NumberTxt.Visibility    = Visibility.Visible;
-                BatchName.Visibility    = Visibility.Visible;
-                BatchNumber.Visibility  = Visibility.Visible;
-                RunBatch.Visibility     = Visibility.Hidden;
-                StopBatch.Visibility    = Visibility.Visible;
-                DeleteBatch.Visibility  = Visibility.Visible;
-                EditBatch.Visibility    = Visibility.Visible;
+            _formStateHolder.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchRunning.ToString()).AddAction(() =>
+            {
+                NameTxt.Visibility = Visibility.Visible;
+                NumberTxt.Visibility = Visibility.Visible;
+                BatchName.Visibility = Visibility.Visible;
+                BatchNumber.Visibility = Visibility.Visible;
+                RunBatch.Visibility = Visibility.Hidden;
+                StopBatch.Visibility = Visibility.Visible;
+                DeleteBatch.Visibility = Visibility.Visible;
+                EditBatch.Visibility = Visibility.Visible;
 
-            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchStopped.ToString()).AddAction(() => {
-                NameTxt.Visibility      = Visibility.Visible;
-                NumberTxt.Visibility    = Visibility.Visible;
-                BatchName.Visibility    = Visibility.Visible;
-                BatchNumber.Visibility  = Visibility.Visible;
-                RunBatch.Visibility     = Visibility.Visible;
-                StopBatch.Visibility    = Visibility.Hidden;
-                DeleteBatch.Visibility  = Visibility.Visible;
-                EditBatch.Visibility    = Visibility.Visible;
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.RealBatchStopped.ToString()).AddAction(() =>
+            {
+                NameTxt.Visibility = Visibility.Visible;
+                NumberTxt.Visibility = Visibility.Visible;
+                BatchName.Visibility = Visibility.Visible;
+                BatchNumber.Visibility = Visibility.Visible;
+                RunBatch.Visibility = Visibility.Visible;
+                StopBatch.Visibility = Visibility.Hidden;
+                DeleteBatch.Visibility = Visibility.Visible;
+                EditBatch.Visibility = Visibility.Visible;
 
-            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.Group.ToString()).AddAction(() => {
-                NameTxt.Visibility      = Visibility.Visible;
-                NumberTxt.Visibility    = Visibility.Visible;
-                BatchName.Visibility    = Visibility.Visible;
-                BatchNumber.Visibility  = Visibility.Visible;
-                
-                RunBatch.Visibility     = Visibility.Hidden;
-                StopBatch.Visibility    = Visibility.Hidden;
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.Group.ToString()).AddAction(() =>
+            {
+                NameTxt.Visibility = Visibility.Visible;
+                NumberTxt.Visibility = Visibility.Visible;
+                BatchName.Visibility = Visibility.Visible;
+                BatchNumber.Visibility = Visibility.Visible;
 
-                DeleteBatch.Visibility  = Visibility.Visible;
-                EditBatch.Visibility    = Visibility.Visible;
+                RunBatch.Visibility = Visibility.Hidden;
+                StopBatch.Visibility = Visibility.Hidden;
 
-            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.None.ToString()).AddAction(() => {
-                NameTxt.Visibility      = Visibility.Hidden;
-                NumberTxt.Visibility    = Visibility.Hidden;
-                BatchName.Visibility    = Visibility.Hidden;
-                BatchNumber.Visibility  = Visibility.Hidden;
+                DeleteBatch.Visibility = Visibility.Visible;
+                EditBatch.Visibility = Visibility.Visible;
 
-                RunBatch.Visibility     = Visibility.Hidden;
-                StopBatch.Visibility    = Visibility.Hidden;
+            }).Parent.CreateFormState(MainWindowViewModel.SelectionMode.None.ToString()).AddAction(() =>
+            {
+                NameTxt.Visibility = Visibility.Hidden;
+                NumberTxt.Visibility = Visibility.Hidden;
+                BatchName.Visibility = Visibility.Hidden;
+                BatchNumber.Visibility = Visibility.Hidden;
 
-                DeleteBatch.Visibility  = Visibility.Hidden;
-                EditBatch.Visibility    = Visibility.Hidden;
+                RunBatch.Visibility = Visibility.Hidden;
+                StopBatch.Visibility = Visibility.Hidden;
+
+                DeleteBatch.Visibility = Visibility.Hidden;
+                EditBatch.Visibility = Visibility.Hidden;
             });
 
             InitializeComponent();
@@ -121,39 +129,67 @@ namespace ActivityScheduler
         {
             //here syncronize tabs with batches
 
+
+            if (runningBatchList == null)
+            {
+                runningBatchList = new List<Batch>();
+            }
+
+
+            Tabs.Dispatcher.Invoke(() =>
+                {
+                    foreach (var runningBatch in runningBatchList)
+                    {
+                        // open tabs wich are running but not opened
+                        // var lst1 = Tabs.Items.OfType<TabItem>().ToList();
+                        var batchTab = Tabs.Items.OfType<TabItem>().ToList().Where(y => y.Header.ToString() == runningBatch.Name).FirstOrDefault();
+
+                        if (batchTab == null)
+                        {
+                            //tab not opened, need to open
+                            var tabItem = new TabItem();
+                            tabItem.Header = runningBatch.Name;
+                            StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
+
+                            var dataGrid = new System.Windows.Controls.DataGrid()
+                            {
+                                //Name = $"DataGrid_{tabItem.Header}", 
+                                Height = 400,
+                                Width = 800,
+                                Style = FindResource("ReadOnlyGridStyle") as Style,
+                                HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left,
+                                VerticalContentAlignment = System.Windows.VerticalAlignment.Top,
+                                AutoGenerateColumns = false
+                            };
+
+                            _gridsDataSources.Add(new GridDataSoucesRecord() { Name = runningBatch.Name, Grid = dataGrid, Data = runningBatch.Activities });
+
+                            dataGrid.ItemsSource = runningBatch.Activities;
+
+                            dataGrid.Columns.Add(new DataGridTextColumn() { Width = 100, Binding = new Binding("ActivityId"), Header= "ActivityId" });
+                            dataGrid.Columns.Add(new DataGridTextColumn() { Width = 100, Binding = new Binding("Name"), Header = "Name" });
+                            dataGrid.Columns.Add(new DataGridTextColumn() { Width = 100, Binding = new Binding("Status"), Header = "Status" });
+                            dataGrid.Columns.Add(new DataGridTextColumn() { Width = 150, Binding = new Binding("TimeLeftToStartAsString"), Header = "TimeLeft" });
+                            dataGrid.Columns.Add(new DataGridTextColumn() { Width = 150, Binding = new Binding("ElapsedTimeAsString"), Header = "Elapsed" });
+
+                            stackPanel.Children.Add(dataGrid);
+                            tabItem.Content = stackPanel;
+                            Tabs.Items.Add(tabItem);
+                        }
+                        else
+                        {
+                            //means tab already exists and we have to update grid's datasource
+                            var rec = _gridsDataSources.FirstOrDefault(x => x.Name == runningBatch.Name);
+                            if (rec != null)
+                            {
+                                rec.Grid.ItemsSource = runningBatch.Activities;
+                            }
+                        }
+                    }
+                });
+
             Tabs.Dispatcher.Invoke(() =>
             {
-                foreach (var x in runningBatchList)
-                {
-                    //open tabs wich are running but not opened
-
-                    var lst2 = Tabs.Items.OfType<TabItem>().ToList().Where(y => y.Header == x.Name).ToList();
-
-                    if (lst2.Count == 0)
-                    {
-                        //tab not opened, need to open
-                        var tbi = new TabItem();
-                        tbi.Header = x.Name;
-                        //tbi.Name = x.Name;
-
-                        StackPanel stackPanel = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Top };
-                        stackPanel.Children.Add(new System.Windows.Controls.TextBox { Height = 60, Width = 60, TextWrapping = TextWrapping.Wrap, Text = "Some text" });
-
-                        var listBox = new System.Windows.Controls.ListBox();
-                        listBox.Items.Add(new ListBoxItem { Content = "Text" });
-                        listBox.Items.Add(new ListBoxItem { Content = "Text to" });
-                        listBox.Items.Add(new ListBoxItem { Content = "And text" });
-
-                        StackPanel stackPanelAsContent = new StackPanel() { Orientation = System.Windows.Controls.Orientation.Vertical, HorizontalAlignment = 0 };
-                        stackPanelAsContent.Children.Add(stackPanel);
-                        stackPanelAsContent.Children.Add(listBox);
-                        tbi.Content = stackPanelAsContent;
-                        Tabs.Items.Add(tbi);
-                    }
-                }
-            });
-
-            Tabs.Dispatcher.Invoke(() => {
 
                 var lst3 = Tabs.Items.OfType<TabItem>().ToList();
 
@@ -164,7 +200,7 @@ namespace ActivityScheduler
                     bool isInfoTab = x.Name.ToLower() == "info";
                     if (!notContainingInRunningBatches && !isMainTab && !isInfoTab)
                     {
-                           Tabs.Items.Remove(x);
+                        Tabs.Items.Remove(x);
                     }
                 });
             });
@@ -172,12 +208,13 @@ namespace ActivityScheduler
 
         private void ViewModel_ListSourceChanged()
         {
-            BatchList.Dispatcher.Invoke(()=> { BatchList.Items.Refresh(); });
+            BatchList.Dispatcher.Invoke(() => { BatchList.Items.Refresh(); });
         }
 
         private void ViewModel_SelectionModeChanged(MainWindowViewModel.SelectionMode selectionMode)
         {
-            this.Dispatcher.Invoke(() => {
+            this.Dispatcher.Invoke(() =>
+            {
                 _formStateHolder.SetFormState(selectionMode.ToString());
             });
         }
@@ -197,7 +234,16 @@ namespace ActivityScheduler
 
         private void FormStateServiceField_TextChanged(object sender, TextChangedEventArgs e)
         {
-            
+
+        }
+
+        public class GridDataSoucesRecord
+        {
+            public string Name { get; set; }
+            public System.Windows.Controls.DataGrid Grid { get; set; }
+
+            public List<Activity> Data { get; set; }
+
         }
     }
 }

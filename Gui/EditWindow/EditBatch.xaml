@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:ActivityScheduler.Core" xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:Globalization="clr-namespace:System.Globalization;assembly=System.Runtime" x:Name="EditBatchFrm" x:Class="ActivityScheduler.Core.EditBatch"
         mc:Ignorable="d"
-        Title="Edit Batch" Height="735" Width="1217"
+        Title="Edit Batch" 
+        Height="735" 
+        Width="1217"
         ResizeMode="NoResize" Closing="EditBatchFrm_Closing" Loaded="EditBatchFrm_Loaded" >
 
     <Window.Resources>

@@ -39,6 +39,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             //go through _runningBatches looking for completed tasks, raise event, remove task 
             //_logger.Information($"BatchRunner: 1200070 clearing tasklist _runningBatches.Count={_runningBatches.Count}");
+            
             foreach (BatchRunningInfo batchRunningInfo in _runningBatches)
             {
                 if (batchRunningInfo.BatchRunTask.IsCompleted)
@@ -51,10 +52,11 @@ namespace ActivityScheduler.WorkerService.TopShelf
                 }
 
             }
-            _runningBatches.ForEach(x => _logger.Information($"_runningBatches dump {x.BatchNumber}--{x.BatchRunTask.Status}"));
-            
+
+            _runningBatches.ForEach(x => _logger.Information($"[BatchRunner] _runningBatches dump {x.BatchNumber}--{x.BatchRunTask.Status}"));
 
             _runningBatches.RemoveAll(x => x.BatchRunTask.IsCompleted);
+
            //  _logger.Information($"BatchRunner: 1200070 DONE clearing tasklist _runningBatches.Count={_runningBatches.Count}");
         }
 
@@ -65,7 +67,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
         public CommonOperationResult RunBatch(string batchNumber)
         {
-            _logger.Information($"BatchRunner: Attempt to run batch {batchNumber}");
+            _logger.Information($"[BatchRunner] Attempt to run batch {batchNumber}");
             if (IsBatchRunning(batchNumber))
             {
                 return CommonOperationResult.SayFail($"Cant start batch {batchNumber} because its already running");
@@ -101,7 +103,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
 
                 if (stopRez.Success)
                 {
-                    _logger.Information($"010024 Remmoving batch {batchNumber} from running ones");
+                    _logger.Information($"[BatchRunner] 010024 Remmoving batch {batchNumber} from running ones");
                 }
             }
 
@@ -111,7 +113,7 @@ namespace ActivityScheduler.WorkerService.TopShelf
         {
             return new RunningBatchesInfo()
             {
-                Batches = _runningBatches.Select(x =>x.BatchNumber).ToList()
+                Batches = _runningBatches.Select(x =>x.Instance.BatchObject).ToList()
             };
         }
 

@@ -67,7 +67,9 @@ namespace ActivityScheduler
         private void SendPipeMessage(object? sender, ElapsedEventArgs e)
         {
             Random random = new Random();
+            
             int x = random.Next(0, 1000);
+            
             string msg = $"Pipe server is sending message {x} to {_pipeServer.PipeName} ";
 
             var msgObject = new AppToWorkerMessage()
@@ -77,6 +79,7 @@ namespace ActivityScheduler
             };
 
             _pipeServer.SendObject(msgObject);
+
             _logger.Information(msg);
         }
         private void ConfigureServices(ServiceCollection services)

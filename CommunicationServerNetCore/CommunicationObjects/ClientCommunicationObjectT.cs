@@ -32,11 +32,13 @@ namespace ActivityScheduler.Shared.Pipes
         public int StackCount { get => Stack.Count; }
         private void _clientPipe_NewMessageEvent(string message)
         {
+            _logger.Debug($"1200896 Got mail: new message from pipe {PipeName}, now {Stack.Count} messages in queue, message content is: {message}");
+
             if (string.IsNullOrEmpty(message)) return;
             T t = new T();
+
             T t1 = t.GetObject(message);
             Stack.Push (t1);
-            _logger.Debug($"Got mail: new message from pipe {PipeName}, now {Stack.Count} messages in queue, message content is: {message}");
         }
 
         public void Run()

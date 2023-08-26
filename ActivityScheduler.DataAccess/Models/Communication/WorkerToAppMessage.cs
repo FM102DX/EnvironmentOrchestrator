@@ -12,7 +12,6 @@ namespace ActivityScheduler.Data.Models.Communication
     public class WorkerToAppMessage : CommunicationMessageBase, ISelfSerializableObject, ISelfDeSerializableObject<WorkerToAppMessage>
     {
 
-
         public WorkerToAppMessage() : base()
         { 
 
@@ -29,6 +28,5 @@ namespace ActivityScheduler.Data.Models.Communication
             return JsonConvert.SerializeObject(this);
         }
         public RunningBatchesInfo RunningBatches { get; set; }
-
     }
 }

@@ -18,8 +18,44 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="ReadOnlyGridStyle" TargetType="{x:Type DataGrid}" >
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="GridLinesVisibility" Value="None" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource GridHeaderStyle}" />
+            <Setter Property="SelectionUnit" Value="FullRow" />
+        </Style>
+
+        <DataTemplate x:Key="IngredientsCellTemplate" >
+            <DataGrid ItemsSource="{Binding Ingredients}" 
+                      Style="{StaticResource ReadOnlyGridStyle}" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ingredients" Width="*" FontSize="12"
+                                        Binding="{Binding Path=IngredientName}" />
+                    <DataGridTextColumn Header="Quantite" Width="*" FontSize="12"
+                                        Binding="{Binding Path=Qty}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DataTemplate>
+        
+        
+
     </Window.Resources>
+
+
+    
     <Grid>
+
         <Button Content="New batch"  HorizontalAlignment="Left" Margin="908,69,0,0"  VerticalAlignment="Top"    Width="99"      Name="NewBatch"             Command="{Binding CreateBatchCmd}"  />
         <Button Content="New group"  HorizontalAlignment="Left" Margin="908,96,0,0"  VerticalAlignment="Top"    Width="99"      Name="NewGroup"             Command="{Binding CreateGroupCmd}" />
         <Button Content="Settings"   HorizontalAlignment="Left" Margin="908,123,0,0" VerticalAlignment="Top"    Width="99"      Name="Settings"             Command="{Binding OpenSettingsFrmCmd}"/>
