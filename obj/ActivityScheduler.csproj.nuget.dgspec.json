@@ -57,6 +57,14 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "ReactiveUI": {
+              "target": "Package",
+              "version": "[19.4.1, )"
+            },
+            "ReactiveUI.WPF": {
+              "target": "Package",
+              "version": "[19.4.1, )"
+            },
             "Serilog": {
               "target": "Package",
               "version": "[2.12.0, )"

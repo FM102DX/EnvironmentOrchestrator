@@ -2,6 +2,22 @@
   "version": 3,
   "targets": {
     "net6.0-windows7.0": {
+      "DynamicData/7.14.2": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/DynamicData.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/DynamicData.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Extended.Wpf.Toolkit/4.5.0": {
         "type": "package",
         "compile": {
@@ -394,6 +410,39 @@
           }
         }
       },
+      "ReactiveUI/19.4.1": {
+        "type": "package",
+        "dependencies": {
+          "DynamicData": "7.14.2",
+          "Splat": "14.6.37"
+        },
+        "compile": {
+          "lib/net6.0/ReactiveUI.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ReactiveUI.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "ReactiveUI.WPF/19.4.1": {
+        "type": "package",
+        "dependencies": {
+          "ReactiveUI": "19.4.1"
+        },
+        "compile": {
+          "lib/net462/ReactiveUI.Wpf.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/ReactiveUI.Wpf.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Serilog/2.12.0": {
         "type": "package",
         "compile": {
@@ -420,6 +469,19 @@
         "runtime": {
           "lib/net5.0/Serilog.Sinks.File.dll": {
             "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Splat/14.6.37": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Splat.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Splat.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -626,6 +688,22 @@
           "lib/netcoreapp2.1/_._": {}
         }
       },
+      "System.Reactive/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Reactive.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Reactive.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
       "System.Runtime.CompilerServices.Unsafe/6.0.0": {
         "type": "package",
         "compile": {
@@ -758,6 +836,28 @@
     }
   },
   "libraries": {
+    "DynamicData/7.14.2": {
+      "sha512": "r0QHWrxOuWngobI/QXbhvZvGNuLUjAo9ocDuSEsDftf47e6SulGoY8id6vMW2Oo5ZOi4c78NQlL22N+4CJ1CbA==",
+      "type": "package",
+      "path": "dynamicdata/7.14.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "dynamicdata.7.14.2.nupkg.sha512",
+        "dynamicdata.nuspec",
+        "lib/net462/DynamicData.dll",
+        "lib/net462/DynamicData.xml",
+        "lib/net6.0/DynamicData.dll",
+        "lib/net6.0/DynamicData.xml",
+        "lib/net7.0/DynamicData.dll",
+        "lib/net7.0/DynamicData.xml",
+        "lib/netstandard2.0/DynamicData.dll",
+        "lib/netstandard2.0/DynamicData.xml",
+        "logo.png"
+      ]
+    },
     "Extended.Wpf.Toolkit/4.5.0": {
       "sha512": "oQP6Qyuz+3kETAC/s+cBEfb8Vzbju6pB7Q5czW4KdkAOpFJTA/SCox8caH6HLQxQ6Lwq2jCeSQOPJKlnpqpFOg==",
       "type": "package",
@@ -1291,6 +1391,103 @@
         "packageIcon.png"
       ]
     },
+    "ReactiveUI/19.4.1": {
+      "sha512": "v19evY2niDfWsQWsIcOKByU6wgo4Uegz0TVxUA5M6QhOns8QPwD9fBuKuYfLHvW1ZrUL2kf8pUYlWu3Btnidew==",
+      "type": "package",
+      "path": "reactiveui/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/monoandroid12.0/ReactiveUI.dll",
+        "lib/monoandroid12.0/ReactiveUI.pdb",
+        "lib/monoandroid12.0/ReactiveUI.xml",
+        "lib/monoandroid12.1/ReactiveUI.dll",
+        "lib/monoandroid12.1/ReactiveUI.pdb",
+        "lib/monoandroid12.1/ReactiveUI.xml",
+        "lib/monoandroid13.0/ReactiveUI.dll",
+        "lib/monoandroid13.0/ReactiveUI.pdb",
+        "lib/monoandroid13.0/ReactiveUI.xml",
+        "lib/net462/ReactiveUI.dll",
+        "lib/net462/ReactiveUI.xml",
+        "lib/net472/ReactiveUI.dll",
+        "lib/net472/ReactiveUI.xml",
+        "lib/net6.0-android31.0/ReactiveUI.dll",
+        "lib/net6.0-android31.0/ReactiveUI.xml",
+        "lib/net6.0-ios16.1/ReactiveUI.dll",
+        "lib/net6.0-ios16.1/ReactiveUI.xml",
+        "lib/net6.0-maccatalyst16.1/ReactiveUI.dll",
+        "lib/net6.0-maccatalyst16.1/ReactiveUI.xml",
+        "lib/net6.0-macos13.0/ReactiveUI.dll",
+        "lib/net6.0-macos13.0/ReactiveUI.xml",
+        "lib/net6.0-tvos16.1/ReactiveUI.dll",
+        "lib/net6.0-tvos16.1/ReactiveUI.xml",
+        "lib/net6.0-windows10.0.17763/ReactiveUI.dll",
+        "lib/net6.0-windows10.0.17763/ReactiveUI.xml",
+        "lib/net6.0-windows10.0.19041/ReactiveUI.dll",
+        "lib/net6.0-windows10.0.19041/ReactiveUI.xml",
+        "lib/net6.0/ReactiveUI.dll",
+        "lib/net6.0/ReactiveUI.xml",
+        "lib/net7.0-android33.0/ReactiveUI.dll",
+        "lib/net7.0-android33.0/ReactiveUI.xml",
+        "lib/net7.0-ios16.1/ReactiveUI.dll",
+        "lib/net7.0-ios16.1/ReactiveUI.xml",
+        "lib/net7.0-maccatalyst16.1/ReactiveUI.dll",
+        "lib/net7.0-maccatalyst16.1/ReactiveUI.xml",
+        "lib/net7.0-macos13.0/ReactiveUI.dll",
+        "lib/net7.0-macos13.0/ReactiveUI.xml",
+        "lib/net7.0-tvos16.1/ReactiveUI.dll",
+        "lib/net7.0-tvos16.1/ReactiveUI.xml",
+        "lib/net7.0-windows10.0.17763/ReactiveUI.dll",
+        "lib/net7.0-windows10.0.17763/ReactiveUI.xml",
+        "lib/net7.0-windows10.0.19041/ReactiveUI.dll",
+        "lib/net7.0-windows10.0.19041/ReactiveUI.xml",
+        "lib/net7.0/ReactiveUI.dll",
+        "lib/net7.0/ReactiveUI.xml",
+        "lib/netstandard2.0/ReactiveUI.dll",
+        "lib/netstandard2.0/ReactiveUI.xml",
+        "lib/tizen40/ReactiveUI.dll",
+        "lib/tizen40/ReactiveUI.xml",
+        "lib/xamarinios10/ReactiveUI.dll",
+        "lib/xamarinios10/ReactiveUI.xml",
+        "lib/xamarinmac20/ReactiveUI.dll",
+        "lib/xamarinmac20/ReactiveUI.xml",
+        "lib/xamarintvos10/ReactiveUI.dll",
+        "lib/xamarintvos10/ReactiveUI.xml",
+        "logo.png",
+        "reactiveui.19.4.1.nupkg.sha512",
+        "reactiveui.nuspec"
+      ]
+    },
+    "ReactiveUI.WPF/19.4.1": {
+      "sha512": "zpaYQA0ELQEWZ6zFDJqolFZFWBEAgTchA4mAX9IiMON0tK3LKtHog0h9gqc3G1QdcpKZQ176v5gFfLOUBMmFKQ==",
+      "type": "package",
+      "path": "reactiveui.wpf/19.4.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "README.md",
+        "lib/net462/ReactiveUI.Wpf.dll",
+        "lib/net462/ReactiveUI.Wpf.xml",
+        "lib/net472/ReactiveUI.Wpf.dll",
+        "lib/net472/ReactiveUI.Wpf.xml",
+        "lib/net48/ReactiveUI.Wpf.dll",
+        "lib/net48/ReactiveUI.Wpf.xml",
+        "lib/net6.0-windows10.0.17763/ReactiveUI.Wpf.dll",
+        "lib/net6.0-windows10.0.17763/ReactiveUI.Wpf.xml",
+        "lib/net6.0-windows10.0.19041/ReactiveUI.Wpf.dll",
+        "lib/net6.0-windows10.0.19041/ReactiveUI.Wpf.xml",
+        "lib/net7.0-windows10.0.17763/ReactiveUI.Wpf.dll",
+        "lib/net7.0-windows10.0.17763/ReactiveUI.Wpf.xml",
+        "lib/net7.0-windows10.0.19041/ReactiveUI.Wpf.dll",
+        "lib/net7.0-windows10.0.19041/ReactiveUI.Wpf.xml",
+        "logo.png",
+        "reactiveui.wpf.19.4.1.nupkg.sha512",
+        "reactiveui.wpf.nuspec"
+      ]
+    },
     "Serilog/2.12.0": {
       "sha512": "xaiJLIdu6rYMKfQMYUZgTy8YK7SMZjB4Yk50C/u//Z4OsvxkUfSPJy4nknfvwAC34yr13q7kcyh4grbwhSxyZg==",
       "type": "package",
@@ -1346,6 +1543,24 @@
         "lib/netstandard2.1/Serilog.Sinks.File.xml",
         "serilog.sinks.file.5.0.0.nupkg.sha512",
         "serilog.sinks.file.nuspec"
+      ]
+    },
+    "Splat/14.6.37": {
+      "sha512": "6BXbAks4Rqjo6dJW4KfTBZAf6ZRygjE78aVUbEBuSLwKGl+WZjsWZSIYIfYtqPbCEs74HvSTg+4xhSE93xl1kQ==",
+      "type": "package",
+      "path": "splat/14.6.37",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE/LICENSE",
+        "lib/net6.0/Splat.dll",
+        "lib/net6.0/Splat.xml",
+        "lib/net7.0/Splat.dll",
+        "lib/net7.0/Splat.xml",
+        "lib/netstandard2.0/Splat.dll",
+        "lib/netstandard2.0/Splat.xml",
+        "splat.14.6.37.nupkg.sha512",
+        "splat.nuspec"
       ]
     },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.4": {
@@ -1529,6 +1744,34 @@
         "version.txt"
       ]
     },
+    "System.Reactive/6.0.0": {
+      "sha512": "31kfaW4ZupZzPsI5PVe77VhnvFF55qgma7KZr/E0iFTs6fmdhhG8j0mgEx620iLTey1EynOkEfnyTjtNEpJzGw==",
+      "type": "package",
+      "path": "system.reactive/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/net6.0-windows10.0.19041/_._",
+        "build/net6.0/_._",
+        "buildTransitive/net6.0-windows10.0.19041/_._",
+        "buildTransitive/net6.0/_._",
+        "icon.png",
+        "lib/net472/System.Reactive.dll",
+        "lib/net472/System.Reactive.xml",
+        "lib/net6.0-windows10.0.19041/System.Reactive.dll",
+        "lib/net6.0-windows10.0.19041/System.Reactive.xml",
+        "lib/net6.0/System.Reactive.dll",
+        "lib/net6.0/System.Reactive.xml",
+        "lib/netstandard2.0/System.Reactive.dll",
+        "lib/netstandard2.0/System.Reactive.xml",
+        "lib/uap10.0.18362/System.Reactive.dll",
+        "lib/uap10.0.18362/System.Reactive.pri",
+        "lib/uap10.0.18362/System.Reactive.xml",
+        "readme.md",
+        "system.reactive.6.0.0.nupkg.sha512",
+        "system.reactive.nuspec"
+      ]
+    },
     "System.Runtime.CompilerServices.Unsafe/6.0.0": {
       "sha512": "/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
       "type": "package",
@@ -1708,6 +1951,8 @@
       "ActivityScheduler.Data >= 1.0.0",
       "Extended.Wpf.Toolkit >= 4.5.0",
       "Microsoft.Extensions.DependencyInjection >= 7.0.0",
+      "ReactiveUI >= 19.4.1",
+      "ReactiveUI.WPF >= 19.4.1",
       "Serilog >= 2.12.0",
       "Serilog.Sinks.File >= 5.0.0",
       "System.Drawing.Common >= 7.0.0",
@@ -1771,6 +2016,14 @@
             "target": "Package",
             "version": "[7.0.0, )"
           },
+          "ReactiveUI": {
+            "target": "Package",
+            "version": "[19.4.1, )"
+          },
+          "ReactiveUI.WPF": {
+            "target": "Package",
+            "version": "[19.4.1, )"
+          },
           "Serilog": {
             "target": "Package",
             "version": "[2.12.0, )"
@@ -1810,5 +2063,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'ReactiveUI.WPF 19.4.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "ReactiveUI.WPF",
+      "targetGraphs": [
+        "net6.0-windows7.0"
+      ]
+    }
+  ]
 }

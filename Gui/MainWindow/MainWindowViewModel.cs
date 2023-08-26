@@ -21,10 +21,12 @@ using System.Windows;
 using System.Windows.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Timer = System.Timers.Timer;
+using ReactiveUI;
+using DynamicData.Binding;
 
 namespace ActivityScheduler.Gui.MainWindow
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : ReactiveObject
     {
         private Core.Settings.Settings settingsFrm;
         private ActivitySchedulerApp _app;
@@ -34,27 +36,14 @@ namespace ActivityScheduler.Gui.MainWindow
         private SettingsManager _settingsManager;
         private List<Batch> _batchList;
         private List<Batch> _runningBatchList;
+
+
         private BatchListBoxViewModel _selectedItem;
+
         public BatchListBoxViewModel SelectedItem
         {
-            get { return _selectedItem; }
-            set
-            {
-                _selectedItem = value;
-
-                if (_selectedItem == null)
-                {
-                    SelectionModeVar = SelectionMode.None;
-                    CurrentBatch = null;
-                    return;
-                }
-
-                CurrentBatch = _batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
-
-                UpdateSelectionMode();
-            }
+            get => _selectedItem;
+            set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
         }
 
         private void UpdateSelectionMode()
@@ -83,7 +72,13 @@ namespace ActivityScheduler.Gui.MainWindow
             }
         }
 
-        public Batch? CurrentBatch { get; set; }
+        public Batch? _currentBatch;
+        public Batch? CurrentBatch 
+        { 
+            get=> _currentBatch; 
+            set=> this.RaiseAndSetIfChanged(ref _currentBatch, value);
+        }
+
         private ActivityManager _activityManager;
 
         public SelectionMode SelectionModeVar { get; set; } = SelectionMode.None;
@@ -91,7 +86,14 @@ namespace ActivityScheduler.Gui.MainWindow
         private ServerCommunicationObjectT<AppToWorkerMessage> _pipeServer;
         private readonly Timer _timer;
         private List<Batch> _runningBatchesList = new List<Batch>();
-        public string InfoRunBatchText { get; set; }
+
+        private string _infoRunBatchText;
+        public string InfoRunBatchText
+        {
+            get => _infoRunBatchText;
+            set => this.RaiseAndSetIfChanged(ref _infoRunBatchText, value);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action ListSourceChanged;
         public ObservableCollection<BatchListBoxViewModel> BatchListItemSource { get; set; }
@@ -135,6 +137,23 @@ namespace ActivityScheduler.Gui.MainWindow
 
             _timer = new Timer(500) { AutoReset = true };
             _timer.Elapsed += ProcessMessages;
+
+            this.WhenAnyValue(vm => vm.SelectedItem)
+                .Subscribe(t =>
+                {
+                    if (t == null)
+                    {
+                        SelectionModeVar = SelectionMode.None;
+                        CurrentBatch = null;
+                        return;
+                    }
+                    else
+                    {
+                        _logger.Information($"e202 {t.BatchNumber}");
+                        CurrentBatch = _batchList.FirstOrDefault(x => x.Id == _selectedItem.Id);
+                        UpdateSelectionMode();
+                    }
+                });
 
             BatchListItemSource = new ObservableCollection<BatchListBoxViewModel>();
 
@@ -280,7 +299,6 @@ namespace ActivityScheduler.Gui.MainWindow
         private void AddBatchTbLine(string text)
         {
             InfoRunBatchText = text + Environment.NewLine + InfoRunBatchText;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("InfoRunBatchText"));
         }
 
         private void ProcessMessages(object? sender, ElapsedEventArgs e)

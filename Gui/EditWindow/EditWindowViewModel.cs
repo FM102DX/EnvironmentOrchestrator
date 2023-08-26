@@ -17,10 +17,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.Toolkit.Primitives;
+using ReactiveUI;
 
 namespace ActivityScheduler.Gui.EditWindow
 {
-    public class EditWindowViewModel : INotifyPropertyChanged
+    public class EditWindowViewModel : ReactiveObject
     {
         private Serilog.ILogger _logger;
         private IAsyncRepositoryT<Activity> _repo;
@@ -143,7 +144,6 @@ namespace ActivityScheduler.Gui.EditWindow
         }
 
 
-        private Batch _currentBatch;
         public ICommand FormLoadedCmd { get; private set; }
         public ICommand SaveActivityCmd { get; private set; }
         public ICommand SaveBatchCmd { get; private set; }
@@ -171,90 +171,51 @@ namespace ActivityScheduler.Gui.EditWindow
             }
         }
 
+        private Batch _currentBatch;
         public Batch CurrentBatch { 
-            get
-            {
-                return _currentBatch;
-            }
-            set
-            {
-                _currentBatch = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentBatch"));
-            }
+            get=> _currentBatch;
+            set => this.RaiseAndSetIfChanged(ref _currentBatch, value);
         }
 
         private List<Activity> _activitiesList = new List<Activity>();
-
         public List<Activity> AcivityListItemSource 
         { 
-            get
-            {
-                return (List<Activity>) _activitiesList;    
-            }
-            
-            set
-            {
-                _activitiesList = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("AcivityListItemSource"));
-            }
+            get =>_activitiesList;
+            set=> this.RaiseAndSetIfChanged(ref _activitiesList, value);
         }
 
         private Activity? _selectedItem;
+
         private Activity? _selectedItemDisplayed;
 
         //made to for record editing purposes
         public Activity? SelectedItemDisplayed 
         { 
-            get
-            {
-                return _selectedItemDisplayed;
-            }
-            set
-            {
-                _selectedItemDisplayed=value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItemDisplayed"));
-            }
+            get => _selectedItemDisplayed;
+            set=> this.RaiseAndSetIfChanged(ref _selectedItemDisplayed, value);
         }
-        
-
 
         public Activity? SelectedItem 
         {
-            get 
-            { 
-                return _selectedItem; 
-            }
+            get => _selectedItem;
             set
             {
-                if (value == null && AcivityListItemSource.Count != 0)
+                if (AcivityListItemSource.Count == 0)
                 {
-
-                    return;
-                }
-                
-                _selectedItem = value;
-
-                if (_selectedItem == null)
-                {
+                    value = null;
                     SelectionModeVar = SelectionMode.ActivityModeNoSelection;
-                    UpdateSelectionMode();
                     SelectedItemDisplayed = null;
-                    return;
                 }
-
-                SelectedItemDisplayed = _activityManager.Clone(_selectedItem);
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedItem"));
-
-                SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
-
+                else
+                {
+                    if (value == null) return;
+                    SelectedItemDisplayed = _activityManager.Clone(value);
+                    SelectionModeVar = SelectionMode.ActivityModeRegularSelection;
+                }
+                this.RaiseAndSetIfChanged(ref _selectedItem, value);
                 UpdateSelectionMode();
             }
         }
-
-        private TimeSpan _actStartTime { get; set; }
-
-        private bool _saveActivityStopMarker = false;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         
@@ -262,14 +223,14 @@ namespace ActivityScheduler.Gui.EditWindow
 
         public event Action NeedToCancelGridChange;
 
-        public event SelectionModeChangedDelegate SelectionModeChanged;
-        public event SelectionModeChangedDelegate3 SelectionModeChanged3;
-        public event SelectionModeChangedDelegate4 SelectionModeChanged4;
+        //TODO need to use bindings here and get rid of event handling in view
+        public event SelectionModeChangedDelegate   SelectionModeChanged;
+        public event SelectionModeChangedDelegate3  SelectionModeChanged3;
+        public event SelectionModeChangedDelegate4  SelectionModeChanged4;
 
         public delegate void SelectionModeChangedDelegate(SelectionMode selectionMode);
         public delegate void SelectionModeChangedDelegate3(BatchStartPointTypeEnum selectionMode);
         public delegate void SelectionModeChangedDelegate4(BatchStartTypeEnum selectionMode);
-        public string BufferIn { get; set; }
 
         public EditWindowViewModel (BatchManager batchManager, ActivityManager activityManager, Batch currentBatch, Serilog.ILogger logger, MainWindowViewModel mainWindowViewModel)
         {
